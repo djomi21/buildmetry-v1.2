@@ -34,18 +34,18 @@ const calcInv = (lines=[],taxRate=FL_TAX,discountPct=0,depositType="none",deposi
 
 // ── CHART DATA ─────────────────────────────────────────────────
 const REV_DATA=[
-  {month:"Jan",revenue:38200,profit:11200,labor:14800,materials:12200},
-  {month:"Feb",revenue:44500,profit:13800,labor:17200,materials:13500},
-  {month:"Mar",revenue:52100,profit:16400,labor:19600,materials:16100},
-  {month:"Apr",revenue:41800,profit:12100,labor:15900,materials:13800},
-  {month:"May",revenue:61200,profit:21000,labor:22100,materials:18100},
-  {month:"Jun",revenue:58700,profit:19500,labor:20800,materials:18400},
-  {month:"Jul",revenue:49300,profit:15200,labor:18200,materials:15900},
-  {month:"Aug",revenue:67400,profit:24100,labor:23400,materials:19900},
-  {month:"Sep",revenue:71200,profit:26400,labor:24800,materials:20000},
-  {month:"Oct",revenue:63500,profit:22100,labor:22200,materials:19200},
-  {month:"Nov",revenue:55800,profit:18300,labor:20100,materials:17400},
-  {month:"Dec",revenue:48200,profit:15600,labor:17800,materials:14800},
+  {month:"Jan",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Feb",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Mar",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Apr",revenue:0,profit:0,labor:0,materials:0},
+  {month:"May",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Jun",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Jul",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Aug",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Sep",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Oct",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Nov",revenue:0,profit:0,labor:0,materials:0},
+  {month:"Dec",revenue:0,profit:0,labor:0,materials:0},
 ];
 
 // ── SEED DATA ──────────────────────────────────────────────────

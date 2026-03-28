@@ -16,9 +16,9 @@ async function main() {
       name: 'BuildMetry Demo Co.',
       owner: 'Admin User',
       email: 'admin@buildmetry.com',
-      defaultTaxRate: 6.5,
-      paymentTerms: 30,
-      laborBurdenDefault: 28.3,
+      defaultTaxRate: 0,
+      paymentTerms: 0,
+      laborBurdenDefault: 0,
     },
   });
 
