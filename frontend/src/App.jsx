@@ -1931,7 +1931,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
     if(!canDelete)return;
     if(!confirm("Delete this project? This cannot be undone."))return;
     db.projs.remove(id);
-    if(sel===id)setSel(null);
+    if(sel===id)setSel(projs.find(p=>p.id!==id)?.id||null);
     showToast("Project deleted");
   };
 
