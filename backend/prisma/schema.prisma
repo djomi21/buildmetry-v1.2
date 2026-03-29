@@ -389,9 +389,9 @@ model ProjectPhase {
 
 model Contract {
   id                Int       @id @default(autoincrement())
-  projectId         Int
+  projectId         String
   project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  linkedEstimateId  Int?
+  linkedEstimateId  String?
   estimate          Estimate? @relation("ContractEstimate", fields: [linkedEstimateId], references: [id])
   parentContractId  Int?
   parentContract    Contract?  @relation("ChangeOrders", fields: [parentContractId], references: [id])
