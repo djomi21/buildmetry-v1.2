@@ -4405,7 +4405,7 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                       {l:"Subtotal",v:fmt(siC.sub),c:"#dde1ec",bold:true},
                       ...(siC.discountPct>0?[{l:`Discount (${siC.discountPct}%)`,v:`−${fmt(siC.discAmt)}`,c:"#a78bfa"}]:[]),
                       ...(siC.discountPct>0?[{l:"After Discount",v:fmt(siC.discSub),c:"#dde1ec",bold:true}]:[]),
-                      {l:`FL Tax ${si.taxRate}% on materials`,v:fmt(siC.tax),c:"#14b8a6"},
+                      {l:`Tax ${si.taxRate}% on materials`,v:fmt(siC.tax),c:"#14b8a6"},
                     ].map(r=>(
                       <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid #111826"}}>
                         <span style={{fontSize:11,color:r.bold?"#dde1ec":"#7a8299",fontWeight:r.bold?700:400}}>{r.l}</span>
