@@ -96,7 +96,7 @@ class ContractsAPI {
   // ── Contracts (matches backend/src/routes/contracts.js) ──
   listContracts(pid) { return this._fetch(`/contracts/project/${pid}`); }
   getContract(pid, cid) { return this._fetch(`/contracts/${cid}`); }
-  createContract(pid, data) { return this._fetch(`/contracts`, { method: "POST", body: JSON.stringify({ ...data, projectId: parseInt(pid) }) }); }
+  createContract(pid, data) { return this._fetch(`/contracts`, { method: "POST", body: JSON.stringify({ ...data, projectId: String(pid) }) }); }
   updateContract(pid, cid, data) { return this._fetch(`/contracts/${cid}`, { method: "PUT", body: JSON.stringify(data) }); }
   deleteContract(pid, cid) { return this._fetch(`/contracts/${cid}`, { method: "DELETE" }); }
   convertEstimate(eid) { return this._fetch(`/contracts/from-estimate/${eid}`, { method: "POST", body: JSON.stringify({}) }); }
@@ -769,7 +769,29 @@ export default function ContractsModule({ projectId = "demo", apiBaseUrl = "/api
   }, [contracts]);
 
   return (
-    <div style={{ padding: "0.5rem 0", fontFamily: "var(--font-sans)", maxWidth: "780px" }}>
+    <div style={{
+      padding: "0.5rem 0", fontFamily: "inherit", maxWidth: "780px",
+      "--color-background-primary":   "#0c0f17",
+      "--color-background-secondary": "#0e1119",
+      "--color-background-info":      "rgba(59,130,246,0.1)",
+      "--color-background-success":   "rgba(34,197,94,0.1)",
+      "--color-background-warning":   "rgba(245,166,35,0.1)",
+      "--color-background-danger":    "rgba(239,68,68,0.1)",
+      "--color-text-primary":         "#e2e8f0",
+      "--color-text-secondary":       "#9aabb8",
+      "--color-text-info":            "#3b82f6",
+      "--color-text-success":         "#22c55e",
+      "--color-text-warning":         "#f5a623",
+      "--color-text-danger":          "#ef4444",
+      "--color-border-secondary":     "#1e2535",
+      "--color-border-tertiary":      "#111826",
+      "--color-border-info":          "rgba(59,130,246,0.35)",
+      "--color-border-warning":       "rgba(245,166,35,0.35)",
+      "--color-border-danger":        "rgba(239,68,68,0.35)",
+      "--border-radius-lg":           "11px",
+      "--border-radius-md":           "8px",
+      "--font-sans":                  "inherit",
+    }}>
       {toast && (
         <div style={{ position: "fixed", bottom: "24px", left: "50%", transform: "translateX(-50%)", background: "var(--color-text-primary)", color: "var(--color-background-primary)", padding: "10px 20px", borderRadius: "var(--border-radius-md)", fontSize: "13px", fontWeight: 500, zIndex: 999, boxShadow: "0 4px 12px rgba(0,0,0,.15)" }}>{toast}</div>
       )}
