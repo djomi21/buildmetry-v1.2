@@ -2719,7 +2719,7 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
                 <div><label className="lbl">Hire Date</label><input className="inp" type="date" value={form.hireDate||""} onChange={e=>setForm(f=>({...f,hireDate:e.target.value}))}/></div>
                 <div><label className="lbl">Emergency Contact</label><input className="inp" value={form.emergencyContact||""} onChange={e=>setForm(f=>({...f,emergencyContact:e.target.value}))} placeholder="Name — (555) 000-0000"/></div>
               </div>
-              <div><label className="lbl">Certifications / Licenses</label><input className="inp" value={form.certifications||""} onChange={e=>setForm(f=>({...f,certifications:e.target.value}))} placeholder="OSHA 10, EPA Lead, FL Electrical License…"/></div>
+              <div><label className="lbl">Certifications / Licenses</label><input className="inp" value={form.certifications||""} onChange={e=>setForm(f=>({...f,certifications:e.target.value}))} placeholder="OSHA 10, EPA Lead, Electrical License…"/></div>
               <div style={{display:"flex",gap:9,marginTop:4}}>
                 <button onClick={()=>setForm(null)} className="bb b-gh" style={{flex:1,padding:"10px",justifyContent:"center"}}>Cancel</button>
                 <button onClick={save} className="bb b-bl" style={{flex:2,padding:"10px",fontSize:13,justifyContent:"center"}}><I n="check" s={13}/>{form._id?"Update":"Add"} Crew Member</button>
