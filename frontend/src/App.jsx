@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import api, { getToken, clearAuth, getSavedUser, saveUser } from "./api";
-import ContractsModule from '../components/ContractsModule';
+import ContractsModule from './components/ContractsModule';
 
 // API_BASE is configured in api.js via VITE_API_URL env var
 
