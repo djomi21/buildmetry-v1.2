@@ -1947,6 +1947,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
   const [sel,  setSel]  = useState(projs[0]?.id||null);
   const [form, setForm] = useState(null);
   const [detailTab, setDetailTab] = useState('overview');
+  const [taskForm, setTaskForm] = useState(null);
   useEffect(() => setDetailTab('overview'), [sel]);
   const sp=projs.find(p=>p.id===sel)||null;
   const blank={name:"",custId:"",status:"active",contractValue:"",budgetLabor:"",budgetMaterials:"",actualLabor:"0",actualMaterials:"0",start:tod(),end:addD(tod(),60),phase:"Planning",progress:0,notes:""};
@@ -2100,7 +2101,6 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
               const unphased=projTasks.filter(function(t){return !t.phase||!PHASES.includes(t.phase);});
               if(unphased.length>0) byPhase["Unassigned"]=unphased;
 
-              const [taskForm,setTaskForm]=useState(null);
               const addTask=()=>setTaskForm({id:null,phase:sp.phase||PHASES[0],title:"",assignedTo:null,status:"todo",dueDate:"",notes:""});
               const saveTask=()=>{
                 if(!taskForm.title.trim()){showToast("Task title required","error");return;}
@@ -2194,7 +2194,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
               </div>;
             })()}
           </div>}
-          {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={projectId}/> apiBaseUrl="/api"/></div>}
+          {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={sp.id} apiBaseUrl="/api"/></div>}
         </div>
       ):(
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>
