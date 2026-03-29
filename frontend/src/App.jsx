@@ -798,7 +798,23 @@ function ForceChangePassword({auth, setAuth, showToast, handleLogout}) {
 // ══════════════════════════════════════════════════════════════
 export default function App() {
   const [auth, setAuth] = useState(()=>getSavedUser());
-  const [tab,      setTab]      = useState("dashboard");
+  const getInitialTab = () => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && hash !== '') return hash;
+    const saved = localStorage.getItem('buildmetry_tab');
+    if (saved) return saved;
+    return 'dashboard';
+  };
+  const [tab, setTabRaw] = useState(getInitialTab);
+  const setTab = useCallback((newTab) => {
+    setTabRaw(prev => {
+      if (prev !== newTab) {
+        window.history.pushState({ tab: newTab }, '', `#${newTab}`);
+      }
+      localStorage.setItem('buildmetry_tab', newTab);
+      return newTab;
+    });
+  }, []);
   const [custs,    setCusts]    = useState([]);
   const [ests,     setEsts]     = useState([]);
   const [projs,    setProjs]    = useState([]);
@@ -819,6 +835,20 @@ export default function App() {
   const [toast,    setToast]    = useState(null);
   const [dataLoaded, setDataLoaded] = useState(false);
   const toastTimer = React.useRef(null);
+
+  // ── URL hash / browser back-forward navigation ─────
+  useEffect(() => {
+    if (!window.location.hash) {
+      window.history.replaceState({ tab: tab }, '', `#${tab}`);
+    }
+    const handlePopState = (event) => {
+      const newTab = event.state?.tab || window.location.hash.replace('#', '') || 'dashboard';
+      setTabRaw(newTab);
+      localStorage.setItem('buildmetry_tab', newTab);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // ── Load fonts ─────────────────────────────────────
   useEffect(() => {
@@ -914,6 +944,8 @@ export default function App() {
 
   // ── Logout ─────────────────────────────────────────
   const handleLogout = useCallback(() => {
+    localStorage.removeItem('buildmetry_tab');
+    window.history.replaceState(null, '', '#dashboard');
     api.logout();
     setAuth(null);
     setCusts([]); setEsts([]); setProjs([]); setMats([]);
