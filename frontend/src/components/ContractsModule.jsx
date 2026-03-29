@@ -1,16 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 /*
- * ═══════════════════════════════════════════════════════
- *  BUILDMETRY — CONTRACTS MODULE v2
- *  With API integration, Estimate→Contract, Change Orders
- * ═══════════════════════════════════════════════════════
- *
- *  Props:
- *    projectId   — ID of the parent project (required)
- *    apiBaseUrl   — override API base (default: /api)
- *    onNavigate  — callback for cross-module nav (optional)
- *                   e.g. onNavigate("invoice", invoiceId)
+ * BUILDMETRY — CONTRACTS MODULE
+ * Dark theme matching App.jsx. Prisma backend API.
+ * Props: projectId (string like "PRJ-2026-001"), apiBaseUrl (default "/api")
  */
 
 const TAX_RATE = 0.065;
@@ -19,820 +12,293 @@ const STATUSES = ["Draft", "Sent", "Active", "Completed", "Cancelled"];
 const PAYMENT_TERMS = ["Due on Receipt", "Net 15", "Net 30", "Net 45", "Net 60"];
 const MILESTONE_STATUSES = ["Pending", "Invoiced", "Paid"];
 const UNITS = ["ea", "sf", "lf", "sy", "cy", "hr", "day", "ls", "gal", "ton", "bd ft"];
-
-const SCOPE_TEMPLATES = {
+const TEMPLATES = {
   "Kitchen Remodel": [
     { description: "Demolition — cabinets, countertops, flooring", qty: 1, unitPrice: 2800, unit: "ls", isMaterial: false },
     { description: "Rough plumbing", qty: 1, unitPrice: 3200, unit: "ls", isMaterial: false },
     { description: "Electrical rough-in", qty: 1, unitPrice: 2400, unit: "ls", isMaterial: false },
     { description: "Cabinets — shaker style", qty: 22, unitPrice: 285, unit: "lf", isMaterial: true },
-    { description: "Quartz countertops — installed", qty: 45, unitPrice: 95, unit: "sf", isMaterial: true },
-    { description: "Tile backsplash — subway", qty: 30, unitPrice: 18, unit: "sf", isMaterial: true },
-    { description: "Backsplash installation labor", qty: 30, unitPrice: 12, unit: "sf", isMaterial: false },
+    { description: "Quartz countertops", qty: 45, unitPrice: 95, unit: "sf", isMaterial: true },
+    { description: "Tile backsplash", qty: 30, unitPrice: 18, unit: "sf", isMaterial: true },
+    { description: "Backsplash labor", qty: 30, unitPrice: 12, unit: "sf", isMaterial: false },
     { description: "Finish plumbing — fixtures", qty: 1, unitPrice: 1800, unit: "ls", isMaterial: true },
     { description: "Painting — walls & trim", qty: 1, unitPrice: 1600, unit: "ls", isMaterial: false },
     { description: "Cleanup & haul-off", qty: 1, unitPrice: 800, unit: "ls", isMaterial: false },
   ],
-  "Bathroom Renovation": [
+  "Bathroom Reno": [
     { description: "Demo — tile, fixtures, vanity", qty: 1, unitPrice: 1500, unit: "ls", isMaterial: false },
     { description: "Plumbing rough-in", qty: 1, unitPrice: 2800, unit: "ls", isMaterial: false },
-    { description: "Waterproofing membrane", qty: 60, unitPrice: 8, unit: "sf", isMaterial: true },
-    { description: "Floor tile — porcelain", qty: 60, unitPrice: 12, unit: "sf", isMaterial: true },
-    { description: "Wall tile — ceramic", qty: 120, unitPrice: 9, unit: "sf", isMaterial: true },
-    { description: "Tile installation labor", qty: 180, unitPrice: 10, unit: "sf", isMaterial: false },
-    { description: "Vanity w/ top — 48in", qty: 1, unitPrice: 1200, unit: "ea", isMaterial: true },
-    { description: "Shower valve + trim kit", qty: 1, unitPrice: 650, unit: "ea", isMaterial: true },
+    { description: "Waterproofing", qty: 60, unitPrice: 8, unit: "sf", isMaterial: true },
+    { description: "Floor tile", qty: 60, unitPrice: 12, unit: "sf", isMaterial: true },
+    { description: "Wall tile", qty: 120, unitPrice: 9, unit: "sf", isMaterial: true },
+    { description: "Tile labor", qty: 180, unitPrice: 10, unit: "sf", isMaterial: false },
+    { description: "Vanity w/ top", qty: 1, unitPrice: 1200, unit: "ea", isMaterial: true },
+    { description: "Shower valve + trim", qty: 1, unitPrice: 650, unit: "ea", isMaterial: true },
     { description: "Finish plumbing", qty: 1, unitPrice: 1200, unit: "ls", isMaterial: false },
-    { description: "Painting & caulking", qty: 1, unitPrice: 900, unit: "ls", isMaterial: false },
+    { description: "Paint & caulk", qty: 1, unitPrice: 900, unit: "ls", isMaterial: false },
   ],
-  "Exterior Painting": [
+  "Ext. Painting": [
     { description: "Pressure washing", qty: 2400, unitPrice: 0.35, unit: "sf", isMaterial: false },
     { description: "Scraping & prep", qty: 2400, unitPrice: 0.45, unit: "sf", isMaterial: false },
-    { description: "Primer — exterior", qty: 12, unitPrice: 48, unit: "gal", isMaterial: true },
-    { description: "Paint — Sherwin-Williams Duration", qty: 18, unitPrice: 72, unit: "gal", isMaterial: true },
-    { description: "Caulking — windows & trim", qty: 1, unitPrice: 600, unit: "ls", isMaterial: true },
-    { description: "Painting labor — 2 coats", qty: 2400, unitPrice: 1.1, unit: "sf", isMaterial: false },
-    { description: "Trim & detail work", qty: 1, unitPrice: 1400, unit: "ls", isMaterial: false },
+    { description: "Primer", qty: 12, unitPrice: 48, unit: "gal", isMaterial: true },
+    { description: "Paint — SW Duration", qty: 18, unitPrice: 72, unit: "gal", isMaterial: true },
+    { description: "Caulking", qty: 1, unitPrice: 600, unit: "ls", isMaterial: true },
+    { description: "Paint labor — 2 coats", qty: 2400, unitPrice: 1.1, unit: "sf", isMaterial: false },
+    { description: "Trim & detail", qty: 1, unitPrice: 1400, unit: "ls", isMaterial: false },
   ],
 };
 
-/* ─── Utilities ─── */
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-function fmt(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n); }
-function fmtPct(n) { return (n * 100).toFixed(1) + "%"; }
-
-function calcTotals(lineItems, discountPercent, taxRate, retentionPercent) {
-  const subtotal = lineItems.reduce((s, i) => s + i.qty * i.unitPrice, 0);
-  const laborTotal = lineItems.filter(i => !i.isMaterial).reduce((s, i) => s + i.qty * i.unitPrice, 0);
-  const materialTotal = lineItems.filter(i => i.isMaterial).reduce((s, i) => s + i.qty * i.unitPrice, 0);
-  const discountAmount = subtotal * (discountPercent / 100);
-  const discountedSubtotal = subtotal - discountAmount;
-  const discountedMaterial = materialTotal * (1 - discountPercent / 100);
-  const taxAmount = discountedMaterial * taxRate;
-  const total = discountedSubtotal + taxAmount;
-  const retentionAmount = total * (retentionPercent / 100);
-  const netPayable = total - retentionAmount;
-  return { subtotal, laborTotal, materialTotal, discountAmount, discountedMaterial, taxAmount, total, retentionAmount, netPayable };
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function $(n){return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(n)}
+function pct(n){return(n*100).toFixed(1)+"%"}
+function calc(items,dp,tr,rp){
+  const sub=items.reduce((s,i)=>s+i.qty*i.unitPrice,0),lab=items.filter(i=>!i.isMaterial).reduce((s,i)=>s+i.qty*i.unitPrice,0),mat=items.filter(i=>i.isMaterial).reduce((s,i)=>s+i.qty*i.unitPrice,0);
+  const da=sub*(dp/100),ds=sub-da,dm=mat*(1-dp/100),tax=dm*tr,tot=ds+tax,ra=tot*(rp/100);
+  return{sub,lab,mat,da,dm,tax,tot,ra,net:tot-ra};
 }
 
-/* ─── API Service (inline — or import from contractsApi.js) ─── */
-class ContractsAPI {
-  constructor(baseUrl = "/api") { this.base = baseUrl; }
+// BuildMetry colors
+const bg="#0c0f17",bg2="#0e1119",brd="#1e2535",brdL="#111826",tx="#dde1ec",tx2="#7a8299",tx3="#4a566e",ac="#3b82f6",acL="#63b3ed",acD="#1d4ed8",grn="#22c55e",red="#ef4444",ylw="#f5a623";
+const inpS={background:bg,border:`1px solid ${brd}`,color:tx,borderRadius:8,padding:"9px 13px",fontSize:13,width:"100%",outline:"none",boxSizing:"border-box",fontFamily:"inherit"};
+const cardS={background:bg2,border:`1px solid ${brdL}`,borderRadius:12,padding:"16px 18px",marginBottom:12};
+const lblS={fontSize:10,fontWeight:700,color:tx3,marginBottom:4,display:"block",textTransform:"uppercase",letterSpacing:".5px"};
+const bPri={background:`linear-gradient(135deg,${ac},${acD})`,color:"#fff",border:"none",borderRadius:8,padding:"9px 18px",fontSize:12,fontWeight:700,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6,fontFamily:"inherit"};
+const bGh={background:"transparent",border:`1px solid ${brd}`,color:tx2,borderRadius:8,padding:"7px 13px",fontSize:12,fontWeight:700,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:5,fontFamily:"inherit"};
+const SC={Draft:{b:"rgba(122,130,153,.12)",f:tx2},Sent:{b:"rgba(59,130,246,.12)",f:acL},Active:{b:"rgba(34,197,94,.12)",f:grn},Completed:{b:"rgba(34,197,94,.12)",f:grn},Cancelled:{b:"rgba(239,68,68,.12)",f:red},Pending:{b:"rgba(249,166,35,.12)",f:ylw},Invoiced:{b:"rgba(59,130,246,.12)",f:acL},Paid:{b:"rgba(34,197,94,.12)",f:grn}};
+const Chip=({s})=>{const c=SC[s]||SC.Draft;return<span style={{display:"inline-block",fontSize:10,fontWeight:700,padding:"3px 9px",borderRadius:8,background:c.b,color:c.f}}>{s}</span>};
 
-  async _fetch(path, options = {}) {
-    const token = localStorage.getItem('bm_token');
-    const res = await fetch(`${this.base}${path}`, {
-      headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}), ...options.headers },
-      ...options,
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.message || `API ${res.status}`);
-    }
-    if (res.status === 204) return null;
-    return res.json();
-  }
+const Ic=({d,s=14,c=tx2})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
 
-  // ── Contracts (matches backend/src/routes/contracts.js) ──
-  listContracts(pid) { return this._fetch(`/contracts/project/${pid}`); }
-  getContract(pid, cid) { return this._fetch(`/contracts/${cid}`); }
-  createContract(pid, data) { return this._fetch(`/contracts`, { method: "POST", body: JSON.stringify({ ...data, projectId: String(pid) }) }); }
-  updateContract(pid, cid, data) { return this._fetch(`/contracts/${cid}`, { method: "PUT", body: JSON.stringify(data) }); }
-  deleteContract(pid, cid) { return this._fetch(`/contracts/${cid}`, { method: "DELETE" }); }
-  convertEstimate(eid) { return this._fetch(`/contracts/from-estimate/${eid}`, { method: "POST", body: JSON.stringify({}) }); }
-
-  // ── Estimates (uses your EXISTING estimates route) ──
-  listEstimates(pid) { return this._fetch(`/estimates/project/${pid}`); }
-
-  // ── Invoices (uses your EXISTING invoices route) ──
-  createInvoice(pid, data) { return this._fetch(`/invoices`, { method: "POST", body: JSON.stringify(data) }); }
+function Section({title,children,open:dOpen=true,badge}){
+  const[o,setO]=useState(dOpen);
+  return<div style={cardS}><div onClick={()=>setO(!o)} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",userSelect:"none"}}>
+    <span style={{fontSize:13,fontWeight:800,color:tx,flex:1}}>{title}</span>{badge}
+    <span style={{transform:o?"rotate(180deg)":"rotate(0)",transition:"transform .2s",display:"flex"}}><Ic d="M6 9l6 6 6-6" s={12}/></span>
+  </div>{o&&<div style={{marginTop:14}}>{children}</div>}</div>;
 }
 
-/* ─── Estimate → Contract mapper ─── */
-function mapEstimateToContract(estimate) {
-  return {
-    id: uid(),
-    linkedEstimateId: estimate.id,
-    title: `${estimate.title || estimate.name || "Estimate"} — Contract`,
-    contractType: "Prime",
-    status: "Draft",
-    clientOrSubName: estimate.customerName || estimate.clientName || "",
-    startDate: estimate.startDate || "",
-    endDate: estimate.endDate || "",
-    discountPercent: estimate.discountPercent ?? 0,
-    taxRate: estimate.taxRate ?? TAX_RATE,
-    retentionPercent: 10,
-    paymentTerms: estimate.paymentTerms || "Net 30",
-    lineItems: (estimate.lineItems || estimate.items || []).map(item => ({
-      id: uid(),
-      description: item.description || item.name || "",
-      qty: parseFloat(item.qty || item.quantity || 0),
-      unitPrice: parseFloat(item.unitPrice || item.price || item.rate || 0),
-      unit: item.unit || "ea",
-      isMaterial: Boolean(item.isMaterial ?? item.type === "material"),
-    })),
-    milestones: [],
-    scopeOfWork: estimate.scopeOfWork || estimate.notes || estimate.description || "",
-    exclusions: estimate.exclusions || "",
-    signatureStatus: "Unsigned",
-    changeOrders: [],
-  };
+function Kpi({label,value,sub,accent}){
+  return<div style={{background:accent?"rgba(59,130,246,.08)":bg,border:`1px solid ${accent?"rgba(59,130,246,.2)":brdL}`,borderRadius:10,padding:"10px 14px"}}>
+    <div style={{fontSize:9,fontWeight:700,color:accent?acL:tx3,textTransform:"uppercase",letterSpacing:".5px",marginBottom:2}}>{label}</div>
+    <div style={{fontSize:18,fontWeight:800,color:accent?acL:tx}}>{value}</div>
+    {sub&&<div style={{fontSize:10,color:tx2,marginTop:2}}>{sub}</div>}
+  </div>;
 }
 
-/* ─── Icons ─── */
-const Icon = ({ d, size = 16, color = "var(--color-text-secondary)" }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
-);
-const PlusIcon = (p) => <Icon d="M12 5v14M5 12h14" {...p} />;
-const TrashIcon = (p) => <Icon d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" {...p} />;
-const ChevronDown = (p) => <Icon d="M6 9l6 6 6-6" {...p} />;
-const FileIcon = (p) => <Icon d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6" {...p} />;
-const CheckIcon = (p) => <Icon d="M20 6L9 17l-5-5" {...p} />;
-const AlertIcon = (p) => <Icon d="M12 9v4M12 17h.01M10.29 3.86l-8.6 14.9A2 2 0 003.4 21h17.2a2 2 0 001.71-2.97l-8.6-14.93a2 2 0 00-3.42-.04z" {...p} />;
-const DollarIcon = (p) => <Icon d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" {...p} />;
-const ClipboardIcon = (p) => <Icon d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2 M9 2h6a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V3a1 1 0 011-1z" {...p} />;
-const RefreshIcon = (p) => <Icon d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" {...p} />;
-const SendIcon = (p) => <Icon d="M22 2L11 13M22 2l-7 20-4-9-9-4z" {...p} />;
-const LinkIcon = (p) => <Icon d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" {...p} />;
-const LayersIcon = (p) => <Icon d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" {...p} />;
-const XIcon = (p) => <Icon d="M18 6L6 18M6 6l12 12" {...p} />;
+function LineItems({items,setItems}){
+  const add=()=>setItems([...items,{id:uid(),description:"",qty:1,unitPrice:0,unit:"ea",isMaterial:false}]);
+  const upd=(id,f,v)=>setItems(items.map(i=>i.id===id?{...i,[f]:v}:i));
+  const rm=id=>setItems(items.filter(i=>i.id!==id));
+  return<div><div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:600}}>
+    <thead><tr style={{borderBottom:`1px solid ${brdL}`}}>{["Description","Type","Unit","Qty","Rate","Total",""].map(h=><th key={h} style={{textAlign:"left",padding:"7px 6px",fontSize:9,fontWeight:700,color:tx3,textTransform:"uppercase",letterSpacing:".3px"}}>{h}</th>)}</tr></thead>
+    <tbody>{items.map(i=><tr key={i.id} style={{borderBottom:`1px solid ${brdL}`}}>
+      <td style={{padding:6}}><input value={i.description} onChange={e=>upd(i.id,"description",e.target.value)} placeholder="Line item..." style={{...inpS,minWidth:150,padding:"7px 10px"}}/></td>
+      <td style={{padding:6}}><select value={i.isMaterial?"material":"labor"} onChange={e=>upd(i.id,"isMaterial",e.target.value==="material")} style={{...inpS,width:82,padding:"7px 6px"}}><option value="labor">Labor</option><option value="material">Material</option></select></td>
+      <td style={{padding:6}}><select value={i.unit} onChange={e=>upd(i.id,"unit",e.target.value)} style={{...inpS,width:62,padding:"7px 6px"}}>{UNITS.map(u=><option key={u}>{u}</option>)}</select></td>
+      <td style={{padding:6}}><input type="number" value={i.qty} min={0} step={.5} onChange={e=>upd(i.id,"qty",Math.max(0,parseFloat(e.target.value)||0))} style={{...inpS,width:58,padding:"7px 8px"}}/></td>
+      <td style={{padding:6}}><input type="number" value={i.unitPrice} min={0} step={.01} onChange={e=>upd(i.id,"unitPrice",Math.max(0,parseFloat(e.target.value)||0))} style={{...inpS,width:82,padding:"7px 8px"}}/></td>
+      <td style={{padding:6,fontWeight:700,color:grn,whiteSpace:"nowrap"}}>{$(i.qty*i.unitPrice)}</td>
+      <td style={{padding:6}}><button onClick={()=>rm(i.id)} style={{...bGh,padding:"4px 6px",border:"none"}}><Ic d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" s={13} c={red}/></button></td>
+    </tr>)}</tbody>
+  </table></div>
+  <button onClick={add} style={{...bGh,marginTop:10}}><Ic d="M12 5v14M5 12h14" s={12}/> Add line item</button></div>;
+}
 
-/* ─── Styles ─── */
-const cardStyle = { background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-lg)", padding: "1.25rem", marginBottom: "1rem" };
-const labelStyle = { fontSize: "12px", fontWeight: 500, color: "var(--color-text-secondary)", marginBottom: "4px", display: "block", textTransform: "uppercase", letterSpacing: "0.04em" };
-const inputStyle = { width: "100%", boxSizing: "border-box" };
-const btnPrimary = { background: "var(--color-text-info)", color: "#fff", border: "none", borderRadius: "var(--border-radius-md)", padding: "10px 20px", fontSize: "14px", fontWeight: 500, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" };
-const btnGhost = { background: "transparent", border: "0.5px solid var(--color-border-secondary)", borderRadius: "var(--border-radius-md)", padding: "8px 14px", fontSize: "13px", cursor: "pointer", color: "var(--color-text-primary)", display: "inline-flex", alignItems: "center", gap: "5px" };
-const btnSuccess = { ...btnPrimary, background: "var(--color-text-success)" };
-const btnDanger = { ...btnGhost, color: "var(--color-text-danger)", borderColor: "var(--color-border-danger)" };
-const pillStyle = (bg, fg) => ({ display: "inline-block", fontSize: "11px", fontWeight: 500, padding: "3px 10px", borderRadius: "var(--border-radius-md)", background: bg, color: fg });
-
-const STATUS_COLORS = {
-  Draft: { bg: "var(--color-background-secondary)", fg: "var(--color-text-secondary)" },
-  Sent: { bg: "var(--color-background-info)", fg: "var(--color-text-info)" },
-  Active: { bg: "var(--color-background-success)", fg: "var(--color-text-success)" },
-  Completed: { bg: "var(--color-background-success)", fg: "var(--color-text-success)" },
-  Cancelled: { bg: "var(--color-background-danger)", fg: "var(--color-text-danger)" },
-  Pending: { bg: "var(--color-background-warning)", fg: "var(--color-text-warning)" },
-  Invoiced: { bg: "var(--color-background-info)", fg: "var(--color-text-info)" },
-  Paid: { bg: "var(--color-background-success)", fg: "var(--color-text-success)" },
-};
-function StatusPill({ status }) { const c = STATUS_COLORS[status] || STATUS_COLORS.Draft; return <span style={pillStyle(c.bg, c.fg)}>{status}</span>; }
-
-/* ─── Section ─── */
-function Section({ title, icon, children, defaultOpen = true, badge, actions }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div style={cardStyle}>
-      <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", userSelect: "none" }}>
-        {icon}
-        <span style={{ fontSize: "15px", fontWeight: 500, color: "var(--color-text-primary)", flex: 1 }}>{title}</span>
-        {badge}
-        {actions && <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: "6px" }}>{actions}</div>}
-        <span style={{ transform: open ? "rotate(180deg)" : "rotate(0)", transition: "transform .2s", display: "flex" }}><ChevronDown /></span>
-      </div>
-      {open && <div style={{ marginTop: "1rem" }}>{children}</div>}
+function Milestones({ms,setMs,total}){
+  const add=()=>setMs([...ms,{id:uid(),milestone:"",amount:0,pctOfTotal:0,dueDate:"",status:"Pending"}]);
+  const upd=(id,f,v)=>setMs(ms.map(m=>{if(m.id!==id)return m;const u={...m,[f]:v};if(f==="pctOfTotal")u.amount=Math.round(total*(parseFloat(v)||0)/100*100)/100;if(f==="amount")u.pctOfTotal=total>0?Math.round((parseFloat(v)||0)/total*10000)/100:0;return u}));
+  const rm=id=>setMs(ms.filter(m=>m.id!==id));
+  const split=n=>{const p=Math.floor(100/n);const nm=n===2?["Deposit","Final"]:n===3?["Deposit","Progress","Final"]:["Deposit","Rough-in","Finish","Final"];
+    setMs(nm.map((name,i)=>({id:uid(),milestone:name,pctOfTotal:i===nm.length-1?100-p*(n-1):p,amount:i===nm.length-1?Math.round((total-Math.round(total*p/100*100)/100*(n-1))*100)/100:Math.round(total*p/100*100)/100,dueDate:"",status:"Pending"})))};
+  const sched=ms.reduce((s,m)=>s+(parseFloat(m.amount)||0),0);
+  return<div>
+    {ms.length===0&&<div style={{marginBottom:12}}><div style={{...lblS,marginBottom:8}}>Quick split</div><div style={{display:"flex",gap:8}}>{[2,3,4].map(n=><button key={n} onClick={()=>split(n)} style={bGh}>{n} draws</button>)}</div></div>}
+    {ms.map((m,i)=><div key={m.id} style={{display:"grid",gridTemplateColumns:"1fr 70px 90px 110px 90px 28px",gap:6,alignItems:"end",marginBottom:6}}>
+      <div>{i===0&&<label style={lblS}>Milestone</label>}<input value={m.milestone} onChange={e=>upd(m.id,"milestone",e.target.value)} placeholder="e.g. Rough-in" style={{...inpS,padding:"7px 10px"}}/></div>
+      <div>{i===0&&<label style={lblS}>%</label>}<input type="number" value={m.pctOfTotal} min={0} max={100} onChange={e=>upd(m.id,"pctOfTotal",e.target.value)} style={{...inpS,padding:"7px 8px"}}/></div>
+      <div>{i===0&&<label style={lblS}>Amount</label>}<input type="number" value={m.amount} min={0} onChange={e=>upd(m.id,"amount",e.target.value)} style={{...inpS,padding:"7px 8px"}}/></div>
+      <div>{i===0&&<label style={lblS}>Due</label>}<input type="date" value={m.dueDate} onChange={e=>upd(m.id,"dueDate",e.target.value)} style={{...inpS,padding:"7px 8px"}}/></div>
+      <div>{i===0&&<label style={lblS}>Status</label>}<select value={m.status} onChange={e=>upd(m.id,"status",e.target.value)} style={{...inpS,padding:"7px 6px"}}>{MILESTONE_STATUSES.map(s=><option key={s}>{s}</option>)}</select></div>
+      <div><button onClick={()=>rm(m.id)} style={{...bGh,padding:"4px",border:"none"}}><Ic d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" s={12} c={red}/></button></div>
+    </div>)}
+    <div style={{display:"flex",alignItems:"center",gap:12,marginTop:8}}>
+      <button onClick={add} style={bGh}><Ic d="M12 5v14M5 12h14" s={12}/> Add</button>
+      <span style={{fontSize:11,color:sched>total+.01?red:tx2}}>{$(sched)} / {$(total)}</span>
     </div>
-  );
+  </div>;
 }
 
-function Metric({ label, value, sub, accent }) {
-  return (
-    <div style={{ background: accent ? "var(--color-background-info)" : "var(--color-background-secondary)", borderRadius: "var(--border-radius-md)", padding: "0.75rem 1rem" }}>
-      <div style={{ fontSize: "12px", color: accent ? "var(--color-text-info)" : "var(--color-text-secondary)", marginBottom: "2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{label}</div>
-      <div style={{ fontSize: "20px", fontWeight: 500, color: accent ? "var(--color-text-info)" : "var(--color-text-primary)" }}>{value}</div>
-      {sub && <div style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}>{sub}</div>}
+function FinSummary({t,dp,tr,rp}){
+  const rows=[{l:"Labor",v:$(t.lab),s:t.sub>0?pct(t.lab/t.sub):""},{l:"Materials",v:$(t.mat),s:t.sub>0?pct(t.mat/t.sub):""},{l:"Subtotal",v:$(t.sub),b:1},
+    ...(dp>0?[{l:`Discount (${dp}%)`,v:`−${$(t.da)}`,c:grn}]:[]),
+    {l:`Tax (${(tr*100).toFixed(1)}% on materials)`,v:$(t.tax),s:`on ${$(t.dm)}`},{l:"Contract total",v:$(t.tot),b:1,a:1},
+    ...(rp>0?[{l:`Retention (${rp}%)`,v:`−${$(t.ra)}`,c:ylw},{l:"Net payable",v:$(t.net),b:1}]:[])];
+  return<div style={{background:bg,borderRadius:10,padding:"14px 16px",border:`1px solid ${brdL}`}}>
+    {rows.map((r,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",padding:"5px 0",borderTop:r.b?`1px solid ${brdL}`:"none",marginTop:r.b?4:0}}>
+      <span style={{fontSize:12,color:r.a?acL:tx2}}>{r.l}</span>
+      <div style={{textAlign:"right"}}><span style={{fontSize:r.a?16:12,fontWeight:r.b?800:400,color:r.c||(r.a?acL:tx)}}>{r.v}</span>{r.s&&<span style={{fontSize:10,color:tx3,marginLeft:6}}>{r.s}</span>}</div>
+    </div>)}
+  </div>;
+}
+
+function Form({contract,onSave,onCancel,isNew,saving}){
+  const[f,sF]=useState(()=>contract?{...contract}:{id:null,title:"",contractType:"Prime",status:"Draft",clientOrSubName:"",startDate:"",endDate:"",discountPercent:0,taxRate:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",scopeOfWork:"",exclusions:"",lineItems:[],milestones:[],changeOrders:[],signatureStatus:"Unsigned",linkedEstimateId:null});
+  const s=(k,v)=>sF(p=>({...p,[k]:v}));
+  const t=useMemo(()=>calc(f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent),[f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent]);
+  const tpl=n=>{const tp=TEMPLATES[n];if(tp)s("lineItems",tp.map(i=>({...i,id:uid()})))};
+  const warns=useMemo(()=>{const w=[];if(!f.lineItems.length)w.push("No line items.");if(t.sub>0&&t.lab/t.sub<.15&&f.lineItems.length)w.push("Labor under 15%.");if(t.mat>0&&f.taxRate===0)w.push("Tax 0% with materials.");const sc=f.milestones.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);if(f.milestones.length&&Math.abs(sc-t.tot)>1)w.push(`Schedule ${$(sc)} ≠ total ${$(t.tot)}.`);if(f.status==="Active"&&f.signatureStatus==="Unsigned")w.push("Active but unsigned.");return w},[f,t]);
+
+  return<div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+      <button onClick={onCancel} style={bGh}>\u2190 Back</button>
+      <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
     </div>
-  );
-}
+    {warns.length>0&&<div style={{...cardS,background:"rgba(249,166,35,.06)",borderColor:"rgba(249,166,35,.2)"}}>
+      <div style={{display:"flex",gap:8,alignItems:"flex-start"}}><Ic d="M12 9v4M12 17h.01M10.29 3.86l-8.6 14.9A2 2 0 003.4 21h17.2a2 2 0 001.71-2.97l-8.6-14.93a2 2 0 00-3.42-.04z" s={14} c={ylw}/>
+        <div>{warns.map((w,i)=><div key={i} style={{fontSize:12,color:ylw,marginBottom:i<warns.length-1?3:0}}>{w}</div>)}</div></div></div>}
 
-/* ─── Loading spinner ─── */
-function Spinner({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" style={{ animation: "spin 1s linear infinite" }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      <circle cx="12" cy="12" r="10" stroke="var(--color-border-secondary)" strokeWidth="3" fill="none" />
-      <path d="M12 2a10 10 0 019.8 8" stroke="var(--color-text-info)" strokeWidth="3" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
+    <Section title="Contract Details"><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+      <div style={{gridColumn:"1/-1"}}><label style={lblS}>Title</label><input value={f.title} onChange={e=>s("title",e.target.value)} placeholder="e.g. Smith Kitchen — Prime Contract" style={inpS}/></div>
+      <div><label style={lblS}>Type</label><select value={f.contractType} onChange={e=>s("contractType",e.target.value)} style={inpS}>{CONTRACT_TYPES.map(t=><option key={t}>{t}</option>)}</select></div>
+      <div><label style={lblS}>Status</label><select value={f.status} onChange={e=>s("status",e.target.value)} style={inpS}>{STATUSES.map(x=><option key={x}>{x}</option>)}</select></div>
+      <div><label style={lblS}>Client / Sub</label><input value={f.clientOrSubName} onChange={e=>s("clientOrSubName",e.target.value)} style={inpS}/></div>
+      <div><label style={lblS}>Terms</label><select value={f.paymentTerms} onChange={e=>s("paymentTerms",e.target.value)} style={inpS}>{PAYMENT_TERMS.map(t=><option key={t}>{t}</option>)}</select></div>
+      <div><label style={lblS}>Start</label><input type="date" value={f.startDate?(f.startDate+"").slice(0,10):""} onChange={e=>s("startDate",e.target.value)} style={inpS}/></div>
+      <div><label style={lblS}>End</label><input type="date" value={f.endDate?(f.endDate+"").slice(0,10):""} onChange={e=>s("endDate",e.target.value)} style={inpS}/></div>
+      <div><label style={lblS}>Signature</label><select value={f.signatureStatus} onChange={e=>s("signatureStatus",e.target.value)} style={inpS}><option>Unsigned</option><option>Signed by Contractor</option><option>Fully Executed</option></select></div>
+    </div></Section>
 
-/* ═══════════════════════════════════════
-   LINE ITEMS TABLE
-   ═══════════════════════════════════════ */
-function LineItemsTable({ items, setItems }) {
-  const addItem = () => setItems([...items, { id: uid(), description: "", qty: 1, unitPrice: 0, unit: "ea", isMaterial: false }]);
-  const update = (id, field, val) => setItems(items.map(i => i.id === id ? { ...i, [field]: val } : i));
-  const remove = (id) => setItems(items.filter(i => i.id !== id));
+    <Section title="Line Items" badge={<span style={{fontSize:10,color:tx3}}>{f.lineItems.length} items</span>}>
+      {f.lineItems.length===0&&!f.linkedEstimateId&&<div style={{marginBottom:12}}><div style={{...lblS,marginBottom:8}}>Quick start</div><div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{Object.keys(TEMPLATES).map(t=><button key={t} onClick={()=>tpl(t)} style={bGh}>{t}</button>)}</div></div>}
+      <LineItems items={f.lineItems} setItems={v=>s("lineItems",v)}/>
+    </Section>
 
-  return (
-    <div>
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px", minWidth: "640px" }}>
-          <thead>
-            <tr style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
-              {["Description", "Type", "Unit", "Qty", "Unit Price", "Total", ""].map(h => (
-                <th key={h} style={{ textAlign: "left", padding: "8px 6px", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: ".04em", color: "var(--color-text-secondary)" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {items.map(item => (
-              <tr key={item.id} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
-                <td style={{ padding: "6px" }}><input value={item.description} onChange={e => update(item.id, "description", e.target.value)} placeholder="Line item description..." style={{ ...inputStyle, minWidth: "180px" }} /></td>
-                <td style={{ padding: "6px" }}><select value={item.isMaterial ? "material" : "labor"} onChange={e => update(item.id, "isMaterial", e.target.value === "material")} style={{ width: "90px" }}><option value="labor">Labor</option><option value="material">Material</option></select></td>
-                <td style={{ padding: "6px" }}><select value={item.unit} onChange={e => update(item.id, "unit", e.target.value)} style={{ width: "70px" }}>{UNITS.map(u => <option key={u} value={u}>{u}</option>)}</select></td>
-                <td style={{ padding: "6px" }}><input type="number" value={item.qty} min={0} step={0.5} onChange={e => update(item.id, "qty", Math.max(0, parseFloat(e.target.value) || 0))} style={{ width: "64px" }} /></td>
-                <td style={{ padding: "6px" }}><input type="number" value={item.unitPrice} min={0} step={0.01} onChange={e => update(item.id, "unitPrice", Math.max(0, parseFloat(e.target.value) || 0))} style={{ width: "90px" }} /></td>
-                <td style={{ padding: "6px", fontWeight: 500, whiteSpace: "nowrap" }}>{fmt(item.qty * item.unitPrice)}</td>
-                <td style={{ padding: "6px" }}><button onClick={() => remove(item.id)} style={{ ...btnGhost, padding: "4px 6px", border: "none" }}><TrashIcon size={14} color="var(--color-text-danger)" /></button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <button onClick={addItem} style={{ ...btnGhost, marginTop: "10px" }}><PlusIcon size={14} /> Add line item</button>
+    <Section title="Pricing & Tax"><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:14}}>
+      <div><label style={lblS}>Discount %</label><input type="number" value={f.discountPercent} min={0} max={100} step={.5} onChange={e=>s("discountPercent",Math.max(0,Math.min(100,parseFloat(e.target.value)||0)))} style={inpS}/></div>
+      <div><label style={lblS}>Tax %</label><input type="number" value={(f.taxRate*100).toFixed(2)} min={0} max={30} step={.25} onChange={e=>s("taxRate",Math.max(0,Math.min(.3,(parseFloat(e.target.value)||0)/100)))} style={inpS}/></div>
+      <div><label style={lblS}>Retention %</label><input type="number" value={f.retentionPercent} min={0} max={20} step={1} onChange={e=>s("retentionPercent",Math.max(0,Math.min(20,parseFloat(e.target.value)||0)))} style={inpS}/></div>
+    </div><FinSummary t={t} dp={f.discountPercent} tr={f.taxRate} rp={f.retentionPercent}/></Section>
+
+    <Section title="Payment Schedule" badge={<span style={{fontSize:10,color:tx3}}>{f.milestones.length}</span>}>
+      <Milestones ms={f.milestones} setMs={v=>s("milestones",v)} total={t.tot}/>
+    </Section>
+
+    <Section title="Scope" open={false}><div style={{marginBottom:10}}><label style={lblS}>Scope of work</label><textarea value={f.scopeOfWork} onChange={e=>s("scopeOfWork",e.target.value)} rows={4} placeholder="Describe..." style={{...inpS,resize:"vertical"}}/></div>
+      <div><label style={lblS}>Exclusions</label><textarea value={f.exclusions} onChange={e=>s("exclusions",e.target.value)} rows={3} placeholder="Not included..." style={{...inpS,resize:"vertical"}}/></div></Section>
+
+    <div style={{display:"flex",justifyContent:"space-between",marginTop:8}}>
+      <button onClick={onCancel} style={bGh}>Cancel</button>
+      <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
     </div>
-  );
+  </div>;
 }
 
-/* ═══════════════════════════════════════
-   PAYMENT SCHEDULE
-   ═══════════════════════════════════════ */
-function PaymentSchedule({ milestones, setMilestones, contractTotal, onGenerateInvoice }) {
-  const add = () => setMilestones([...milestones, { id: uid(), milestone: "", amount: 0, pctOfTotal: 0, dueDate: "", status: "Pending" }]);
-  const update = (id, field, val) => {
-    setMilestones(milestones.map(m => {
-      if (m.id !== id) return m;
-      const u = { ...m, [field]: val };
-      if (field === "pctOfTotal") u.amount = Math.round(contractTotal * (parseFloat(val) || 0) / 100 * 100) / 100;
-      if (field === "amount") u.pctOfTotal = contractTotal > 0 ? Math.round((parseFloat(val) || 0) / contractTotal * 10000) / 100 : 0;
-      return u;
-    }));
-  };
-  const remove = (id) => setMilestones(milestones.filter(m => m.id !== id));
-  const autoSplit = (count) => {
-    const pct = Math.floor(100 / count);
-    const names = count === 2 ? ["Deposit", "Final payment"] : count === 3 ? ["Deposit", "Progress payment", "Final payment"] : count === 4 ? ["Deposit", "Rough-in complete", "Finish work", "Final payment"] : Array.from({ length: count }, (_, i) => `Draw ${i + 1}`);
-    setMilestones(names.map((name, i) => ({
-      id: uid(), milestone: name, pctOfTotal: i === names.length - 1 ? 100 - pct * (count - 1) : pct,
-      amount: i === names.length - 1 ? Math.round((contractTotal - Math.round(contractTotal * pct / 100 * 100) / 100 * (count - 1)) * 100) / 100 : Math.round(contractTotal * pct / 100 * 100) / 100,
-      dueDate: "", status: "Pending",
-    })));
-  };
-  const scheduled = milestones.reduce((s, m) => s + (parseFloat(m.amount) || 0), 0);
-  const remaining = contractTotal - scheduled;
+/* ═══════ MAIN EXPORT ═══════ */
+export default function ContractsModule({projectId,apiBaseUrl="/api"}){
+  const[contracts,setContracts]=useState([]);
+  const[view,setView]=useState("list");
+  const[activeId,setActiveId]=useState(null);
+  const[loading,setLoading]=useState(false);
+  const[saving,setSaving]=useState(false);
+  const[toast,setToast]=useState(null);
+  const[ests,setEsts]=useState([]);
+  const[estLd,setEstLd]=useState(false);
 
-  return (
-    <div>
-      {milestones.length === 0 && (
-        <div style={{ marginBottom: "12px" }}>
-          <label style={{ ...labelStyle, marginBottom: "8px" }}>Quick split</label>
-          <div style={{ display: "flex", gap: "8px" }}>
-            {[2, 3, 4].map(n => <button key={n} onClick={() => autoSplit(n)} style={btnGhost}>{n} draws</button>)}
-          </div>
-        </div>
-      )}
-      {milestones.map((m, idx) => (
-        <div key={m.id} style={{ display: "grid", gridTemplateColumns: "1fr 80px 90px 120px 100px 32px 32px", gap: "8px", alignItems: "end", marginBottom: "8px" }}>
-          <div>{idx === 0 && <label style={labelStyle}>Milestone</label>}<input value={m.milestone} onChange={e => update(m.id, "milestone", e.target.value)} placeholder="e.g. Rough-in complete" style={inputStyle} /></div>
-          <div>{idx === 0 && <label style={labelStyle}>%</label>}<input type="number" value={m.pctOfTotal} min={0} max={100} step={1} onChange={e => update(m.id, "pctOfTotal", e.target.value)} style={inputStyle} /></div>
-          <div>{idx === 0 && <label style={labelStyle}>Amount</label>}<input type="number" value={m.amount} min={0} step={0.01} onChange={e => update(m.id, "amount", e.target.value)} style={inputStyle} /></div>
-          <div>{idx === 0 && <label style={labelStyle}>Due date</label>}<input type="date" value={m.dueDate} onChange={e => update(m.id, "dueDate", e.target.value)} style={inputStyle} /></div>
-          <div>{idx === 0 && <label style={labelStyle}>Status</label>}<select value={m.status} onChange={e => update(m.id, "status", e.target.value)} style={inputStyle}>{MILESTONE_STATUSES.map(s => <option key={s}>{s}</option>)}</select></div>
-          <div style={{ paddingBottom: "2px" }}>
-            {m.status === "Pending" && onGenerateInvoice && (
-              <button onClick={() => onGenerateInvoice(m)} style={{ ...btnGhost, padding: "4px 6px", border: "none" }} title="Generate invoice"><SendIcon size={14} color="var(--color-text-info)" /></button>
-            )}
-          </div>
-          <div style={{ paddingBottom: "2px" }}><button onClick={() => remove(m.id)} style={{ ...btnGhost, padding: "4px 6px", border: "none" }}><TrashIcon size={14} color="var(--color-text-danger)" /></button></div>
-        </div>
-      ))}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
-        <button onClick={add} style={btnGhost}><PlusIcon size={14} /> Add milestone</button>
-        <span style={{ fontSize: "12px", color: remaining < -0.01 ? "var(--color-text-danger)" : "var(--color-text-secondary)" }}>
-          Scheduled: {fmt(scheduled)} / {fmt(contractTotal)} — Remaining: {fmt(remaining)}
-        </span>
-      </div>
-    </div>
-  );
-}
+  const show=msg=>{setToast(msg);setTimeout(()=>setToast(null),3000)};
+  const token=typeof localStorage!=="undefined"?localStorage.getItem("token"):null;
+  const hdr={"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})};
 
-/* ═══════════════════════════════════════
-   FINANCIAL SUMMARY
-   ═══════════════════════════════════════ */
-function FinancialSummary({ totals, discountPercent, taxRate, retentionPercent }) {
-  const { subtotal, laborTotal, materialTotal, discountAmount, discountedMaterial, taxAmount, total, retentionAmount, netPayable } = totals;
-  const laborPct = subtotal > 0 ? laborTotal / subtotal : 0;
-  const materialPct = subtotal > 0 ? materialTotal / subtotal : 0;
-  const rows = [
-    { label: "Labor subtotal", value: fmt(laborTotal), sub: fmtPct(laborPct) },
-    { label: "Material subtotal", value: fmt(materialTotal), sub: fmtPct(materialPct) },
-    { label: "Subtotal", value: fmt(subtotal), bold: true },
-    ...(discountPercent > 0 ? [{ label: `Discount (${discountPercent}%)`, value: `−${fmt(discountAmount)}`, color: "var(--color-text-success)" }] : []),
-    { label: `Tax (${(taxRate * 100).toFixed(1)}% on materials)`, value: fmt(taxAmount), sub: `on ${fmt(discountedMaterial)}` },
-    { label: "Contract total", value: fmt(total), bold: true, accent: true },
-    ...(retentionPercent > 0 ? [
-      { label: `Retention held (${retentionPercent}%)`, value: `−${fmt(retentionAmount)}`, color: "var(--color-text-warning)" },
-      { label: "Net payable", value: fmt(netPayable), bold: true },
-    ] : []),
-  ];
-  return (
-    <div style={{ background: "var(--color-background-secondary)", borderRadius: "var(--border-radius-lg)", padding: "1rem 1.25rem" }}>
-      {rows.map((r, i) => (
-        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "6px 0", borderTop: r.bold ? "0.5px solid var(--color-border-tertiary)" : "none", marginTop: r.bold ? "4px" : 0 }}>
-          <span style={{ fontSize: "13px", color: r.accent ? "var(--color-text-info)" : "var(--color-text-secondary)" }}>{r.label}</span>
-          <div style={{ textAlign: "right" }}>
-            <span style={{ fontSize: r.accent ? "18px" : "14px", fontWeight: r.bold ? 500 : 400, color: r.color || (r.accent ? "var(--color-text-info)" : "var(--color-text-primary)") }}>{r.value}</span>
-            {r.sub && <span style={{ fontSize: "11px", color: "var(--color-text-secondary)", marginLeft: "6px" }}>{r.sub}</span>}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+  const fetchC=useCallback(async()=>{
+    if(!projectId)return;setLoading(true);
+    try{const r=await fetch(`${apiBaseUrl}/contracts/project/${projectId}`,{headers:hdr});if(r.ok){const d=await r.json();setContracts(Array.isArray(d)?d:[])}}catch{}
+    finally{setLoading(false)}
+  },[projectId,apiBaseUrl]);
 
-/* ═══════════════════════════════════════
-   ESTIMATE PICKER MODAL
-   ═══════════════════════════════════════ */
-function EstimatePicker({ estimates, loading, onSelect, onClose }) {
-  return (
-    <div style={{ minHeight: "300px", display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <span style={{ fontSize: "15px", fontWeight: 500 }}>Select an estimate to convert</span>
-        <button onClick={onClose} style={{ ...btnGhost, padding: "4px 8px", border: "none" }}><XIcon size={16} /></button>
-      </div>
-      {loading && <div style={{ display: "flex", justifyContent: "center", padding: "2rem" }}><Spinner /></div>}
-      {!loading && estimates.length === 0 && (
-        <div style={{ textAlign: "center", padding: "2rem", color: "var(--color-text-secondary)", fontSize: "13px" }}>
-          No estimates found for this project. Create an estimate first.
-        </div>
-      )}
-      {!loading && estimates.map(est => {
-        const estTotal = (est.lineItems || est.items || []).reduce((s, i) => s + (i.qty || i.quantity || 0) * (i.unitPrice || i.price || i.rate || 0), 0);
-        return (
-          <div key={est.id} onClick={() => onSelect(est)} style={{ ...cardStyle, cursor: "pointer", marginBottom: "8px" }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = "var(--color-border-info)"}
-            onMouseLeave={e => e.currentTarget.style.borderColor = "var(--color-border-tertiary)"}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div>
-                <div style={{ fontSize: "14px", fontWeight: 500 }}>{est.title || est.name || "Untitled Estimate"}</div>
-                <div style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                  {est.customerName || est.clientName || "No client"} · {(est.lineItems || est.items || []).length} items
-                </div>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "16px", fontWeight: 500 }}>{fmt(estTotal)}</div>
-                <div style={{ fontSize: "11px", color: "var(--color-text-secondary)" }}>{est.status || "Draft"}</div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+  useEffect(()=>{fetchC()},[fetchC]);
 
-/* ═══════════════════════════════════════
-   CHANGE ORDERS SECTION
-   ═══════════════════════════════════════ */
-function ChangeOrdersSection({ changeOrders, parentTotal, onAddCO }) {
-  const coTotalValue = changeOrders.reduce((s, co) => {
-    return s + (co.lineItems || []).reduce((ls, i) => ls + i.qty * i.unitPrice, 0);
-  }, 0);
-  const revisedTotal = parentTotal + coTotalValue;
-
-  return (
-    <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "1rem" }}>
-        <Metric label="Original value" value={fmt(parentTotal)} />
-        <Metric label="Change orders" value={fmt(coTotalValue)} sub={`${changeOrders.length} CO${changeOrders.length !== 1 ? "s" : ""}`} />
-        <Metric label="Revised total" value={fmt(revisedTotal)} accent />
-      </div>
-      {changeOrders.map((co, idx) => {
-        const coTotal = (co.lineItems || []).reduce((s, i) => s + i.qty * i.unitPrice, 0);
-        return (
-          <div key={co.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
-            <div>
-              <span style={{ fontSize: "13px", fontWeight: 500 }}>CO-{String(idx + 1).padStart(2, "0")}: {co.title || "Untitled"}</span>
-              <span style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginLeft: "8px" }}>{(co.lineItems || []).length} items</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <StatusPill status={co.status || "Draft"} />
-              <span style={{ fontSize: "14px", fontWeight: 500, color: coTotal >= 0 ? "var(--color-text-primary)" : "var(--color-text-danger)" }}>{coTotal >= 0 ? "+" : ""}{fmt(coTotal)}</span>
-            </div>
-          </div>
-        );
-      })}
-      <button onClick={onAddCO} style={{ ...btnGhost, marginTop: "10px" }}><PlusIcon size={14} /> Add change order</button>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════
-   CONTRACT LIST
-   ═══════════════════════════════════════ */
-function ContractList({ contracts, onSelect, onCreate, onCreateFromEstimate, loading }) {
-  if (loading) return <div style={{ display: "flex", justifyContent: "center", padding: "3rem" }}><Spinner size={28} /></div>;
-
-  if (contracts.length === 0) {
-    return (
-      <div style={{ textAlign: "center", padding: "3rem 1rem" }}>
-        <div style={{ marginBottom: "1rem" }}><ClipboardIcon size={40} color="var(--color-text-secondary)" /></div>
-        <div style={{ fontSize: "16px", fontWeight: 500, marginBottom: "6px" }}>No contracts yet</div>
-        <div style={{ fontSize: "13px", color: "var(--color-text-secondary)", marginBottom: "1.5rem" }}>Create a contract from scratch or convert an approved estimate.</div>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          <button onClick={onCreate} style={btnPrimary}><PlusIcon size={14} color="#fff" /> New contract</button>
-          <button onClick={onCreateFromEstimate} style={btnSuccess}><LinkIcon size={14} color="#fff" /> From estimate</button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>{contracts.length} contract{contracts.length !== 1 ? "s" : ""}</span>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button onClick={onCreateFromEstimate} style={btnGhost}><LinkIcon size={14} /> From estimate</button>
-          <button onClick={onCreate} style={btnPrimary}><PlusIcon size={14} color="#fff" /> New contract</button>
-        </div>
-      </div>
-      {contracts.map(c => {
-        const totals = calcTotals(c.lineItems || [], c.discountPercent || 0, c.taxRate || TAX_RATE, c.retentionPercent || 0);
-        const paidAmount = (c.milestones || []).filter(m => m.status === "Paid").reduce((s, m) => s + (parseFloat(m.amount) || 0), 0);
-        const billedPct = totals.total > 0 ? paidAmount / totals.total : 0;
-        return (
-          <div key={c.id} onClick={() => onSelect(c.id)} style={{ ...cardStyle, cursor: "pointer", transition: "border-color .15s" }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = "var(--color-border-secondary)"}
-            onMouseLeave={e => e.currentTarget.style.borderColor = "var(--color-border-tertiary)"}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-              <div>
-                <div style={{ fontSize: "15px", fontWeight: 500 }}>{c.title || "Untitled Contract"}</div>
-                <div style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                  {c.contractType} · {c.clientOrSubName || "No party"}
-                  {c.linkedEstimateId && <span style={{ marginLeft: "6px" }}><LinkIcon size={11} color="var(--color-text-info)" /> Linked</span>}
-                </div>
-              </div>
-              <StatusPill status={c.status} />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px" }}>
-              <Metric label="Total" value={fmt(totals.total)} />
-              <Metric label="Labor" value={fmt(totals.laborTotal)} />
-              <Metric label="Materials" value={fmt(totals.materialTotal)} />
-              <Metric label="Billed" value={fmtPct(billedPct)} sub={fmt(paidAmount)} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════
-   CONTRACT FORM
-   ═══════════════════════════════════════ */
-function ContractForm({ contract, onSave, onCancel, isNew, saving, onGenerateInvoice }) {
-  const [form, setForm] = useState(() => contract ? { ...contract } : {
-    id: uid(), title: "", contractType: "Prime", status: "Draft", clientOrSubName: "",
-    startDate: "", endDate: "", discountPercent: 0, taxRate: TAX_RATE, retentionPercent: 10,
-    paymentTerms: "Net 30", scopeOfWork: "", exclusions: "", lineItems: [], milestones: [],
-    changeOrders: [], signatureStatus: "Unsigned", linkedEstimateId: null,
-  });
-
-  const setField = (f, v) => setForm(prev => ({ ...prev, [f]: v }));
-  const setLineItems = (items) => setField("lineItems", items);
-  const setMilestones = (ms) => setField("milestones", ms);
-
-  const totals = useMemo(() => calcTotals(form.lineItems, form.discountPercent, form.taxRate, form.retentionPercent), [form.lineItems, form.discountPercent, form.taxRate, form.retentionPercent]);
-
-  const applyTemplate = (name) => {
-    const tpl = SCOPE_TEMPLATES[name];
-    if (tpl) setField("lineItems", tpl.map(i => ({ ...i, id: uid() })));
-  };
-
-  const handleAddCO = () => {
-    const co = { id: uid(), title: `Change Order ${(form.changeOrders || []).length + 1}`, status: "Draft", lineItems: [{ id: uid(), description: "", qty: 1, unitPrice: 0, unit: "ea", isMaterial: false }] };
-    setField("changeOrders", [...(form.changeOrders || []), co]);
-  };
-
-  const handleInvoiceMilestone = (milestone) => {
-    if (onGenerateInvoice) onGenerateInvoice(form, milestone);
-  };
-
-  const warnings = useMemo(() => {
-    const w = [];
-    if (form.lineItems.length === 0) w.push("No line items — contract has no value.");
-    const laborPct = totals.subtotal > 0 ? totals.laborTotal / totals.subtotal : 0;
-    if (laborPct < 0.15 && form.lineItems.length > 0) w.push("Labor is under 15% of subtotal — verify pricing covers crew costs.");
-    if (totals.materialTotal > 0 && form.taxRate === 0) w.push("Materials present but tax rate is 0% — confirm exemption.");
-    const scheduled = form.milestones.reduce((s, m) => s + (parseFloat(m.amount) || 0), 0);
-    if (form.milestones.length > 0 && Math.abs(scheduled - totals.total) > 1) w.push(`Payment schedule (${fmt(scheduled)}) doesn't match contract total (${fmt(totals.total)}).`);
-    if (form.status === "Active" && form.signatureStatus === "Unsigned") w.push("Contract is Active but unsigned — no legal protection.");
-    if (form.linkedEstimateId) w.push("Linked to estimate — changes here won't update the source estimate.");
-    return w;
-  }, [form, totals]);
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <button onClick={onCancel} style={btnGhost}>Back to list</button>
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          {saving && <Spinner size={16} />}
-          <button onClick={() => onSave(form)} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.6 : 1 }}>
-            <CheckIcon size={14} color="#fff" /> {isNew ? "Create contract" : "Save changes"}
-          </button>
-        </div>
-      </div>
-
-      {form.linkedEstimateId && (
-        <div style={{ ...cardStyle, background: "var(--color-background-info)", borderColor: "var(--color-border-info)", display: "flex", alignItems: "center", gap: "8px" }}>
-          <LinkIcon size={14} color="var(--color-text-info)" />
-          <span style={{ fontSize: "13px", color: "var(--color-text-info)" }}>Generated from estimate — line items, pricing, and scope pre-populated.</span>
-        </div>
-      )}
-
-      {warnings.length > 0 && (
-        <div style={{ ...cardStyle, background: "var(--color-background-warning)", borderColor: "var(--color-border-warning)" }}>
-          <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-            <AlertIcon size={16} color="var(--color-text-warning)" />
-            <div>{warnings.map((w, i) => <div key={i} style={{ fontSize: "13px", color: "var(--color-text-warning)", marginBottom: i < warnings.length - 1 ? "4px" : 0 }}>{w}</div>)}</div>
-          </div>
-        </div>
-      )}
-
-      {/* Header */}
-      <Section title="Contract details" icon={<FileIcon size={16} color="var(--color-text-info)" />}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-          <div style={{ gridColumn: "1 / -1" }}><label style={labelStyle}>Contract title</label><input value={form.title} onChange={e => setField("title", e.target.value)} placeholder="e.g. Smith Residence — Kitchen Remodel" style={inputStyle} /></div>
-          <div><label style={labelStyle}>Type</label><select value={form.contractType} onChange={e => setField("contractType", e.target.value)} style={inputStyle}>{CONTRACT_TYPES.map(t => <option key={t}>{t}</option>)}</select></div>
-          <div><label style={labelStyle}>Status</label><select value={form.status} onChange={e => setField("status", e.target.value)} style={inputStyle}>{STATUSES.map(s => <option key={s}>{s}</option>)}</select></div>
-          <div><label style={labelStyle}>Client / Sub name</label><input value={form.clientOrSubName} onChange={e => setField("clientOrSubName", e.target.value)} placeholder="Company or individual" style={inputStyle} /></div>
-          <div><label style={labelStyle}>Payment terms</label><select value={form.paymentTerms} onChange={e => setField("paymentTerms", e.target.value)} style={inputStyle}>{PAYMENT_TERMS.map(t => <option key={t}>{t}</option>)}</select></div>
-          <div><label style={labelStyle}>Start date</label><input type="date" value={form.startDate} onChange={e => setField("startDate", e.target.value)} style={inputStyle} /></div>
-          <div><label style={labelStyle}>End date</label><input type="date" value={form.endDate} onChange={e => setField("endDate", e.target.value)} style={inputStyle} /></div>
-          <div><label style={labelStyle}>Signature status</label><select value={form.signatureStatus} onChange={e => setField("signatureStatus", e.target.value)} style={inputStyle}><option>Unsigned</option><option>Signed by Contractor</option><option>Fully Executed</option></select></div>
-        </div>
-      </Section>
-
-      {/* Line Items */}
-      <Section title="Line items" icon={<DollarIcon size={16} color="var(--color-text-success)" />} badge={<span style={{ fontSize: "12px", color: "var(--color-text-secondary)" }}>{form.lineItems.length} items</span>}>
-        {form.lineItems.length === 0 && !form.linkedEstimateId && (
-          <div style={{ marginBottom: "12px" }}>
-            <label style={{ ...labelStyle, marginBottom: "8px" }}>Quick start from template</label>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>{Object.keys(SCOPE_TEMPLATES).map(t => <button key={t} onClick={() => applyTemplate(t)} style={btnGhost}>{t}</button>)}</div>
-          </div>
-        )}
-        <LineItemsTable items={form.lineItems} setItems={setLineItems} />
-      </Section>
-
-      {/* Financial */}
-      <Section title="Pricing & tax" icon={<DollarIcon size={16} color="var(--color-text-warning)" />}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "1rem" }}>
-          <div><label style={labelStyle}>Discount %</label><input type="number" value={form.discountPercent} min={0} max={100} step={0.5} onChange={e => setField("discountPercent", Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))} style={inputStyle} /></div>
-          <div><label style={labelStyle}>Tax rate %</label><input type="number" value={(form.taxRate * 100).toFixed(2)} min={0} max={30} step={0.25} onChange={e => setField("taxRate", Math.max(0, Math.min(0.3, (parseFloat(e.target.value) || 0) / 100)))} style={inputStyle} /></div>
-          <div><label style={labelStyle}>Retention %</label><input type="number" value={form.retentionPercent} min={0} max={20} step={1} onChange={e => setField("retentionPercent", Math.max(0, Math.min(20, parseFloat(e.target.value) || 0)))} style={inputStyle} /></div>
-        </div>
-        <FinancialSummary totals={totals} discountPercent={form.discountPercent} taxRate={form.taxRate} retentionPercent={form.retentionPercent} />
-      </Section>
-
-      {/* Payment Schedule */}
-      <Section title="Payment schedule" icon={<ClipboardIcon size={16} color="var(--color-text-info)" />} badge={<span style={{ fontSize: "12px", color: "var(--color-text-secondary)" }}>{form.milestones.length} milestones</span>}>
-        <PaymentSchedule milestones={form.milestones} setMilestones={setMilestones} contractTotal={totals.total} onGenerateInvoice={handleInvoiceMilestone} />
-      </Section>
-
-      {/* Change Orders */}
-      <Section title="Change orders" icon={<LayersIcon size={16} color="var(--color-text-warning)" />} defaultOpen={false}
-        badge={<span style={{ fontSize: "12px", color: "var(--color-text-secondary)" }}>{(form.changeOrders || []).length} COs</span>}>
-        <ChangeOrdersSection changeOrders={form.changeOrders || []} parentTotal={totals.total} onAddCO={handleAddCO} />
-      </Section>
-
-      {/* Scope */}
-      <Section title="Scope of work" icon={<FileIcon size={16} color="var(--color-text-secondary)" />} defaultOpen={false}>
-        <div style={{ marginBottom: "12px" }}><label style={labelStyle}>Scope of work</label><textarea value={form.scopeOfWork} onChange={e => setField("scopeOfWork", e.target.value)} rows={5} placeholder="Describe the work to be performed..." style={{ ...inputStyle, resize: "vertical" }} /></div>
-        <div><label style={labelStyle}>Exclusions</label><textarea value={form.exclusions} onChange={e => setField("exclusions", e.target.value)} rows={3} placeholder="What is NOT included in this contract..." style={{ ...inputStyle, resize: "vertical" }} /></div>
-      </Section>
-
-      {/* Bottom actions */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem" }}>
-        <button onClick={onCancel} style={btnGhost}>Cancel</button>
-        <button onClick={() => onSave(form)} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.6 : 1 }}><CheckIcon size={14} color="#fff" /> {isNew ? "Create contract" : "Save changes"}</button>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════
-   MAIN MODULE
-   ═══════════════════════════════════════ */
-export default function ContractsModule({ projectId = "demo", apiBaseUrl = "/api", onNavigate }) {
-  const api = useMemo(() => new ContractsAPI(apiBaseUrl), [apiBaseUrl]);
-
-  // State
-  const [contracts, setContracts] = useState([]);
-  const [view, setView] = useState("list"); // list | form | pickEstimate
-  const [activeId, setActiveId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState(null);
-  const [error, setError] = useState(null);
-
-  // Estimate picker state
-  const [estimates, setEstimates] = useState([]);
-  const [estimatesLoading, setEstimatesLoading] = useState(false);
-
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
-
-  // ── Fetch contracts ──
-  const fetchContracts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await api.listContracts(projectId);
-      setContracts(Array.isArray(data) ? data : []);
-    } catch (err) {
-      // If API not available, use local state (demo mode)
-      console.warn("API unavailable, using local state:", err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [api, projectId]);
-
-  useEffect(() => { fetchContracts(); }, [fetchContracts]);
-
-  // ── Save ──
-  const handleSave = async (contract) => {
+  const handleSave=async form=>{
     setSaving(true);
-    try {
-      const isUpdate = contracts.some(c => c.id === contract.id);
-      if (isUpdate) {
-        await api.updateContract(projectId, contract.id, contract).catch(() => null);
-      } else {
-        await api.createContract(projectId, contract).catch(() => null);
-      }
-      // Always update local state (works in demo mode too)
-      setContracts(prev => {
-        const idx = prev.findIndex(c => c.id === contract.id);
-        if (idx >= 0) { const next = [...prev]; next[idx] = contract; return next; }
-        return [...prev, contract];
-      });
-      setView("list");
-      setActiveId(null);
-      showToast(isUpdate ? "Contract updated" : "Contract created");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
+    try{
+      const isUpd=form.id&&contracts.some(c=>c.id===form.id);
+      if(isUpd){try{const r=await fetch(`${apiBaseUrl}/contracts/${form.id}`,{method:"PUT",headers:hdr,body:JSON.stringify(form)});if(r.ok){const d=await r.json();setContracts(p=>p.map(c=>c.id===form.id?d:c));setView("list");setActiveId(null);show("Updated");return}}catch{}}
+      else{try{const r=await fetch(`${apiBaseUrl}/contracts`,{method:"POST",headers:hdr,body:JSON.stringify({...form,projectId})});if(r.ok){const d=await r.json();setContracts(p=>[...p.filter(c=>c.id!==null),d]);setView("list");setActiveId(null);show("Created");return}}catch{}}
+      // Fallback local
+      setContracts(p=>{const idx=p.findIndex(c=>c.id===form.id);if(idx>=0){const n=[...p];n[idx]=form;return n}return[...p.filter(c=>c.id!==null),{...form,id:form.id||uid()}]});
+      setView("list");setActiveId(null);show(isUpd?"Updated":"Created");
+    }finally{setSaving(false)}
   };
 
-  // ── Create from estimate ──
-  const handlePickEstimate = async () => {
-    setView("pickEstimate");
-    setEstimatesLoading(true);
-    try {
-      const data = await api.listEstimates(projectId);
-      setEstimates(Array.isArray(data) ? data : []);
-    } catch {
-      // Demo fallback — show sample estimates
-      setEstimates([
-        { id: "est-001", title: "Smith Kitchen Remodel", customerName: "John Smith", status: "Approved", lineItems: SCOPE_TEMPLATES["Kitchen Remodel"].map(i => ({ ...i, id: uid() })), discountPercent: 0, taxRate: TAX_RATE },
-        { id: "est-002", title: "Jones Bathroom Reno", customerName: "Sarah Jones", status: "Approved", lineItems: SCOPE_TEMPLATES["Bathroom Renovation"].map(i => ({ ...i, id: uid() })), discountPercent: 5, taxRate: TAX_RATE },
-        { id: "est-003", title: "Davis Exterior Paint", customerName: "Mike Davis", status: "Draft", lineItems: SCOPE_TEMPLATES["Exterior Painting"].map(i => ({ ...i, id: uid() })), discountPercent: 0, taxRate: TAX_RATE },
-      ]);
-    } finally {
-      setEstimatesLoading(false);
-    }
+  const pickEst=async()=>{
+    setView("pickEst");setEstLd(true);
+    try{const r=await fetch(`${apiBaseUrl}/estimates/project/${projectId}`,{headers:hdr});if(r.ok){const d=await r.json();setEsts(Array.isArray(d)?d:[])}}catch{setEsts([])}
+    finally{setEstLd(false)}
   };
 
-  const handleSelectEstimate = async (estimate) => {
-    try {
-      // Use server-side conversion (handles field mapping on the backend)
-      const draft = await api.convertEstimate(estimate.id);
-      // Draft comes back without an ID — it's not saved yet
-      // Add a temp ID so the form can work with it
-      draft._tempId = uid();
-      draft.id = null; // signals "new contract" to the save handler
-      setActiveId(null);
-      setView("form");
-      // Pass draft directly to the form via a ref trick:
-      setContracts(prev => [...prev, { ...draft, _isNewFromEstimate: true }]);
-      showToast("Estimate converted — review and save");
-    } catch {
-      // Fallback to client-side mapping if endpoint not available
-      const contract = mapEstimateToContract(estimate);
-      setActiveId(null);
-      setView("form");
-      setContracts(prev => [...prev, contract]);
-      showToast("Estimate converted — review and save");
-    }
+  const selEst=async est=>{
+    const items=(est.lineItems||est.items||[]).map(i=>({id:uid(),description:i.description||i.name||"",qty:parseFloat(i.qty||0),unitPrice:parseFloat(i.unitPrice||i.price||0),unit:i.unit||"ea",isMaterial:Boolean(i.isMaterial)}));
+    const draft={id:null,title:`${est.title||est.name||"Estimate"} — Contract`,contractType:"Prime",status:"Draft",clientOrSubName:est.customerName||"",
+      discountPercent:est.discountPercent||est.discount||0,taxRate:est.taxRate?est.taxRate/100:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",
+      lineItems:items,milestones:[],changeOrders:[],scopeOfWork:est.notes||"",exclusions:"",signatureStatus:"Unsigned",linkedEstimateId:est.id};
+    setContracts(p=>[...p,draft]);setView("form");setActiveId(null);show("Estimate converted — review and save");
   };
 
-  // ── Invoice from milestone ──
-  const handleGenerateInvoice = async (contract, milestone) => {
-    try {
-      await api.createInvoice(projectId, {
-        contractId: contract.id,
-        milestoneId: milestone.id,
-        customerName: contract.clientOrSubName,
-        title: `${contract.title} — ${milestone.milestone}`,
-        dueDate: milestone.dueDate,
-        paymentTerms: contract.paymentTerms,
-        lineItems: [{ description: `Progress payment: ${milestone.milestone}`, qty: 1, unitPrice: parseFloat(milestone.amount), isMaterial: false, unit: "ls" }],
-        total: parseFloat(milestone.amount),
-        status: "Draft",
-      });
-      showToast(`Invoice created for "${milestone.milestone}"`);
-      if (onNavigate) onNavigate("invoice", null);
-    } catch {
-      showToast(`Invoice draft ready for "${milestone.milestone}"`);
-    }
-  };
+  const active=activeId!=null?contracts.find(c=>c.id===activeId):contracts.find(c=>c.id===null);
 
-  const handleCreate = () => { setActiveId(null); setView("form"); };
-  const handleSelect = (id) => { setActiveId(id); setView("form"); };
-  const handleCancel = () => { setView("list"); setActiveId(null); };
+  return<div style={{maxWidth:780,color:tx,fontFamily:"'DM Sans',system-ui,sans-serif"}}>
+    {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:ac,color:"#fff",padding:"10px 22px",borderRadius:10,fontSize:12,fontWeight:700,zIndex:999,boxShadow:"0 8px 32px rgba(59,130,246,.4)"}}>{toast}</div>}
 
-  const activeContract = activeId ? contracts.find(c => c.id === activeId) : null;
-
-  // Dashboard metrics
-  const dashTotals = useMemo(() => {
-    let totalValue = 0, totalLabor = 0, totalMaterial = 0, totalBilled = 0;
-    contracts.forEach(c => {
-      const t = calcTotals(c.lineItems || [], c.discountPercent || 0, c.taxRate || TAX_RATE, c.retentionPercent || 0);
-      totalValue += t.total;
-      totalLabor += t.laborTotal;
-      totalMaterial += t.materialTotal;
-      totalBilled += (c.milestones || []).filter(m => m.status === "Paid").reduce((s, m) => s + (parseFloat(m.amount) || 0), 0);
-    });
-    return { totalValue, totalLabor, totalMaterial, totalBilled };
-  }, [contracts]);
-
-  return (
-    <div style={{
-      padding: "0.5rem 0", fontFamily: "inherit", maxWidth: "780px",
-      "--color-background-primary":   "#0c0f17",
-      "--color-background-secondary": "#0e1119",
-      "--color-background-info":      "rgba(59,130,246,0.1)",
-      "--color-background-success":   "rgba(34,197,94,0.1)",
-      "--color-background-warning":   "rgba(245,166,35,0.1)",
-      "--color-background-danger":    "rgba(239,68,68,0.1)",
-      "--color-text-primary":         "#e2e8f0",
-      "--color-text-secondary":       "#9aabb8",
-      "--color-text-info":            "#3b82f6",
-      "--color-text-success":         "#22c55e",
-      "--color-text-warning":         "#f5a623",
-      "--color-text-danger":          "#ef4444",
-      "--color-border-secondary":     "#1e2535",
-      "--color-border-tertiary":      "#111826",
-      "--color-border-info":          "rgba(59,130,246,0.35)",
-      "--color-border-warning":       "rgba(245,166,35,0.35)",
-      "--color-border-danger":        "rgba(239,68,68,0.35)",
-      "--border-radius-lg":           "11px",
-      "--border-radius-md":           "8px",
-      "--font-sans":                  "inherit",
-    }}>
-      {toast && (
-        <div style={{ position: "fixed", bottom: "24px", left: "50%", transform: "translateX(-50%)", background: "var(--color-text-primary)", color: "var(--color-background-primary)", padding: "10px 20px", borderRadius: "var(--border-radius-md)", fontSize: "13px", fontWeight: 500, zIndex: 999, boxShadow: "0 4px 12px rgba(0,0,0,.15)" }}>{toast}</div>
-      )}
-      {error && (
-        <div style={{ ...cardStyle, background: "var(--color-background-danger)", borderColor: "var(--color-border-danger)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "13px", color: "var(--color-text-danger)" }}>{error}</span>
-          <button onClick={() => setError(null)} style={{ ...btnGhost, padding: "4px 8px", border: "none" }}><XIcon size={14} color="var(--color-text-danger)" /></button>
+    {view==="list"&&<>
+      {contracts.length>0&&<div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:14}}>
+        {(()=>{let tv=0,tl=0,tm=0,tb=0;contracts.forEach(c=>{const t=calc(c.lineItems||[],c.discountPercent||0,c.taxRate||TAX_RATE,c.retentionPercent||0);tv+=t.tot;tl+=t.lab;tm+=t.mat;tb+=(c.milestones||[]).filter(m=>m.status==="Paid").reduce((a,m)=>a+(parseFloat(m.amount)||0),0)});
+          return[<Kpi key="v" label="Total value" value={$(tv)} accent/>,<Kpi key="l" label="Labor" value={$(tl)}/>,<Kpi key="m" label="Materials" value={$(tm)}/>,<Kpi key="b" label="Billed" value={$(tb)} sub={tv>0?pct(tb/tv):"0%"}/>]})()}
+      </div>}
+      {loading?<div style={{textAlign:"center",padding:40,color:tx2}}>Loading...</div>:
+      contracts.length===0?<div style={{textAlign:"center",padding:"40px 16px"}}>
+        <Ic d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z M14 2v6h6" s={36} c={tx3}/>
+        <div style={{fontSize:15,fontWeight:800,color:tx,marginTop:12,marginBottom:6}}>No contracts yet</div>
+        <div style={{fontSize:12,color:tx2,marginBottom:20}}>Create from scratch or convert an estimate.</div>
+        <div style={{display:"flex",gap:10,justifyContent:"center"}}>
+          <button onClick={()=>{setActiveId(null);setView("form")}} style={bPri}><Ic d="M12 5v14M5 12h14" s={12} c="#fff"/> New</button>
+          <button onClick={pickEst} style={{...bPri,background:`linear-gradient(135deg,${grn},#16a34a)`}}><Ic d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" s={12} c="#fff"/> From estimate</button>
         </div>
-      )}
-
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.25rem" }}>
-        <ClipboardIcon size={20} color="var(--color-text-info)" />
-        <span style={{ fontSize: "18px", fontWeight: 500 }}>Contracts</span>
-        {view === "list" && (
-          <button onClick={fetchContracts} style={{ ...btnGhost, padding: "4px 8px", border: "none", marginLeft: "auto" }} title="Refresh"><RefreshIcon size={14} /></button>
-        )}
-      </div>
-
-      {view === "list" && (
-        <>
-          {contracts.length > 0 && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "1rem" }}>
-              <Metric label="Total value" value={fmt(dashTotals.totalValue)} accent />
-              <Metric label="Labor" value={fmt(dashTotals.totalLabor)} />
-              <Metric label="Materials" value={fmt(dashTotals.totalMaterial)} />
-              <Metric label="Billed" value={fmt(dashTotals.totalBilled)} sub={dashTotals.totalValue > 0 ? fmtPct(dashTotals.totalBilled / dashTotals.totalValue) : "0%"} />
+      </div>:
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+          <span style={{fontSize:11,color:tx2}}>{contracts.length} contract{contracts.length!==1?"s":""}</span>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={pickEst} style={bGh}><Ic d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" s={12}/> From est.</button>
+            <button onClick={()=>{setActiveId(null);setView("form")}} style={bPri}><Ic d="M12 5v14M5 12h14" s={12} c="#fff"/> New</button>
+          </div>
+        </div>
+        {contracts.map(c=>{const t=calc(c.lineItems||[],c.discountPercent||0,c.taxRate||TAX_RATE,c.retentionPercent||0);const pd=(c.milestones||[]).filter(m=>m.status==="Paid").reduce((a,m)=>a+(parseFloat(m.amount)||0),0);
+          return<div key={c.id||uid()} onClick={()=>{setActiveId(c.id);setView("form")}} style={{...cardS,cursor:"pointer",transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=ac} onMouseLeave={e=>e.currentTarget.style.borderColor=brdL}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+              <div><div style={{fontSize:14,fontWeight:800,color:tx}}>{c.title||"Untitled"}</div><div style={{fontSize:11,color:tx2,marginTop:2}}>{c.contractType} · {c.clientOrSubName||"\u2014"}</div></div>
+              <Chip s={c.status}/>
             </div>
-          )}
-          <ContractList contracts={contracts} onSelect={handleSelect} onCreate={handleCreate} onCreateFromEstimate={handlePickEstimate} loading={loading} />
-        </>
-      )}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+              <Kpi label="Total" value={$(t.tot)}/><Kpi label="Labor" value={$(t.lab)}/><Kpi label="Materials" value={$(t.mat)}/><Kpi label="Billed" value={pct(t.tot>0?pd/t.tot:0)} sub={$(pd)}/>
+            </div>
+          </div>})}
+      </div>}
+    </>}
 
-      {view === "pickEstimate" && (
-        <div style={cardStyle}>
-          <EstimatePicker estimates={estimates} loading={estimatesLoading} onSelect={handleSelectEstimate} onClose={handleCancel} />
-        </div>
-      )}
+    {view==="pickEst"&&<div style={cardS}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+        <span style={{fontSize:14,fontWeight:800,color:tx}}>Select an estimate</span>
+        <button onClick={()=>setView("list")} style={{...bGh,padding:"4px 8px",border:"none"}}><Ic d="M18 6L6 18M6 6l12 12" s={14}/></button>
+      </div>
+      {estLd?<div style={{textAlign:"center",padding:30,color:tx2}}>Loading...</div>:
+      ests.length===0?<div style={{textAlign:"center",padding:30,color:tx2,fontSize:12}}>No estimates found.</div>:
+      ests.map(e=>{const t=(e.lineItems||e.items||[]).reduce((a,i)=>a+(i.qty||0)*(i.unitPrice||0),0);
+        return<div key={e.id} onClick={()=>selEst(e)} style={{...cardS,cursor:"pointer",transition:"border-color .15s"}} onMouseEnter={x=>x.currentTarget.style.borderColor=ac} onMouseLeave={x=>x.currentTarget.style.borderColor=brdL}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div><div style={{fontSize:13,fontWeight:700,color:tx}}>{e.title||e.name||"Untitled"}</div><div style={{fontSize:11,color:tx2,marginTop:2}}>{e.customerName||"\u2014"} · {(e.lineItems||e.items||[]).length} items</div></div>
+            <div style={{textAlign:"right"}}><div style={{fontSize:15,fontWeight:800,color:grn}}>{$(t)}</div><Chip s={e.status==="approved"?"Active":"Draft"}/></div>
+          </div>
+        </div>})}
+    </div>}
 
-      {view === "form" && (
-        <ContractForm contract={activeContract} onSave={handleSave} onCancel={handleCancel} isNew={!activeContract || !contracts.some(c => c.id === activeContract?.id)} saving={saving} onGenerateInvoice={handleGenerateInvoice} />
-      )}
-    </div>
-  );
+    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} isNew={!active||active.id==null} saving={saving}/>}
+  </div>;
 }
