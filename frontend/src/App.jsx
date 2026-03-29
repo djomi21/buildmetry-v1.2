@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import api, { getToken, clearAuth, getSavedUser, saveUser } from "./api";
-import ContractsModule from './components/ContractsModule';
+import ContractsModule from "./components/ContractsModule";
 
 // API_BASE is configured in api.js via VITE_API_URL env var
 
@@ -2029,7 +2029,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
                 <span className="mn" style={{fontSize:9,color:"#4a566e"}}>{p.progress}%</span>
                 <span className="mn" style={{fontSize:11,color:"var(--accent)",marginLeft:4}}>{fmt(p.contractValue)}</span>
               </div>
-              
+
             </div>;
           })}
         </div>
@@ -2192,7 +2192,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
               </div>;
             })()}
           </div>}
-          {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={sp.id} apiBaseUrl="/api"/></div>}
+          {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={projectId}/> apiBaseUrl="/api"/></div>}
         </div>
       ):(
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>
