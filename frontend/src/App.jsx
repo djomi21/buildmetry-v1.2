@@ -2029,6 +2029,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
                 <span className="mn" style={{fontSize:9,color:"#4a566e"}}>{p.progress}%</span>
                 <span className="mn" style={{fontSize:11,color:"var(--accent)",marginLeft:4}}>{fmt(p.contractValue)}</span>
               </div>
+              
             </div>;
           })}
         </div>

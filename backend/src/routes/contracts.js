@@ -14,6 +14,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { authenticate } = require('../middleware/auth');
 
 // ─── Helper: Calculate contract totals server-side ───
 // Follows BuildMetry rules: tax on materials only, after discount
@@ -37,7 +38,7 @@ function calcTotals(lineItems, discountPercent, taxRate, retentionPercent) {
 // GET /api/contracts/project/:projectId
 // List all contracts for a project
 // ═══════════════════════════════════════
-router.get('/project/:projectId', async (req, res) => {
+router.get('/project/:projectId', authenticate, async (req, res) => {
   try {
     const projectId = req.params.projectId;
     const contracts = await prisma.contract.findMany({
@@ -57,7 +58,7 @@ router.get('/project/:projectId', async (req, res) => {
 // GET /api/contracts/:id
 // Get a single contract with change orders
 // ═══════════════════════════════════════
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const contract = await prisma.contract.findUnique({
@@ -77,7 +78,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/contracts
 // Create a new contract
 // ═══════════════════════════════════════
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
     const {
       projectId, linkedEstimateId, parentContractId,
@@ -122,7 +123,7 @@ router.post('/', async (req, res) => {
 // PUT /api/contracts/:id
 // Full update of a contract
 // ═══════════════════════════════════════
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const {
@@ -162,7 +163,7 @@ router.put('/:id', async (req, res) => {
 // PATCH /api/contracts/:id/status
 // Quick status update only
 // ═══════════════════════════════════════
-router.patch('/:id/status', async (req, res) => {
+router.patch('/:id/status', authenticate, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const { status, signatureStatus } = req.body;
@@ -183,7 +184,7 @@ router.patch('/:id/status', async (req, res) => {
 // DELETE /api/contracts/:id
 // Soft delete — sets status to Cancelled
 // ═══════════════════════════════════════
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     await prisma.contract.update({
@@ -202,7 +203,7 @@ router.delete('/:id', async (req, res) => {
 // GET /api/contracts/:id/summary
 // Financial summary including change orders
 // ═══════════════════════════════════════
-router.get('/:id/summary', async (req, res) => {
+router.get('/:id/summary', authenticate, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const contract = await prisma.contract.findUnique({
@@ -245,7 +246,7 @@ router.get('/:id/summary', async (req, res) => {
 // POST /api/contracts/from-estimate/:estimateId
 // Convert an estimate into a contract draft
 // ═══════════════════════════════════════
-router.post('/from-estimate/:estimateId', async (req, res) => {
+router.post('/from-estimate/:estimateId', authenticate, async (req, res) => {
   try {
     const estimateId = req.params.estimateId;
 
