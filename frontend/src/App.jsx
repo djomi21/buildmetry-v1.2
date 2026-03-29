@@ -1721,7 +1721,7 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                     {l:"Subtotal",v:fmt(seC.sub),c:"#dde1ec",bold:true},
                     ...(seC.discountPct>0?[{l:`Discount (${seC.discountPct}%)`,v:`−${fmt(seC.discAmt)}`,c:"#a78bfa"}]:[]),
                     ...(seC.discountPct>0?[{l:"After Discount",v:fmt(seC.discSub),c:"#dde1ec",bold:true}]:[]),
-                    {l:`FL Sales Tax ${se.taxRate}%`,v:fmt(seC.tax),c:"#14b8a6"},
+                    {l:`Sales Tax ${se.taxRate}%`,v:fmt(seC.tax),c:"#14b8a6"},
                   ].map(r=>(
                     <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid #111826"}}>
                       <span style={{fontSize:11,color:r.bold?"#dde1ec":"#7a8299",fontWeight:r.bold?700:400}}>{r.l}</span>
