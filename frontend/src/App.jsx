@@ -19,7 +19,7 @@ const nxtNum = (list,prefix,yr=2026) => {
     .map(x=>parseInt((x.number||x.id||"").split("-")[2]||0)).reduce((m,n)=>Math.max(m,n),0);
   return `${prefix}-${yr}-${String(max+1).padStart(3,"0")}`;
 };
-const calcInv = (lines=[],taxRate=FL_TAX,discountPct=0,depositType="none",depositValue=0) => {
+const calcInv = (lines=[],taxRate=TAX,discountPct=0,depositType="none",depositValue=0) => {
   const sub = lines.reduce((s,l)=>s+(l.qty*l.unitPrice),0);
   const lab = lines.filter(l=>!l.isMaterial).reduce((s,l)=>s+(l.qty*l.unitPrice),0);
   const mat = lines.filter(l=> l.isMaterial).reduce((s,l)=>s+(l.qty*l.unitPrice),0);
