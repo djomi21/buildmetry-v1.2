@@ -205,7 +205,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
   const[estLd,setEstLd]=useState(false);
 
   const show=msg=>{setToast(msg);setTimeout(()=>setToast(null),3000)};
-  const token=typeof localStorage!=="undefined"?localStorage.getItem("token"):null;
+  const token=typeof localStorage!=="undefined"?localStorage.getItem("bm_token"):null;
   const hdr={"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})};
 
   const fetchC=useCallback(async()=>{
