@@ -24,16 +24,30 @@ function fmtDate(d) {
 
 // ─── Shared: Draw header with company info ───
 function drawHeader(doc, company, docType, docNumber) {
+  let nameX = 50;
+
+  // Company logo (if available as base64 data URL)
+  if (company.logo && company.logo.startsWith('data:image')) {
+    try {
+      const base64Data = company.logo.split(',')[1];
+      const logoBuffer = Buffer.from(base64Data, 'base64');
+      doc.image(logoBuffer, 50, 40, { height: 40 });
+      nameX = 100;
+    } catch (e) {
+      // Logo failed to render, continue without it
+    }
+  }
+
   // Company name
   doc.fontSize(18).font('Helvetica-Bold')
-     .text(company.name || company.companyName || 'BuildMetry', 50, 50);
+     .text(company.name || company.companyName || 'BuildMetry', nameX, 50);
 
   // Company address
   doc.fontSize(9).font('Helvetica').fillColor('#666666');
   let y = 75;
-  if (company.address) { doc.text(company.address, 50, y); y += 12; }
-  if (company.phone)   { doc.text(company.phone, 50, y); y += 12; }
-  if (company.email)   { doc.text(company.email, 50, y); y += 12; }
+  if (company.address) { doc.text(company.address, nameX, y); y += 12; }
+  if (company.phone)   { doc.text(company.phone, nameX, y); y += 12; }
+  if (company.email)   { doc.text(company.email, nameX, y); y += 12; }
 
   // Document type badge (right side)
   doc.fontSize(22).font('Helvetica-Bold').fillColor('#1B5E9E')

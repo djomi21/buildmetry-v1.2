@@ -362,7 +362,9 @@ td{padding:6px 10px;border-bottom:1px solid #eee}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 </style></head><body>
 <div class="hdr">
-  <div><div class="co-name">${coName}</div>${coLic?`<div style="font-size:9px;color:#888;margin-top:2px">${coLic}</div>`:""}</div>
+  <div style="display:flex;align-items:center;gap:12px">${co?.logo?`<img src="${co.logo}" alt="Logo" style="height:40px;width:auto;object-fit:contain"/>`:""}
+    <div><div class="co-name">${coName}</div>${coLic?`<div style="font-size:9px;color:#888;margin-top:2px">${coLic}</div>`:""}</div>
+  </div>
   <div class="co-info">${coAddr?coAddr.replace(/,/g,",<br>"):""}${coPhone?"<br>"+coPhone:""}${coEmail?"<br>"+coEmail:""}</div>
 </div>
 ${bodyHtml}
@@ -1064,8 +1066,8 @@ export default function App() {
         ...(typeof window!=="undefined"&&window.innerWidth<=768?{position:"fixed",top:0,bottom:0,left:mobileNav?0:-270,boxShadow:mobileNav?"8px 0 40px rgba(0,0,0,.6)":"none"}:{})
       }}>
         <div style={{padding:"18px 12px 16px",borderBottom:"1px solid #111826",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-          <div style={{width:32,height:32,borderRadius:8,background:"linear-gradient(135deg,var(--accent),var(--accent-dark))",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><I n="wrench" s={15}/></div>
-          {(sOpen||mobileNav)&&<div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:"#e2e8f0",lineHeight:1}}>BuildMetry</div><div style={{fontSize:8,color:"#2d3a52",fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",marginTop:2}}>v1.0</div></div>}
+          {company.logo?<img src={company.logo} alt="Logo" style={{width:32,height:32,borderRadius:8,objectFit:"contain",flexShrink:0}}/>:<div style={{width:32,height:32,borderRadius:8,background:"linear-gradient(135deg,#3b82f6,#1e40af)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><I n="wrench" s={15}/></div>}
+          {(sOpen||mobileNav)&&<div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:"#e2e8f0",lineHeight:1}}>{company.name||"BuildMetry"}</div><div style={{fontSize:8,color:"#2d3a52",fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",marginTop:2}}>v1.0</div></div>}
           {mobileNav&&<button onClick={()=>setMobileNav(false)} style={{color:"#4a566e",padding:4}}><I n="x" s={16}/></button>}
         </div>
         <nav style={{flex:1,padding:"8px 5px",display:"flex",flexDirection:"column",gap:1,overflowY:"auto"}}>
