@@ -205,12 +205,16 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
   const[estLd,setEstLd]=useState(false);
 
   const show=msg=>{setToast(msg);setTimeout(()=>setToast(null),3000)};
-  const token=typeof localStorage!=="undefined"?localStorage.getItem("bm_token"):null;
+  const token = typeof localStorage !== "undefined"? localStorage.getItem("bm_token"): null;
+  if (!token) {
+  console.warn("No auth token found for contracts request");
+  return;
+  }
   const hdr={"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})};
 
   const fetchC=useCallback(async()=>{
     if(!projectId)return;setLoading(true);
-    try{const r=await fetch(`${apiBaseUrl}/contracts/project/${projectId}`,{headers:hdr});if(r.ok){const d=await r.json();setContracts(Array.isArray(d)?d:[])}}catch{}
+    try{const r=await fetch(`${apiBaseUrl}/contracts/project/${projectId}`,{headers:hdr});if(r.ok){const d=await r.json();setContracts(Array.isArray(d)?d:[])}}catch (err) {console.error("Failed to load contracts:", err);}
     finally{setLoading(false)}
   },[projectId,apiBaseUrl]);
 
