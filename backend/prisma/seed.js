@@ -114,7 +114,7 @@ async function main() {
   console.log('  + 10 labor roles');
 
   // ── Project Phases ──────────────────────────────────
-  var phaseNames = ['Planning','Design','Permitting','Demolition','Site Prep','Rough-In','Installations','Finishes','Closeout & Punch List'];
+  var phaseNames = ['Planning','Design','Permitting','Demolition','Site Prep','Rough-In','Installations','Finishes','Closeout & Punch List','Complete'];
   for (var i = 0; i < phaseNames.length; i++) {
     await prisma.projectPhase.upsert({
       where: { companyId_name: { companyId: company.id, name: phaseNames[i] } },
