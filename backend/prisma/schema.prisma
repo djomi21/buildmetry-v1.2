@@ -148,6 +148,7 @@ model Estimate {
   updatedAt     DateTime  @updatedAt
 
   invoices      Invoice[]
+  contracts  Contract[] @relation("ContractEstimate")
 
   @@index([companyId])
   @@index([custId])
@@ -180,7 +181,7 @@ model Project {
   timeEntries     TimeEntry[]
   changeOrders    ChangeOrder[]
   expenses        Expense[]
-
+  contracts  Contract[]
   @@index([companyId])
   @@index([custId])
 }
@@ -384,4 +385,32 @@ model ProjectPhase {
 
   @@unique([companyId, name])
   @@index([companyId])
+}
+
+model Contract {
+  id                Int       @id @default(autoincrement())
+  projectId         Int
+  project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  linkedEstimateId  Int?
+  estimate          Estimate? @relation("ContractEstimate", fields: [linkedEstimateId], references: [id])
+  parentContractId  Int?
+  parentContract    Contract?  @relation("ChangeOrders", fields: [parentContractId], references: [id])
+  changeOrders      Contract[] @relation("ChangeOrders")
+  title             String
+  contractType      String     @default("Prime")
+  status            String     @default("Draft")
+  clientOrSubName   String     @default("")
+  startDate         DateTime?
+  endDate           DateTime?
+  signatureStatus   String     @default("Unsigned")
+  discountPercent   Float      @default(0)
+  taxRate           Float      @default(0.065)
+  retentionPercent  Float      @default(10)
+  paymentTerms      String     @default("Net 30")
+  scopeOfWork       String     @default("") @db.Text
+  exclusions        String     @default("") @db.Text
+  lineItems         Json       @default("[]")
+  milestones        Json       @default("[]")
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 }

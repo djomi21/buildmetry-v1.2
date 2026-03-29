@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const { PrismaClient } = require('@prisma/client');
 const { authenticate } = require('../middleware/auth');
 const prisma = new PrismaClient();
+const { generateEstimatePdf, generateInvoicePdf } = require('../utils/generatePdf');
 const router = express.Router();
 
 function createTransporter(company) {
@@ -34,6 +35,26 @@ router.post('/send', authenticate, async (req, res) => {
 
     var transporter = createTransporter(company);
 
+    // Generate PDF attachment for estimates and invoices
+    var attachments = [];
+    if (docId && type === 'estimate') {
+      try {
+        var estimate = await prisma.estimate.findUnique({ where: { id: docId }, include: { customer: true } });
+        if (estimate) {
+          var pdfBuffer = await generateEstimatePdf(estimate, company);
+          attachments.push({ filename: 'Estimate-' + (estimate.number || estimate.id) + '.pdf', content: pdfBuffer, contentType: 'application/pdf' });
+        }
+      } catch (pdfErr) { console.error('Estimate PDF error:', pdfErr.message); }
+    } else if (docId && type === 'invoice') {
+      try {
+        var invoice = await prisma.invoice.findUnique({ where: { id: docId }, include: { customer: true } });
+        if (invoice) {
+          var pdfBuffer = await generateInvoicePdf(invoice, company);
+          attachments.push({ filename: 'Invoice-' + (invoice.number || invoice.id) + '.pdf', content: pdfBuffer, contentType: 'application/pdf' });
+        }
+      } catch (pdfErr) { console.error('Invoice PDF error:', pdfErr.message); }
+    }
+
     await transporter.sendMail({
       from: '"' + (company.emailFromName || company.name) + '" <' + company.smtpUser + '>',
       to: to,
@@ -42,6 +63,7 @@ router.post('/send', authenticate, async (req, res) => {
       subject: subject,
       text: body,
       html: body.replace(/\n/g, '<br>'),
+      attachments: attachments.length ? attachments : undefined,
     });
 
     try {

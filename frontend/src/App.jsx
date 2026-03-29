@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import api, { getToken, clearAuth, getSavedUser, saveUser } from "./api";
+import ContractsModule from '../components/ContractsModule';
 
 // API_BASE is configured in api.js via VITE_API_URL env var
 
@@ -570,7 +571,7 @@ div:has(>table){overflow-x:auto;-webkit-overflow-scrolling:touch}
 `;
 
 // ══════════════════════════════════════════════════════════════
-// LOGIN (sign up removed — only admins can add users via Company Setup)
+// LOGIN (only admins can add users via Company Setup)
 // ══════════════════════════════════════════════════════════════
 function LoginPage({users, setUsers, onLogin}) {
   const [email, setEmail] = useState("");
@@ -1911,6 +1912,8 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
 function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs,showToast,setTab,db,auth}) {
   const [sel,  setSel]  = useState(projs[0]?.id||null);
   const [form, setForm] = useState(null);
+  const [detailTab, setDetailTab] = useState('overview');
+  useEffect(() => setDetailTab('overview'), [sel]);
   const sp=projs.find(p=>p.id===sel)||null;
   const blank={name:"",custId:"",status:"active",contractValue:"",budgetLabor:"",budgetMaterials:"",actualLabor:"0",actualMaterials:"0",start:tod(),end:addD(tod(),60),phase:"Planning",progress:0,notes:""};
   const PHASES=phases;
@@ -2028,7 +2031,14 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
               ))}
             </div>
           </div>
-          <div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}>
+          <div className="sub-tabs" style={{display:"flex",gap:2,background:"#0a0d15",borderRadius:10,padding:3,border:"1px solid #111826",width:"fit-content",maxWidth:"100%",overflowX:"auto",margin:"10px 20px 0"}}>
+            {[{id:"overview",icon:"dashboard",label:"Overview"},{id:"contracts",icon:"shield",label:"Contracts"}].map(t=>(
+              <button key={t.id} onClick={()=>setDetailTab(t.id)} style={{display:"flex",alignItems:"center",gap:7,padding:"8px 14px",borderRadius:8,fontSize:12,fontWeight:700,color:detailTab===t.id?"#63b3ed":"#4a566e",background:detailTab===t.id?"rgba(99,179,237,.1)":"transparent",transition:"all .18s",border:"none",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}}>
+                <I n={t.icon} s={13}/>{t.label}
+              </button>
+            ))}
+          </div>
+          {detailTab==='overview'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13,marginBottom:14}}>
               {[{l:"Labor Budget vs Actual",budget:sp.budgetLabor,actual:sp.actualLabor,c:"#f5a623"},{l:"Materials Budget vs Actual",budget:sp.budgetMaterials,actual:sp.actualMaterials,c:"#6c8ebf"}].map(item=>{
                 const over=item.actual>item.budget;
@@ -2148,7 +2158,8 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
                 )}
               </div>;
             })()}
-          </div>
+          </div>}
+          {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={sp.id} apiBaseUrl="/api"/></div>}
         </div>
       ):(
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>

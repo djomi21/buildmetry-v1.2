@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const contractRoutes = require('./routes/contracts');
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.use('/api/tasks',          loadRoute('./routes/tasks', 'tasks'));
 app.use('/api/phases',         loadRoute('./routes/phases', 'phases'));
 app.use('/api/email',          loadRoute('./routes/email', 'email'));
 app.use('/api/users',          loadRoute('./routes/users', 'users'));
+app.use('/api/contracts',      authenticate, contractRoutes);
 
 // ── ERROR HANDLER ────────────────────────────────────
 app.use((err, req, res, next) => {

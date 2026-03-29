@@ -1,0 +1,62 @@
+// ═══════════════════════════════════════════════════════════
+// CONTRACTS MODULE — Add this BELOW your existing models
+// in backend/prisma/schema.prisma
+//
+// DO NOT replace your existing schema.prisma.
+// Open the file, scroll to the bottom, and PASTE this below
+// your last model (probably Task or ProjectPhase).
+// ═══════════════════════════════════════════════════════════
+
+model Contract {
+  id                Int       @id @default(autoincrement())
+  projectId         Int
+  project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Optional link back to the estimate this was generated from
+  linkedEstimateId  Int?
+  estimate          Estimate? @relation("ContractEstimate", fields: [linkedEstimateId], references: [id])
+
+  // If this is a Change Order, link to the parent contract
+  parentContractId  Int?
+  parentContract    Contract?  @relation("ChangeOrders", fields: [parentContractId], references: [id])
+  changeOrders      Contract[] @relation("ChangeOrders")
+
+  // Header fields
+  title             String
+  contractType      String     @default("Prime")    // "Prime", "Subcontract", "Change Order"
+  status            String     @default("Draft")     // "Draft", "Sent", "Active", "Completed", "Cancelled"
+  clientOrSubName   String     @default("")
+  startDate         DateTime?
+  endDate           DateTime?
+  signatureStatus   String     @default("Unsigned")  // "Unsigned", "Signed by Contractor", "Fully Executed"
+
+  // Financial settings
+  discountPercent   Float      @default(0)
+  taxRate           Float      @default(0.065)
+  retentionPercent  Float      @default(10)
+  paymentTerms      String     @default("Net 30")
+
+  // Scope
+  scopeOfWork       String     @default("") @db.Text
+  exclusions        String     @default("") @db.Text
+
+  // Line items and milestones (stored as JSON for flexibility,
+  // same pattern as your existing estimate/invoice line items)
+  lineItems         Json       @default("[]")
+  milestones        Json       @default("[]")
+
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+// ═══════════════════════════════════════════════════════════
+// ALSO ADD these relation fields to your EXISTING models.
+//
+// 1. In your existing "Project" model, add this line:
+//      contracts  Contract[]
+//
+// 2. In your existing "Estimate" model, add this line:
+//      contracts  Contract[] @relation("ContractEstimate")
+//
+// If you skip this, Prisma will throw an error on generate.
+// ═══════════════════════════════════════════════════════════
