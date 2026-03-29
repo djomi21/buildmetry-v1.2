@@ -39,7 +39,7 @@ function calcTotals(lineItems, discountPercent, taxRate, retentionPercent) {
 // ═══════════════════════════════════════
 router.get('/project/:projectId', async (req, res) => {
   try {
-    const projectId = parseInt(req.params.projectId);
+    const projectId = req.params.projectId;
     const contracts = await prisma.contract.findMany({
       where: { projectId },
       include: { changeOrders: true },
@@ -89,8 +89,8 @@ router.post('/', async (req, res) => {
 
     const contract = await prisma.contract.create({
       data: {
-        projectId:        parseInt(projectId),
-        linkedEstimateId: linkedEstimateId ? parseInt(linkedEstimateId) : null,
+        projectId:        String(projectId),
+        linkedEstimateId: linkedEstimateId ? String(linkedEstimateId) : null,
         parentContractId: parentContractId ? parseInt(parentContractId) : null,
         title:            title || 'Untitled Contract',
         contractType:     contractType || 'Prime',
@@ -247,17 +247,18 @@ router.get('/:id/summary', async (req, res) => {
 // ═══════════════════════════════════════
 router.post('/from-estimate/:estimateId', async (req, res) => {
   try {
-    const estimateId = parseInt(req.params.estimateId);
+    const estimateId = req.params.estimateId;
 
     // Fetch the estimate with its line items
     const estimate = await prisma.estimate.findUnique({
       where: { id: estimateId },
-      include: { customer: true, items: true },
+      include: { customer: true },
     });
     if (!estimate) return res.status(404).json({ message: 'Estimate not found' });
 
     // Map estimate line items to contract line item format
-    const lineItems = (estimate.items || []).map(item => ({
+    const rawItems = Array.isArray(estimate.lineItems) ? estimate.lineItems : [];
+    const lineItems = rawItems.map(item => ({
       description: item.description || item.name || '',
       qty:         parseFloat(item.qty || item.quantity || 0),
       unitPrice:   parseFloat(item.unitPrice || item.price || item.rate || 0),
@@ -268,7 +269,7 @@ router.post('/from-estimate/:estimateId', async (req, res) => {
     // Create the contract draft (NOT saved yet — returned for user review)
     // Or if req.body.autoSave is true, save it immediately
     const contractData = {
-      projectId:        estimate.projectId,
+      projectId:        estimate.projId || '',
       linkedEstimateId: estimate.id,
       title:            `${estimate.title || estimate.name || 'Estimate'} — Contract`,
       contractType:     'Prime',
