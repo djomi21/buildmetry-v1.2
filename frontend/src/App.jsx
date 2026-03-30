@@ -230,7 +230,7 @@ const SD_COMPANY={
 };
 
 const USER_ROLES=["Owner","Admin","Project Manager","Estimator","Foreman","Bookkeeper","Field Tech","Read Only"];
-const USER_ROLE_C={"Owner":"#f5a623","Admin":"#6366f1","Project Manager":"#3b82f6","Estimator":"#14b8a6","Foreman":"#fb923c","Bookkeeper":"#ec4899","Field Tech":"#78716c","Read Only":"#4a566e"};
+const USER_ROLE_C={"Owner":"#f5a623","Admin":"#6366f1","Project Manager":"#3b82f6","Estimator":"#14b8a6","Foreman":"#fb923c","Bookkeeper":"#ec4899","Field Tech":"#78716c","Read Only":"var(--text-dim)"};
 const USER_ROLE_PERMS={
   "Owner":["All Access","Manage Users","Company Settings","Financial Reports","Delete Records"],
   "Admin":["All Access","Manage Users","Company Settings","Financial Reports"],
@@ -417,10 +417,10 @@ const CO_SC={"pending":{bg:"rgba(245,166,35,.12)",c:"#f5a623",label:"Pending"},"
 
 // ── SHARED MICRO-COMPONENTS ────────────────────────────────────
 const Chip=({s,map})=>{const sc=(map||INV_SC)[s]||{bg:"rgba(74,80,104,.15)",c:"#7a8299",label:s};return <span style={{padding:"2px 9px",borderRadius:12,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:.4,background:sc.bg,color:sc.c}}>{sc.label}</span>;};
-const ES=({icon,text})=><div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"38px 20px",color:"#2d3a52",gap:10,textAlign:"center"}}><I n={icon} s={28}/><div style={{fontSize:13}}>{text}</div></div>;
+const ES=({icon,text})=><div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"38px 20px",color:"var(--text-ghost)",gap:10,textAlign:"center"}}><I n={icon} s={28}/><div style={{fontSize:13}}>{text}</div></div>;
 const ini=n=>n?.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()||"??";
 const avC=id=>["#3b82f6","#a78bfa","#22c55e","#f5a623","#fb923c","#6366f1","#14b8a6"][id%7];
-const Pr=({v,color})=><div style={{height:5,background:"#0c0f17",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",borderRadius:3,width:`${v}%`,background:color||"var(--accent)",transition:"width .6s ease"}}/></div>;
+const Pr=({v,color})=><div style={{height:5,background:"var(--bg-card)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",borderRadius:3,width:`${v}%`,background:color||"var(--accent)",transition:"width .6s ease"}}/></div>;
 
 // ── ICONS ──────────────────────────────────────────────────────
 const I=({n,s=18})=>{
@@ -484,10 +484,14 @@ const CSS=`
   --text:#dde1ec;--text-2:#c8d0e0;--text-3:#9aabb8;--text-muted:#7a8299;--text-dim:#4a566e;--text-faint:#3a4160;--text-ghost:#2d3a52;
 }
 :root[data-theme="light"]{
-  --bg:#f1f5f9;--bg-sidebar:#e8edf5;--bg-card:#ffffff;--bg-input:#f8fafc;--bg-darker:#f0f4f8;
-  --border:#dde3ed;--border-2:#c4cedd;
-  --text:#0f172a;--text-2:#1e293b;--text-3:#334155;--text-muted:#475569;--text-dim:#64748b;--text-faint:#94a3b8;--text-ghost:#cbd5e1;
+  --bg:#f3f6fb;--bg-sidebar:#eaeff8;--bg-card:#ffffff;--bg-input:#f8fafc;--bg-darker:#edf1f8;
+  --border:#dbe2ef;--border-2:#c8d4e6;
+  --text:#0f172a;--text-2:#1e293b;--text-3:#334155;--text-muted:#4b5d7a;--text-dim:#617499;--text-faint:#8fa3c0;--text-ghost:#c0cfdf;
 }
+:root[data-theme="light"] .card:hover{box-shadow:0 6px 24px rgba(15,23,42,.09);transform:translateY(-1px)}
+:root[data-theme="light"] .mo{box-shadow:0 20px 60px rgba(15,23,42,.18)}
+:root[data-theme="light"] .rh:hover{background:rgba(59,130,246,.05)!important}
+:root[data-theme="light"] .inp{box-shadow:inset 0 1px 3px rgba(15,23,42,.06)}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:var(--bg-card)}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px}
@@ -534,7 +538,7 @@ select.inp option{background:var(--bg-input);color:var(--text)}
 .desk-only{display:block}
 .desk-flex{display:flex}
 .mob-drawer-overlay{display:none}
-.sub-tabs{display:flex;gap:2;background:#0a0d15;border-radius:10;padding:3px;border:1px solid #111826;width:fit-content;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sub-tabs{display:flex;gap:2;background:var(--bg-sidebar);border-radius:10;padding:3px;border:1px solid var(--border);width:fit-content;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .sub-tabs::-webkit-scrollbar{height:0}
 main table{min-width:600px}
 main .tbl-auto{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -556,7 +560,7 @@ div:has(>table){overflow-x:auto;-webkit-overflow-scrolling:touch}
   .g4{grid-template-columns:1fr 1fr}
   .g6{grid-template-columns:repeat(2,1fr)}
   .spl{grid-template-columns:1fr;height:auto}
-  .spl-l{max-height:40vh;border-right:none;border-bottom:1px solid #111826}
+  .spl-l{max-height:40vh;border-right:none;border-bottom:1px solid var(--border)}
   .spl-r{min-height:50vh}
   .ov{padding:0}
   .mo{border-radius:0;min-height:100vh;border:none}
@@ -620,15 +624,15 @@ function LoginPage({users, setUsers, onLogin}) {
   };
 
   const inputStyle = {
-    background:"#0c0f17",border:"1px solid #1e2535",color:"#dde1ec",borderRadius:10,padding:"12px 14px",fontSize:14,width:"100%",transition:"border-color .2s",outline:"none",fontFamily:"'DM Sans',system-ui,sans-serif"
+    background:"var(--bg-card)",border:"1px solid var(--border-2)",color:"var(--text)",borderRadius:10,padding:"12px 14px",fontSize:14,width:"100%",transition:"border-color .2s",outline:"none",fontFamily:"'DM Sans',system-ui,sans-serif"
   };
 
   return (
-    <div style={{minHeight:"100vh",background:"#080a0f",display:"flex",flexDirection:"row",flexWrap:"wrap",fontFamily:"'DM Sans',system-ui,sans-serif",color:"#dde1ec",overflow:"auto"}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",display:"flex",flexDirection:"row",flexWrap:"wrap",fontFamily:"'DM Sans',system-ui,sans-serif",color:"var(--text)",overflow:"auto"}}>
       <style>{CSS}</style>
 
       {/* LEFT — BRANDING PANEL */}
-      <div style={{flex:"1 1 380px",minHeight:"min(100vh,500px)",background:"linear-gradient(160deg,#0a0d15 0%,#0e1225 40%,#111a38 100%)",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",padding:"clamp(30px,5vw,60px) clamp(20px,4vw,50px)",position:"relative",overflow:"hidden"}}>
+      <div style={{flex:"1 1 380px",minHeight:"min(100vh,500px)",background:"linear-gradient(160deg,var(--bg-sidebar) 0%,var(--bg-card) 60%,var(--bg-card) 100%)",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",padding:"clamp(30px,5vw,60px) clamp(20px,4vw,50px)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,opacity:.06,backgroundImage:"radial-gradient(circle,var(--accent) 1px,transparent 1px)",backgroundSize:"32px 32px"}}/>
         <div style={{position:"absolute",top:"20%",left:"30%",width:300,height:300,background:"radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 70%)",borderRadius:"50%",filter:"blur(60px)",animation:"gridFloat 8s ease-in-out infinite"}}/>
         <div style={{position:"absolute",bottom:"15%",right:"20%",width:200,height:200,background:"radial-gradient(circle,rgba(99,102,241,.1) 0%,transparent 70%)",borderRadius:"50%",filter:"blur(50px)",animation:"gridFloat 6s ease-in-out infinite 2s"}}/>
@@ -636,10 +640,10 @@ function LoginPage({users, setUsers, onLogin}) {
         <div style={{position:"relative",zIndex:1,maxWidth:380}}>
           <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:32}}>
             <div style={{width:48,height:48,borderRadius:12,background:"linear-gradient(135deg,var(--accent),var(--accent-dark))",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 32px rgba(59,130,246,.35)"}}><I n="wrench" s={22}/></div>
-            <div><div style={{fontSize:22,fontWeight:800,color:"#e2e8f0",letterSpacing:-.3}}>BuildMetry</div><div style={{fontSize:9,color:"#4a566e",fontWeight:700,letterSpacing:3,textTransform:"uppercase"}}>v1.0</div></div>
+            <div><div style={{fontSize:22,fontWeight:800,color:"var(--text-2)",letterSpacing:-.3}}>BuildMetry</div><div style={{fontSize:9,color:"var(--text-dim)",fontWeight:700,letterSpacing:3,textTransform:"uppercase"}}>v1.0</div></div>
           </div>
-          <div style={{fontSize:28,fontWeight:800,lineHeight:1.25,color:"#e2e8f0",marginBottom:14,letterSpacing:-.5}}>Run your construction<br/>business from one place.</div>
-          <div style={{fontSize:14,color:"#4a566e",lineHeight:1.7,marginBottom:36}}>Estimates, projects, invoices, job costing, materials, subs — everything a GC needs to stay profitable and organized.</div>
+          <div style={{fontSize:28,fontWeight:800,lineHeight:1.25,color:"var(--text-2)",marginBottom:14,letterSpacing:-.5}}>Run your construction<br/>business from one place.</div>
+          <div style={{fontSize:14,color:"var(--text-dim)",lineHeight:1.7,marginBottom:36}}>Estimates, projects, invoices, job costing, materials, subs — everything a GC needs to stay profitable and organized.</div>
 
           <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
             {["Estimates","Job Costing","Invoicing","Change Orders","Crew Management","Reports"].map(f=>(
@@ -653,8 +657,8 @@ function LoginPage({users, setUsers, onLogin}) {
       <div style={{flex:"1 1 380px",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",padding:"clamp(24px,4vw,40px) clamp(16px,4vw,50px)",minHeight:"auto"}}>
         <div style={{width:"100%",maxWidth:400,animation:"slideUp .4s ease"}}>
           <div style={{marginBottom:28}}>
-            <div style={{fontSize:22,fontWeight:800,color:"#e2e8f0",marginBottom:6}}>Welcome back</div>
-            <div style={{fontSize:13,color:"#4a566e"}}>Sign in to your BuildMetry workspace</div>
+            <div style={{fontSize:22,fontWeight:800,color:"var(--text-2)",marginBottom:6}}>Welcome back</div>
+            <div style={{fontSize:13,color:"var(--text-dim)"}}>Sign in to your BuildMetry workspace</div>
           </div>
 
           {error&&(
@@ -665,42 +669,42 @@ function LoginPage({users, setUsers, onLogin}) {
 
           <div style={{display:"flex",flexDirection:"column",gap:14}}>
             <div>
-              <label style={{fontSize:11,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Email</label>
+              <label style={{fontSize:11,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Email</label>
               <div style={{position:"relative"}}>
-                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="mail" s={15}/></div>
+                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="mail" s={15}/></div>
                 <input style={{...inputStyle,paddingLeft:38}} type="email" placeholder="you@company.com" value={email} onChange={e=>{setEmail(e.target.value);setError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()}/>
               </div>
             </div>
 
             <div>
-              <label style={{fontSize:11,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Password</label>
+              <label style={{fontSize:11,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Password</label>
               <div style={{position:"relative"}}>
-                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="lock" s={15}/></div>
+                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="lock" s={15}/></div>
                 <input style={{...inputStyle,paddingLeft:38,paddingRight:42}} type={showPass?"text":"password"} placeholder="Enter password" value={pass} onChange={e=>{setPass(e.target.value);setError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()}/>
-                <button onClick={()=>setShowPass(!showPass)} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"#3a4160",padding:4,display:"flex"}}><I n={showPass?"eye-off":"eye"} s={15}/></button>
+                <button onClick={()=>setShowPass(!showPass)} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",padding:4,display:"flex"}}><I n={showPass?"eye-off":"eye"} s={15}/></button>
               </div>
             </div>
 
-            <button onClick={handleLogin} disabled={loading} style={{width:"100%",padding:"13px 0",borderRadius:10,background:loading?"#1e2535":"linear-gradient(135deg,var(--accent),var(--accent-dark))",color:"#fff",fontSize:14,fontWeight:700,border:"none",cursor:loading?"default":"pointer",transition:"all .2s",boxShadow:loading?"none":"0 6px 24px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.35)",fontFamily:"'DM Sans',system-ui,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+            <button onClick={handleLogin} disabled={loading} style={{width:"100%",padding:"13px 0",borderRadius:10,background:loading?"var(--border)":"linear-gradient(135deg,var(--accent),var(--accent-dark))",color:"#fff",fontSize:14,fontWeight:700,border:"none",cursor:loading?"default":"pointer",transition:"all .2s",boxShadow:loading?"none":"0 6px 24px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.35)",fontFamily:"'DM Sans',system-ui,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
               {loading ? (<><div style={{width:16,height:16,border:"2px solid rgba(255,255,255,.3)",borderTop:"2px solid #fff",borderRadius:"50%",animation:"pulse 1s linear infinite"}}/> Signing in…</>) : "Sign In"}
             </button>
           </div>
 
-          <div style={{textAlign:"center",marginTop:18,fontSize:12,color:"#3a4160"}}>
+          <div style={{textAlign:"center",marginTop:18,fontSize:12,color:"var(--text-faint)"}}>
             Contact your administrator for account access
           </div>
 
           {/* Demo quick login */}
-          <div style={{marginTop:28,borderTop:"1px solid #111826",paddingTop:20}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#3a4160",textTransform:"uppercase",letterSpacing:1,marginBottom:10,textAlign:"center"}}>Quick Demo Access</div>
+          <div style={{marginTop:28,borderTop:"1px solid var(--border)",paddingTop:20}}>
+            <div style={{fontSize:10,fontWeight:700,color:"var(--text-faint)",textTransform:"uppercase",letterSpacing:1,marginBottom:10,textAlign:"center"}}>Quick Demo Access</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {users.filter(u=>u.status==="active").slice(0,4).map(u=>{
                 const rc=USER_ROLE_C[u.role]||"var(--accent)";
                 return (
-                  <button key={u.id} onClick={()=>demoLogin(u)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 12px",background:"#0c0f17",border:"1px solid #1e2535",borderRadius:9,cursor:"pointer",transition:"all .18s",textAlign:"left"}} onMouseEnter={e=>{e.currentTarget.style.borderColor=rc;e.currentTarget.style.background=rc+"08";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="#1e2535";e.currentTarget.style.background="#0c0f17";}}>
+                  <button key={u.id} onClick={()=>demoLogin(u)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 12px",background:"var(--bg-card)",border:"1px solid var(--border-2)",borderRadius:9,cursor:"pointer",transition:"all .18s",textAlign:"left"}} onMouseEnter={e=>{e.currentTarget.style.borderColor=rc;e.currentTarget.style.background=rc+"08";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border-2)";e.currentTarget.style.background="var(--bg-card)";}}>
                     <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+","+rc+"88)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fff",flexShrink:0}}>{ini(u.name)}</div>
                     <div style={{overflow:"hidden"}}>
-                      <div style={{fontSize:11,fontWeight:700,color:"#c8d0e0",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{u.name}</div>
+                      <div style={{fontSize:11,fontWeight:700,color:"var(--text-2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{u.name}</div>
                       <div style={{fontSize:9,color:rc,fontWeight:600}}>{u.role}</div>
                     </div>
                   </button>
@@ -727,7 +731,7 @@ function ForceChangePassword({auth, setAuth, showToast, handleLogout}) {
   const [loading, setLoading] = useState(false);
 
   const inputStyle = {
-    background:"#0c0f17",border:"1px solid #1e2535",color:"#dde1ec",borderRadius:10,padding:"12px 14px",fontSize:14,width:"100%",transition:"border-color .2s",outline:"none",fontFamily:"'DM Sans',system-ui,sans-serif"
+    background:"var(--bg-card)",border:"1px solid var(--border-2)",color:"var(--text)",borderRadius:10,padding:"12px 14px",fontSize:14,width:"100%",transition:"border-color .2s",outline:"none",fontFamily:"'DM Sans',system-ui,sans-serif"
   };
 
   const handleSubmit = async () => {
@@ -750,16 +754,16 @@ function ForceChangePassword({auth, setAuth, showToast, handleLogout}) {
   };
 
   return (
-    <div style={{minHeight:"100vh",background:"#080a0f",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',system-ui,sans-serif",color:"#dde1ec",padding:20}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',system-ui,sans-serif",color:"var(--text)",padding:20}}>
       <style>{CSS}</style>
       <div style={{width:"100%",maxWidth:440,animation:"slideUp .4s ease"}}>
         <div style={{textAlign:"center",marginBottom:32}}>
           <div style={{width:56,height:56,borderRadius:14,background:"linear-gradient(135deg,var(--accent),var(--accent-dark))",display:"inline-flex",alignItems:"center",justifyContent:"center",marginBottom:16,boxShadow:"0 8px 32px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.35)"}}><I n="lock" s={24}/></div>
-          <div style={{fontSize:22,fontWeight:800,color:"#e2e8f0",marginBottom:6}}>Set Your Password</div>
-          <div style={{fontSize:13,color:"#4a566e"}}>Welcome, {auth.name}! For security, please change your password before continuing.</div>
+          <div style={{fontSize:22,fontWeight:800,color:"var(--text-2)",marginBottom:6}}>Set Your Password</div>
+          <div style={{fontSize:13,color:"var(--text-dim)"}}>Welcome, {auth.name}! For security, please change your password before continuing.</div>
         </div>
 
-        <div style={{background:"#0e1119",border:"1px solid #1e2535",borderRadius:14,padding:"24px 28px"}}>
+        <div style={{background:"var(--bg-darker)",border:"1px solid var(--border-2)",borderRadius:14,padding:"24px 28px"}}>
           {error && (
             <div style={{background:"rgba(239,68,68,.08)",border:"1px solid rgba(239,68,68,.2)",borderRadius:10,padding:"10px 14px",marginBottom:16,display:"flex",alignItems:"center",gap:8,fontSize:12,color:"#ef4444",fontWeight:600}}>
               <I n="alert" s={14}/>{error}
@@ -768,40 +772,40 @@ function ForceChangePassword({auth, setAuth, showToast, handleLogout}) {
 
           <div style={{display:"flex",flexDirection:"column",gap:16}}>
             <div>
-              <label style={{fontSize:11,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Current Password</label>
+              <label style={{fontSize:11,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Current Password</label>
               <div style={{position:"relative"}}>
-                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="lock" s={15}/></div>
+                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="lock" s={15}/></div>
                 <input style={{...inputStyle,paddingLeft:38,paddingRight:42}} type={showCurrent?"text":"password"} placeholder="Default: Welcome123!" value={currentPass} onChange={e=>{setCurrentPass(e.target.value);setError("");}} onKeyDown={e=>e.key==="Enter"&&handleSubmit()}/>
-                <button onClick={()=>setShowCurrent(!showCurrent)} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"#3a4160",padding:4,display:"flex"}}><I n={showCurrent?"eye-off":"eye"} s={15}/></button>
+                <button onClick={()=>setShowCurrent(!showCurrent)} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",padding:4,display:"flex"}}><I n={showCurrent?"eye-off":"eye"} s={15}/></button>
               </div>
-              <div style={{fontSize:10,color:"#3a4160",marginTop:4}}>Your admin set a default password when creating your account</div>
+              <div style={{fontSize:10,color:"var(--text-faint)",marginTop:4}}>Your admin set a default password when creating your account</div>
             </div>
 
             <div>
-              <label style={{fontSize:11,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>New Password</label>
+              <label style={{fontSize:11,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>New Password</label>
               <div style={{position:"relative"}}>
-                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="lock" s={15}/></div>
+                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="lock" s={15}/></div>
                 <input style={{...inputStyle,paddingLeft:38,paddingRight:42}} type={showNew?"text":"password"} placeholder="Min 6 characters" value={newPass} onChange={e=>{setNewPass(e.target.value);setError("");}} onKeyDown={e=>e.key==="Enter"&&handleSubmit()}/>
-                <button onClick={()=>setShowNew(!showNew)} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"#3a4160",padding:4,display:"flex"}}><I n={showNew?"eye-off":"eye"} s={15}/></button>
+                <button onClick={()=>setShowNew(!showNew)} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",padding:4,display:"flex"}}><I n={showNew?"eye-off":"eye"} s={15}/></button>
               </div>
             </div>
 
             <div>
-              <label style={{fontSize:11,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Confirm New Password</label>
+              <label style={{fontSize:11,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5,display:"block"}}>Confirm New Password</label>
               <div style={{position:"relative"}}>
-                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="lock" s={15}/></div>
+                <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="lock" s={15}/></div>
                 <input style={{...inputStyle,paddingLeft:38}} type={showNew?"text":"password"} placeholder="Type again to confirm" value={confirmPass} onChange={e=>{setConfirmPass(e.target.value);setError("");}} onKeyDown={e=>e.key==="Enter"&&handleSubmit()}/>
               </div>
             </div>
 
-            <button onClick={handleSubmit} disabled={loading} style={{width:"100%",padding:"13px 0",borderRadius:10,background:loading?"#1e2535":"linear-gradient(135deg,var(--accent),var(--accent-dark))",color:"#fff",fontSize:14,fontWeight:700,border:"none",cursor:loading?"default":"pointer",transition:"all .2s",boxShadow:loading?"none":"0 6px 24px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.35)",fontFamily:"'DM Sans',system-ui,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginTop:4}}>
+            <button onClick={handleSubmit} disabled={loading} style={{width:"100%",padding:"13px 0",borderRadius:10,background:loading?"var(--border)":"linear-gradient(135deg,var(--accent),var(--accent-dark))",color:"#fff",fontSize:14,fontWeight:700,border:"none",cursor:loading?"default":"pointer",transition:"all .2s",boxShadow:loading?"none":"0 6px 24px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.35)",fontFamily:"'DM Sans',system-ui,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginTop:4}}>
               {loading ? (<><div style={{width:16,height:16,border:"2px solid rgba(255,255,255,.3)",borderTop:"2px solid #fff",borderRadius:"50%",animation:"pulse 1s linear infinite"}}/> Updating…</>) : (<><I n="check" s={16}/> Set Password & Continue</>)}
             </button>
           </div>
         </div>
 
         <div style={{textAlign:"center",marginTop:18}}>
-          <button onClick={handleLogout} style={{fontSize:12,color:"#4a566e",fontWeight:600}}>Sign out</button>
+          <button onClick={handleLogout} style={{fontSize:12,color:"var(--text-dim)",fontWeight:600}}>Sign out</button>
         </div>
       </div>
     </div>
@@ -1071,12 +1075,12 @@ export default function App() {
 
   // ── Loading screen ─────────────────────────────────
   if (!dataLoaded && auth) return (
-    <div style={{display:"flex",height:"100vh",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',sans-serif",background:"#080a0f",color:"#dde1ec",flexDirection:"column",gap:16}}>
+    <div style={{display:"flex",height:"100vh",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',sans-serif",background:"var(--bg)",color:"var(--text)",flexDirection:"column",gap:16}}>
       <style>{CSS}</style>
       <div style={{width:40,height:40,borderRadius:10,background:"linear-gradient(135deg,var(--accent),var(--accent-dark))",display:"flex",alignItems:"center",justifyContent:"center"}}><I n="wrench" s={20}/></div>
       <div style={{fontSize:14,fontWeight:700}}>Loading BuildMetry…</div>
-      <div style={{fontSize:9,color:"#3a4160"}}>v1.0</div>
-      <div style={{width:120,height:4,borderRadius:2,background:"#1e2535",overflow:"hidden"}}><div style={{width:"60%",height:"100%",borderRadius:2,background:"var(--accent)",animation:"pulse 1.5s ease-in-out infinite"}}/></div>
+      <div style={{fontSize:9,color:"var(--text-faint)"}}>v1.0</div>
+      <div style={{width:120,height:4,borderRadius:2,background:"var(--border)",overflow:"hidden"}}><div style={{width:"60%",height:"100%",borderRadius:2,background:"var(--accent)",animation:"pulse 1.5s ease-in-out infinite"}}/></div>
     </div>
   );
 
@@ -1189,16 +1193,16 @@ export default function App() {
 // ── TOOLTIP (reused across charts) ────────────────────────────
 const CTip=({active,payload,label})=>{
   if(!active||!payload?.length)return null;
-  return <div style={{background:"#0e1119",border:"1px solid #1e2535",borderRadius:9,padding:"9px 13px",fontSize:11}}><div style={{fontWeight:700,marginBottom:5,color:"#dde1ec"}}>{label}</div>{payload.map(p=><div key={p.dataKey} style={{color:p.color,display:"flex",justifyContent:"space-between",gap:14}}><span>{p.name}</span><span className="mn">{fmtK(p.value)}</span></div>)}</div>;
+  return <div style={{background:"var(--bg-darker)",border:"1px solid var(--border-2)",borderRadius:9,padding:"9px 13px",fontSize:11}}><div style={{fontWeight:700,marginBottom:5,color:"var(--text)"}}>{label}</div>{payload.map(p=><div key={p.dataKey} style={{color:p.color,display:"flex",justifyContent:"space-between",gap:14}}><span>{p.name}</span><span className="mn">{fmtK(p.value)}</span></div>)}</div>;
 };
 
 // ── KPI CARD ──────────────────────────────────────────────────
 const KpiCard=({label,val,sub,color})=>(
-  <div className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"13px 15px",position:"relative",overflow:"hidden"}}>
+  <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"13px 15px",position:"relative",overflow:"hidden"}}>
     <div style={{position:"absolute",top:0,right:0,width:44,height:44,background:color,opacity:.05,borderRadius:"0 0 0 44px"}}/>
-    <div style={{fontSize:9,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.6,marginBottom:7,lineHeight:1.3}}>{label}</div>
+    <div style={{fontSize:9,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.6,marginBottom:7,lineHeight:1.3}}>{label}</div>
     <div className="mn" style={{fontSize:20,color:color,letterSpacing:-1}}>{val}</div>
-    <div style={{fontSize:10,color:"#3a4160",marginTop:4}}>{sub}</div>
+    <div style={{fontSize:10,color:"var(--text-faint)",marginTop:4}}>{sub}</div>
   </div>
 );
 
@@ -1238,9 +1242,9 @@ function Dashboard({custs,ests,projs,invs,setTab}) {
       </div>
 
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:16}}>
-        <div className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:13,padding:"16px 16px 8px"}}>
+        <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:13,padding:"16px 16px 8px"}}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}>
-            <div><div style={{fontWeight:800,fontSize:13}}>Revenue vs. Profit — 2026</div><div style={{fontSize:10,color:"#4a566e",marginTop:1}}>Monthly trend</div></div>
+            <div><div style={{fontWeight:800,fontSize:13}}>Revenue vs. Profit — 2026</div><div style={{fontSize:10,color:"var(--text-dim)",marginTop:1}}>Monthly trend</div></div>
             <span className="mn" style={{fontSize:12,color:"#63b3ed"}}>{fmt(ytd.rev)} YTD</span>
           </div>
           <ResponsiveContainer width="100%" height={160}>
@@ -1249,9 +1253,9 @@ function Dashboard({custs,ests,projs,invs,setTab}) {
                 <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={.2}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient>
                 <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={.2}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#111826" vertical={false}/>
-              <XAxis dataKey="month" tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
+              <XAxis dataKey="month" tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false}/>
+              <YAxis tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
               <Tooltip content={<CTip/>}/>
               <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#3b82f6" strokeWidth={2} fill="url(#g1)" dot={false}/>
               <Area type="monotone" dataKey="profit"  name="Profit"  stroke="#22c55e" strokeWidth={2} fill="url(#g2)" dot={false}/>
@@ -1260,45 +1264,45 @@ function Dashboard({custs,ests,projs,invs,setTab}) {
         </div>
 
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
-          <div className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:13,padding:"13px 15px",flex:1}}>
+          <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:13,padding:"13px 15px",flex:1}}>
             <div style={{fontWeight:800,fontSize:12,marginBottom:8}}>A/R Status</div>
             <div style={{display:"flex",gap:0,height:90}}>
               <ResponsiveContainer width="45%" height="100%">
-                <PieChart><Pie data={arPie} cx="50%" cy="50%" innerRadius={26} outerRadius={42} dataKey="value" paddingAngle={3}>{arPie.map(e=><Cell key={e.name} fill={e.fill}/>)}</Pie><Tooltip formatter={v=>fmt(v)} contentStyle={{background:"#0e1119",border:"1px solid #1e2535",borderRadius:7,fontSize:10}}/></PieChart>
+                <PieChart><Pie data={arPie} cx="50%" cy="50%" innerRadius={26} outerRadius={42} dataKey="value" paddingAngle={3}>{arPie.map(e=><Cell key={e.name} fill={e.fill}/>)}</Pie><Tooltip formatter={v=>fmt(v)} contentStyle={{background:"var(--bg-darker)",border:"1px solid var(--border-2)",borderRadius:7,fontSize:10}}/></PieChart>
               </ResponsiveContainer>
               <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",gap:5}}>
-                {arPie.map(d=><div key={d.name} style={{display:"flex",justifyContent:"space-between",fontSize:10}}><div style={{display:"flex",gap:5,alignItems:"center"}}><div style={{width:6,height:6,borderRadius:1,background:d.fill}}/><span style={{color:"#7a8299"}}>{d.name}</span></div><span className="mn" style={{color:d.fill,fontSize:10}}>{fmt(d.value)}</span></div>)}
+                {arPie.map(d=><div key={d.name} style={{display:"flex",justifyContent:"space-between",fontSize:10}}><div style={{display:"flex",gap:5,alignItems:"center"}}><div style={{width:6,height:6,borderRadius:1,background:d.fill}}/><span style={{color:"var(--text-muted)"}}>{d.name}</span></div><span className="mn" style={{color:d.fill,fontSize:10}}>{fmt(d.value)}</span></div>)}
               </div>
             </div>
           </div>
           {ovAmt>0&&<div style={{background:"rgba(239,68,68,.05)",border:"1px solid rgba(239,68,68,.18)",borderRadius:11,padding:"11px 14px"}}>
             <div style={{fontSize:10,fontWeight:700,color:"#ef4444",textTransform:"uppercase",letterSpacing:.5,marginBottom:7,display:"flex",gap:5,alignItems:"center"}}><I n="alert" s={11}/>Overdue</div>
-            {invs.filter(i=>i.status==="overdue").map(i=>{const c=custs.find(x=>x.id===i.custId);const v=calcInv(i.lineItems,i.taxRate,i.discount||0).total;return <div key={i.id} style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}}><span style={{color:"#c8d0e0"}}>{c?.name}</span><span className="mn" style={{color:"#ef4444"}}>{fmt(v)}</span></div>;})}
+            {invs.filter(i=>i.status==="overdue").map(i=>{const c=custs.find(x=>x.id===i.custId);const v=calcInv(i.lineItems,i.taxRate,i.discount||0).total;return <div key={i.id} style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}}><span style={{color:"var(--text-2)"}}>{c?.name}</span><span className="mn" style={{color:"#ef4444"}}>{fmt(v)}</span></div>;})}
           </div>}
         </div>
       </div>
 
-      <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:13,overflow:"hidden"}}>
-        <div style={{padding:"11px 18px",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:13,overflow:"hidden"}}>
+        <div style={{padding:"11px 18px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{fontWeight:800,fontSize:13}}>Active Projects</div>
           <button onClick={()=>setTab("projects")} className="bb b-gh" style={{padding:"4px 11px",fontSize:11}}>View All <I n="arrow" s={11}/></button>
         </div>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-          <thead><tr style={{background:"#0a0d15"}}>{["Project","Customer","Contract","Budget Labor","Budget Mat","Progress","Status"].map(h=><th key={h} style={{padding:"7px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.4,borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+          <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Project","Customer","Contract","Budget Labor","Budget Mat","Progress","Status"].map(h=><th key={h} style={{padding:"7px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.4,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
           <tbody>
             {actv.map((p,i)=>{
               const c=custs.find(x=>x.id===p.custId);
               const pc=p.progress>=90?"#22c55e":p.progress>=50?"#3b82f6":"#f5a623";
-              return <tr key={p.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                <td style={{padding:"8px 14px",fontWeight:700,color:"#c8d0e0"}}>{p.name}</td>
-                <td style={{padding:"8px 14px",color:"#7a8299"}}>{c?.name}</td>
+              return <tr key={p.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                <td style={{padding:"8px 14px",fontWeight:700,color:"var(--text-2)"}}>{p.name}</td>
+                <td style={{padding:"8px 14px",color:"var(--text-muted)"}}>{c?.name}</td>
                 <td className="mn" style={{padding:"8px 14px",color:"var(--accent)"}}>{fmt(p.contractValue)}</td>
                 <td className="mn" style={{padding:"8px 14px",color:"#f5a623"}}>{fmt(p.budgetLabor)}</td>
                 <td className="mn" style={{padding:"8px 14px",color:"#6c8ebf"}}>{fmt(p.budgetMaterials)}</td>
                 <td style={{padding:"8px 14px",minWidth:110}}>
                   <div style={{display:"flex",alignItems:"center",gap:7}}>
                     <div style={{flex:1}}><Pr v={p.progress} color={pc}/></div>
-                    <span className="mn" style={{fontSize:9,color:"#7a8299"}}>{p.progress}%</span>
+                    <span className="mn" style={{fontSize:9,color:"var(--text-muted)"}}>{p.progress}%</span>
                   </div>
                 </td>
                 <td style={{padding:"8px 14px"}}><Chip s={p.status} map={PRJ_SC}/></td>
@@ -1358,52 +1362,52 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
     <div className="spl">
       {/* LEFT */}
       <div className="spl-l">
-        <div style={{padding:"11px 12px",borderBottom:"1px solid #111826",flexShrink:0}}>
+        <div style={{padding:"11px 12px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
           <div style={{display:"flex",gap:7,marginBottom:8}}>
             <div style={{flex:1,position:"relative"}}>
-              <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={12}/></div>
+              <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={12}/></div>
               <input className="inp" value={srch} onChange={e=>setSrch(e.target.value)} placeholder="Search…" style={{paddingLeft:27,fontSize:12}}/>
             </div>
             <button onClick={openNew} className="bb b-bl" style={{padding:"8px 12px",fontSize:12}}><I n="plus" s={12}/>Add</button>
           </div>
           <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-            {TAGS.map(t=><button key={t} onClick={()=>setTagF(t)} style={{padding:"3px 8px",borderRadius:18,fontSize:9,fontWeight:700,border:`1px solid ${tagF===t?"var(--accent)":"#111826"}`,background:tagF===t?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"transparent",color:tagF===t?"var(--accent-light)":"#4a566e"}}>{t}</button>)}
+            {TAGS.map(t=><button key={t} onClick={()=>setTagF(t)} style={{padding:"3px 8px",borderRadius:18,fontSize:9,fontWeight:700,border:`1px solid ${tagF===t?"var(--accent)":"var(--border)"}`,background:tagF===t?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"transparent",color:tagF===t?"var(--accent-light)":"var(--text-dim)"}}>{t}</button>)}
           </div>
         </div>
-        <div style={{padding:"5px 12px",borderBottom:"1px solid #111826",fontSize:9,color:"#2d3a52",fontWeight:700,textTransform:"uppercase",letterSpacing:.7,flexShrink:0}}>{filt.length} customers</div>
+        <div style={{padding:"5px 12px",borderBottom:"1px solid var(--border)",fontSize:9,color:"var(--text-ghost)",fontWeight:700,textTransform:"uppercase",letterSpacing:.7,flexShrink:0}}>{filt.length} customers</div>
         <div style={{flex:1,overflowY:"auto"}}>
           {filt.map(c=>{
             const is=sel===c.id;
-            return <div key={c.id} className={`sl ${is?"on":""}`} onClick={()=>{setSel(c.id);setDtab("overview");}} style={{padding:"10px 12px",borderBottom:"1px solid #0e1119",background:is?"rgba(59,130,246,.06)":"transparent"}}>
+            return <div key={c.id} className={`sl ${is?"on":""}`} onClick={()=>{setSel(c.id);setDtab("overview");}} style={{padding:"10px 12px",borderBottom:"1px solid var(--border)",background:is?"rgba(59,130,246,.06)":"transparent"}}>
               <div style={{display:"flex",gap:9,alignItems:"flex-start"}}>
                 <div style={{width:34,height:34,borderRadius:9,background:avC(c.id),display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:12,flexShrink:0}}>{ini(c.name)}</div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{display:"flex",justifyContent:"space-between",gap:4}}>
-                    <div style={{fontWeight:700,fontSize:12,color:is?"#e2e8f0":"#c8d0e0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                    <div style={{fontWeight:700,fontSize:12,color:is?"var(--text)":"var(--text-2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
                     <div className="mn" style={{fontSize:10,color:"#3b82f6",flexShrink:0}}>{fmt(c.totalRevenue)}</div>
                   </div>
-                  <div style={{fontSize:10,color:"#3a4160",marginTop:1}}>{c.propertyType} · {c.leadSource}</div>
+                  <div style={{fontSize:10,color:"var(--text-faint)",marginTop:1}}>{c.propertyType} · {c.leadSource}</div>
                   <div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:4}}>
-                    {c.tags.map(t=><span key={t} style={{padding:"1px 6px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:TAG_C[t]?.bg||"rgba(74,80,104,.15)",color:TAG_C[t]?.c||"#7a8299"}}>{t}</span>)}
+                    {c.tags.map(t=><span key={t} style={{padding:"1px 6px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:TAG_C[t]?.bg||"rgba(74,80,104,.15)",color:TAG_C[t]?.c||"var(--text-muted)"}}>{t}</span>)}
                   </div>
                 </div>
               </div>
             </div>;
           })}
-          {filt.length===0&&<div style={{padding:"30px",textAlign:"center",color:"#2d3a52",fontSize:12}}>No customers found</div>}
+          {filt.length===0&&<div style={{padding:"30px",textAlign:"center",color:"var(--text-ghost)",fontSize:12}}>No customers found</div>}
         </div>
       </div>
 
       {/* RIGHT */}
       {sc?(
         <div className="spl-r">
-          <div style={{padding:"15px 20px",borderBottom:"1px solid #111826",flexShrink:0}}>
+          <div style={{padding:"15px 20px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
               <div style={{display:"flex",gap:12,alignItems:"center"}}>
                 <div style={{width:44,height:44,borderRadius:12,background:avC(sc.id),display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:16}}>{ini(sc.name)}</div>
                 <div>
                   <div style={{fontWeight:800,fontSize:18,letterSpacing:-.3}}>{sc.name}</div>
-                  <div style={{display:"flex",gap:5,marginTop:4}}>{sc.tags.map(t=><span key={t} style={{padding:"2px 7px",borderRadius:10,fontSize:9,fontWeight:700,textTransform:"uppercase",background:TAG_C[t]?.bg||"rgba(74,80,104,.15)",color:TAG_C[t]?.c||"#7a8299"}}>{t}</span>)}</div>
+                  <div style={{display:"flex",gap:5,marginTop:4}}>{sc.tags.map(t=><span key={t} style={{padding:"2px 7px",borderRadius:10,fontSize:9,fontWeight:700,textTransform:"uppercase",background:TAG_C[t]?.bg||"rgba(74,80,104,.15)",color:TAG_C[t]?.c||"var(--text-muted)"}}>{t}</span>)}</div>
                 </div>
               </div>
               <div className="act-bar" style={{display:"flex",gap:6,flexWrap:"wrap"}}>
@@ -1413,38 +1417,38 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
             </div>
             <div style={{display:"flex",gap:16,marginTop:11,flexWrap:"wrap"}}>
               {[{icon:"phone",v:sc.phone},{icon:"mail",v:sc.email},{icon:"map",v:sc.address}].map(x=>(
-                <div key={x.icon} style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:"#7a8299"}}><span style={{color:"#4a566e"}}><I n={x.icon} s={11}/></span>{x.v}</div>
+                <div key={x.icon} style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:"var(--text-muted)"}}><span style={{color:"var(--text-dim)"}}><I n={x.icon} s={11}/></span>{x.v}</div>
               ))}
             </div>
             <div style={{display:"flex",gap:8,marginTop:11,flexWrap:"wrap"}}>
-              {[{l:"Revenue",v:fmt(sc.totalRevenue),c:"#3b82f6"},{l:"Billed",v:fmt(billed),c:"#22c55e"},{l:"Projects",v:cProj.length,c:"#f5a623"},{l:"Estimates",v:cEsts.length,c:"#a78bfa"},{l:"Invoices",v:cInvs.length,c:"#14b8a6"},{l:"Since",v:sc.createdAt,c:"#4a566e"}].map(k=>(
-                <div key={k.l} style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:8,padding:"6px 11px"}}>
-                  <div style={{fontSize:8,color:"#3a4160",fontWeight:700,textTransform:"uppercase",letterSpacing:.5}}>{k.l}</div>
+              {[{l:"Revenue",v:fmt(sc.totalRevenue),c:"#3b82f6"},{l:"Billed",v:fmt(billed),c:"#22c55e"},{l:"Projects",v:cProj.length,c:"#f5a623"},{l:"Estimates",v:cEsts.length,c:"#a78bfa"},{l:"Invoices",v:cInvs.length,c:"#14b8a6"},{l:"Since",v:sc.createdAt,c:"var(--text-dim)"}].map(k=>(
+                <div key={k.l} style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:8,padding:"6px 11px"}}>
+                  <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5}}>{k.l}</div>
                   <div className="mn" style={{fontSize:12,color:k.c,marginTop:2}}>{k.v}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div style={{display:"flex",borderBottom:"1px solid #111826",padding:"0 20px",flexShrink:0}}>
+          <div style={{display:"flex",borderBottom:"1px solid var(--border)",padding:"0 20px",flexShrink:0}}>
             {["overview","projects","estimates","invoices","notes"].map(t=>(
-              <button key={t} onClick={()=>setDtab(t)} style={{padding:"9px 15px",fontSize:11,fontWeight:700,textTransform:"capitalize",letterSpacing:.3,color:dtab===t?"var(--accent-light)":"#4a566e",borderBottom:`2px solid ${dtab===t?"var(--accent)":"transparent"}`,transition:"all .14s"}}>{t}</button>
+              <button key={t} onClick={()=>setDtab(t)} style={{padding:"9px 15px",fontSize:11,fontWeight:700,textTransform:"capitalize",letterSpacing:.3,color:dtab===t?"var(--accent-light)":"var(--text-dim)",borderBottom:`2px solid ${dtab===t?"var(--accent)":"transparent"}`,transition:"all .14s"}}>{t}</button>
             ))}
           </div>
           <div style={{flex:1,overflowY:"auto",padding:20}} key={dtab+sc.id}>
             {dtab==="overview"&&(
               <div style={{display:"flex",flexDirection:"column",gap:14}}>
-                <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:15}}>
+                <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:15}}>
                   <div className="stl">Notes</div>
-                  <div style={{fontSize:13,color:"#9aabb8",lineHeight:1.7,fontStyle:sc.notes?"normal":"italic"}}>{sc.notes||"No notes added."}</div>
+                  <div style={{fontSize:13,color:"var(--text-3)",lineHeight:1.7,fontStyle:sc.notes?"normal":"italic"}}>{sc.notes||"No notes added."}</div>
                 </div>
-                <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:15}}>
+                <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:15}}>
                   <div className="stl">Recent Activity</div>
                   {[...cProj.map(p=>({type:"Project",name:p.name,status:p.status,val:p.contractValue,date:p.start,map:PRJ_SC})),
                     ...cEsts.map(e=>({type:"Estimate",name:e.name,status:e.status,val:calcInv(e.lineItems,e.taxRate,e.discount||0).total,date:e.date,map:EST_SC})),
                     ...cInvs.map(i=>({type:"Invoice",name:i.number,status:i.status,val:calcInv(i.lineItems,i.taxRate,i.discount||0).total,date:i.issueDate,map:INV_SC})),
                   ].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,7).map(a=>(
-                    <div key={`${a.type}-${a.name}`} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #111826"}}>
-                      <div><div style={{fontSize:12,fontWeight:600}}>{a.name}</div><div style={{fontSize:10,color:"#3a4160"}}>{a.type} · {a.date}</div></div>
+                    <div key={`${a.type}-${a.name}`} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid var(--border)"}}>
+                      <div><div style={{fontSize:12,fontWeight:600}}>{a.name}</div><div style={{fontSize:10,color:"var(--text-faint)"}}>{a.type} · {a.date}</div></div>
                       <div style={{display:"flex",gap:8,alignItems:"center"}}><Chip s={a.status} map={a.map}/><span className="mn" style={{fontSize:12,color:"#63b3ed"}}>{fmt(a.val)}</span></div>
                     </div>
                   ))}
@@ -1453,9 +1457,9 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
               </div>
             )}
             {dtab==="projects"&&(cProj.length===0?<ES icon="projects" text="No projects linked."/>:cProj.map(p=>(
-              <div key={p.id} className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:11,padding:"13px 16px",marginBottom:9}}>
+              <div key={p.id} className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:11,padding:"13px 16px",marginBottom:9}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <div><div style={{fontWeight:700,fontSize:13}}>{p.name}</div><div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Phase: {p.phase}</div></div>
+                  <div><div style={{fontWeight:700,fontSize:13}}>{p.name}</div><div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Phase: {p.phase}</div></div>
                   <div style={{display:"flex",gap:8,alignItems:"center"}}><Chip s={p.status} map={PRJ_SC}/><span className="mn" style={{fontSize:14,color:"var(--accent)"}}>{fmt(p.contractValue)}</span></div>
                 </div>
                 <div style={{marginTop:9}}><Pr v={p.progress} color={p.progress>=90?"#22c55e":p.progress>=50?"#3b82f6":"#f5a623"}/></div>
@@ -1463,9 +1467,9 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
             )))}
             {dtab==="estimates"&&(cEsts.length===0?<ES icon="estimates" text="No estimates."/>:cEsts.map(e=>{
               const c=calcInv(e.lineItems,e.taxRate,e.discount||0);
-              return <div key={e.id} className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:11,padding:"13px 16px",marginBottom:9}}>
+              return <div key={e.id} className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:11,padding:"13px 16px",marginBottom:9}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <div><div style={{fontWeight:700,fontSize:13}}>{e.name}</div><div style={{fontSize:11,color:"#4a566e",marginTop:2}}>{e.number} · {e.date}</div></div>
+                  <div><div style={{fontWeight:700,fontSize:13}}>{e.name}</div><div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>{e.number} · {e.date}</div></div>
                   <div style={{display:"flex",gap:8,alignItems:"center"}}><Chip s={e.status} map={EST_SC}/><span className="mn" style={{fontSize:14,color:"#a78bfa"}}>{fmt(c.total)}</span></div>
                 </div>
               </div>;
@@ -1473,15 +1477,15 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
             {dtab==="invoices"&&(
               <div>
                 <div style={{display:"flex",gap:9,marginBottom:12}}>
-                  {[{l:"Billed",v:fmt(billed),c:"#dde1ec"},{l:"Paid",v:fmt(cInvs.filter(i=>i.status==="paid").reduce((s,i)=>s+calcInv(i.lineItems,i.taxRate,i.discount||0).total,0)),c:"#22c55e"},{l:"Outstanding",v:fmt(cInvs.filter(i=>i.status!=="paid"&&i.status!=="void").reduce((s,i)=>s+calcInv(i.lineItems,i.taxRate,i.discount||0).total,0)),c:"#f5a623"}].map(k=>(
-                    <div key={k.l} style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:8,padding:"7px 12px"}}><div style={{fontSize:9,color:"#3a4160",fontWeight:700,textTransform:"uppercase"}}>{k.l}</div><div className="mn" style={{fontSize:13,color:k.c,marginTop:2}}>{k.v}</div></div>
+                  {[{l:"Billed",v:fmt(billed),c:"var(--text)"},{l:"Paid",v:fmt(cInvs.filter(i=>i.status==="paid").reduce((s,i)=>s+calcInv(i.lineItems,i.taxRate,i.discount||0).total,0)),c:"#22c55e"},{l:"Outstanding",v:fmt(cInvs.filter(i=>i.status!=="paid"&&i.status!=="void").reduce((s,i)=>s+calcInv(i.lineItems,i.taxRate,i.discount||0).total,0)),c:"#f5a623"}].map(k=>(
+                    <div key={k.l} style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:8,padding:"7px 12px"}}><div style={{fontSize:9,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase"}}>{k.l}</div><div className="mn" style={{fontSize:13,color:k.c,marginTop:2}}>{k.v}</div></div>
                   ))}
                 </div>
                 {cInvs.length===0?<ES icon="invoices" text="No invoices."/>:cInvs.map(inv=>{
                   const c=calcInv(inv.lineItems,inv.taxRate,inv.discount||0);
-                  return <div key={inv.id} className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:11,padding:"11px 16px",marginBottom:8}}>
+                  return <div key={inv.id} className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:11,padding:"11px 16px",marginBottom:8}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <div><span className="mn" style={{fontSize:12,color:"#7a8299"}}>{inv.number}</span><div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Due {inv.dueDate}</div></div>
+                      <div><span className="mn" style={{fontSize:12,color:"var(--text-muted)"}}>{inv.number}</span><div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Due {inv.dueDate}</div></div>
                       <div style={{display:"flex",gap:8,alignItems:"center"}}><Chip s={inv.status} map={INV_SC}/><span className="mn" style={{fontSize:14,color:"#22c55e"}}>{fmt(c.total)}</span></div>
                     </div>
                   </div>;
@@ -1489,16 +1493,16 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
               </div>
             )}
             {dtab==="notes"&&(
-              <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:16}}>
+              <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
                 <div className="stl">Client Notes</div>
                 <textarea defaultValue={sc.notes} onBlur={e=>{db.custs.update(sc.id,{notes:e.target.value});showToast("Notes saved");}} rows={10} className="inp" placeholder="Notes…" style={{resize:"vertical",lineHeight:1.7,fontSize:13}}/>
-                <div style={{fontSize:10,color:"#2d3a52",marginTop:6}}>Auto-saves on blur.</div>
+                <div style={{fontSize:10,color:"var(--text-ghost)",marginTop:6}}>Auto-saves on blur.</div>
               </div>
             )}
           </div>
         </div>
       ):(
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"var(--text-ghost)",gap:12}}>
           <I n="customers" s={40}/><div style={{fontSize:14,fontWeight:600}}>Select a customer</div>
           <button onClick={openNew} className="bb b-bl" style={{padding:"8px 16px",fontSize:12,marginTop:4}}><I n="plus" s={13}/>Add Customer</button>
         </div>
@@ -1507,9 +1511,9 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:580,marginTop:40}}>
-            <div style={{padding:"18px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"18px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>{form._id?"Edit Customer":"New Customer"}</div>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13}}>
               <div><label className="lbl">Full Name *</label><input className="inp" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="John Smith"/></div>
@@ -1534,7 +1538,7 @@ function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
                 <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                   {["VIP","Repeat","Hot Lead","Investor","New","Referral Source"].map(t=>{
                     const on=form.tags.includes(t);
-                    return <button key={t} onClick={()=>toggleTag(t)} style={{padding:"4px 11px",borderRadius:18,fontSize:10,fontWeight:700,border:`1px solid ${on?(TAG_C[t]?.c||"var(--accent)"):"#1e2535"}`,background:on?(TAG_C[t]?.bg||"rgba(59,130,246,.12)"):"transparent",color:on?(TAG_C[t]?.c||"#63b3ed"):"#4a566e"}}>{t}</button>;
+                    return <button key={t} onClick={()=>toggleTag(t)} style={{padding:"4px 11px",borderRadius:18,fontSize:10,fontWeight:700,border:`1px solid ${on?(TAG_C[t]?.c||"var(--accent)"):"var(--border-2)"}`,background:on?(TAG_C[t]?.bg||"rgba(59,130,246,.12)"):"transparent",color:on?(TAG_C[t]?.c||"#63b3ed"):"var(--text-dim)"}}>{t}</button>;
                   })}
                 </div>
               </div>
@@ -1666,17 +1670,17 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
     <div style={{height:"100%",display:"flex",flexDirection:"column"}}>
     {!form?(<div className="spl" style={{flex:1}}>
       <div className="spl-l">
-        <div style={{padding:"11px 12px",borderBottom:"1px solid #111826",flexShrink:0}}>
+        <div style={{padding:"11px 12px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
           <div style={{display:"flex",gap:7,marginBottom:8}}>
             <div style={{flex:1,position:"relative"}}>
-              <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={12}/></div>
+              <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={12}/></div>
               <input className="inp" value={srch} onChange={e=>setSrch(e.target.value)} placeholder="Search estimates…" style={{paddingLeft:27,fontSize:12}}/>
             </div>
             <button onClick={openNew} className="bb b-bl" style={{padding:"8px 12px",fontSize:12}}><I n="plus" s={12}/>New</button>
           </div>
-          <div style={{display:"flex",borderRadius:7,overflow:"hidden",border:"1px solid #111826"}}>
+          <div style={{display:"flex",borderRadius:7,overflow:"hidden",border:"1px solid var(--border)"}}>
             {[["all",`All (${cnts.all})`],["draft",`Draft (${cnts.draft})`],["sent",`Sent (${cnts.sent})`],["approved",`Approved (${cnts.approved})`]].map(([v,l])=>(
-              <button key={v} onClick={()=>setStF(v)} style={{flex:1,padding:"5px 3px",fontSize:9,fontWeight:700,background:stF===v?"rgba(59,130,246,.15)":"transparent",color:stF===v?"#63b3ed":"#4a566e",borderRight:"1px solid #111826",transition:"all .13s"}}>{l}</button>
+              <button key={v} onClick={()=>setStF(v)} style={{flex:1,padding:"5px 3px",fontSize:9,fontWeight:700,background:stF===v?"rgba(59,130,246,.15)":"transparent",color:stF===v?"#63b3ed":"var(--text-dim)",borderRight:"1px solid var(--border)",transition:"all .13s"}}>{l}</button>
             ))}
           </div>
         </div>
@@ -1686,32 +1690,32 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
             const calc=calcInv(e.lineItems,e.taxRate,e.discount||0);
             const is=sel===e.id;
             const sc=EST_SC[e.status]||EST_SC.draft;
-            return <div key={e.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(e.id)} style={{padding:"10px 12px",borderBottom:"1px solid #0e1119",background:is?"rgba(59,130,246,.06)":"transparent"}}>
+            return <div key={e.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(e.id)} style={{padding:"10px 12px",borderBottom:"1px solid var(--border)",background:is?"rgba(59,130,246,.06)":"transparent"}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
-                <span className="mn" style={{fontSize:10,color:is?"#63b3ed":"#4a566e"}}>{e.number}</span>
+                <span className="mn" style={{fontSize:10,color:is?"#63b3ed":"var(--text-dim)"}}>{e.number}</span>
                 <span style={{padding:"2px 6px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:sc.bg,color:sc.c}}>{sc.label}</span>
               </div>
-              <div style={{fontWeight:700,fontSize:12,color:is?"#e2e8f0":"#c8d0e0",marginBottom:2}}>{e.name}</div>
+              <div style={{fontWeight:700,fontSize:12,color:is?"var(--text)":"var(--text-2)",marginBottom:2}}>{e.name}</div>
               <div style={{display:"flex",justifyContent:"space-between"}}>
-                <div style={{fontSize:10,color:"#3a4160"}}>{c?.name}</div>
+                <div style={{fontSize:10,color:"var(--text-faint)"}}>{c?.name}</div>
                 <div className="mn" style={{fontSize:12,color:"#a78bfa"}}>{fmt(calc.total)}</div>
               </div>
             </div>;
           })}
-          {filt.length===0&&<div style={{padding:"30px",textAlign:"center",color:"#2d3a52",fontSize:12}}>No estimates found</div>}
+          {filt.length===0&&<div style={{padding:"30px",textAlign:"center",color:"var(--text-ghost)",fontSize:12}}>No estimates found</div>}
         </div>
       </div>
 
       {se?(
         <div className="spl-r">
-          <div style={{padding:"15px 20px",borderBottom:"1px solid #111826",flexShrink:0}}>
+          <div style={{padding:"15px 20px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
             <div className="est-detail-header" style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
               <div style={{minWidth:0}}>
                 <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
-                  <span className="mn" style={{fontSize:17,color:"#e2e8f0"}}>{se.number}</span>
+                  <span className="mn" style={{fontSize:17,color:"var(--text-2)"}}>{se.number}</span>
                   <Chip s={se.status} map={EST_SC}/>
                 </div>
-                <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>
+                <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>
                   {se.name} · {custs.find(c=>c.id===se.custId)?.name} · {se.date}
                   {se.projId&&<span style={{marginLeft:8,padding:"2px 8px",borderRadius:10,fontSize:9,fontWeight:700,background:"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.12)",color:"var(--accent)",cursor:"pointer"}} onClick={()=>setTab("projects")}><I n="projects" s={9}/> {se.projId}</span>}
                 </div>
@@ -1729,9 +1733,9 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
               </div>
             </div>
             <div className="est-kpi-row" style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {[{l:"Labor",v:fmt(seC.lab),c:"#f5a623"},{l:"Materials",v:fmt(seC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(seC.sub),c:"#dde1ec"},{l:`Tax ${se.taxRate}%`,v:fmt(seC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(seC.total),c:"#22c55e",big:true},...(seC.depAmt>0?[{l:"Deposit",v:fmt(seC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(seC.balanceDue),c:"#63b3ed",big:true}]:[])].map(k=>(
-                <div key={k.l} style={{background:"#0c0f17",border:`1px solid ${k.big?"rgba(34,197,94,.3)":"#111826"}`,borderRadius:8,padding:"6px 11px"}}>
-                  <div style={{fontSize:8,color:"#3a4160",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
+              {[{l:"Labor",v:fmt(seC.lab),c:"#f5a623"},{l:"Materials",v:fmt(seC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(seC.sub),c:"var(--text)"},{l:`Tax ${se.taxRate}%`,v:fmt(seC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(seC.total),c:"#22c55e",big:true},...(seC.depAmt>0?[{l:"Deposit",v:fmt(seC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(seC.balanceDue),c:"#63b3ed",big:true}]:[])].map(k=>(
+                <div key={k.l} style={{background:"var(--bg-card)",border:`1px solid ${k.big?"rgba(34,197,94,.3)":"var(--border)"}`,borderRadius:8,padding:"6px 11px"}}>
+                  <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
                   <div className="mn" style={{fontSize:k.big?14:11,color:k.c,marginTop:2}}>{k.v}</div>
                 </div>
               ))}
@@ -1742,20 +1746,20 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
               const labItems=se.lineItems.filter(l=>!l.isMaterial);
               const matItems=se.lineItems.filter(l=>l.isMaterial);
               const renderSection=(title,items,color,qtyLabel)=>(
-                items.length>0&&<div style={{border:"1px solid #111826",borderRadius:11,overflow:"hidden",marginBottom:14}}>
-                  <div style={{padding:"8px 14px",background:"#0a0d15",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                items.length>0&&<div style={{border:"1px solid var(--border)",borderRadius:11,overflow:"hidden",marginBottom:14}}>
+                  <div style={{padding:"8px 14px",background:"var(--bg-sidebar)",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <div style={{fontWeight:700,fontSize:11,color}}><I n={title==="Labor"?"wrench":"materials"} s={12}/> {title}</div>
                     <span className="mn" style={{fontSize:11,color}}>{fmt(items.reduce((s,l)=>s+l.qty*l.unitPrice,0))}</span>
                   </div>
                   <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-                    <thead><tr style={{background:"#0a0d15"}}>{["#","Description",qtyLabel,"Rate","Total"].map(h=><th key={h} style={{padding:"6px 13px",textAlign:"left",fontSize:8,fontWeight:700,color:"#4a566e",textTransform:"uppercase",borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+                    <thead><tr style={{background:"var(--bg-sidebar)"}}>{["#","Description",qtyLabel,"Rate","Total"].map(h=><th key={h} style={{padding:"6px 13px",textAlign:"left",fontSize:8,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                     <tbody>
                       {items.map((li,i)=>(
-                        <tr key={li.id} className="rh" style={{borderTop:"1px solid #0e1119"}}>
-                          <td style={{padding:"7px 13px",color:"#4a566e",fontSize:10}}>{i+1}</td>
-                          <td style={{padding:"7px 13px",color:"#c8d0e0"}}>{li.description}</td>
-                          <td className="mn" style={{padding:"7px 13px",color:"#7a8299"}}>{li.qty}{qtyLabel==="Hours"?" hrs":""}</td>
-                          <td className="mn" style={{padding:"7px 13px",color:"#dde1ec"}}>{fmtD(li.unitPrice)}{qtyLabel==="Hours"?"/hr":""}</td>
+                        <tr key={li.id} className="rh" style={{borderTop:"1px solid var(--border)"}}>
+                          <td style={{padding:"7px 13px",color:"var(--text-dim)",fontSize:10}}>{i+1}</td>
+                          <td style={{padding:"7px 13px",color:"var(--text-2)"}}>{li.description}</td>
+                          <td className="mn" style={{padding:"7px 13px",color:"var(--text-muted)"}}>{li.qty}{qtyLabel==="Hours"?" hrs":""}</td>
+                          <td className="mn" style={{padding:"7px 13px",color:"var(--text)"}}>{fmtD(li.unitPrice)}{qtyLabel==="Hours"?"/hr":""}</td>
                           <td className="mn" style={{padding:"7px 13px",color:"#22c55e",fontWeight:700}}>{fmtD(li.qty*li.unitPrice)}</td>
                         </tr>
                       ))}
@@ -1765,19 +1769,19 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
               );
               return <>{renderSection("Labor",labItems,"#f5a623","Hours")}{renderSection("Materials",matItems,"#6c8ebf","Qty")}</>;
             })()}
-            <div style={{border:"1px solid #111826",borderRadius:11,overflow:"hidden",marginBottom:14}}>
-              <div style={{padding:"11px 16px",background:"#0a0d15"}}>
+            <div style={{border:"1px solid var(--border)",borderRadius:11,overflow:"hidden",marginBottom:14}}>
+              <div style={{padding:"11px 16px",background:"var(--bg-sidebar)"}}>
                 <div style={{maxWidth:280,marginLeft:"auto"}}>
                   {[
                     {l:"Labor Subtotal",v:fmt(seC.lab),c:"#f5a623"},
                     {l:"Material Subtotal (taxable)",v:fmt(seC.mat),c:"#6c8ebf"},
-                    {l:"Subtotal",v:fmt(seC.sub),c:"#dde1ec",bold:true},
+                    {l:"Subtotal",v:fmt(seC.sub),c:"var(--text)",bold:true},
                     ...(seC.discountPct>0?[{l:`Discount (${seC.discountPct}%)`,v:`−${fmt(seC.discAmt)}`,c:"#a78bfa"}]:[]),
-                    ...(seC.discountPct>0?[{l:"After Discount",v:fmt(seC.discSub),c:"#dde1ec",bold:true}]:[]),
+                    ...(seC.discountPct>0?[{l:"After Discount",v:fmt(seC.discSub),c:"var(--text)",bold:true}]:[]),
                     {l:`Sales Tax ${se.taxRate}%`,v:fmt(seC.tax),c:"#14b8a6"},
                   ].map(r=>(
-                    <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid #111826"}}>
-                      <span style={{fontSize:11,color:r.bold?"#dde1ec":"#7a8299",fontWeight:r.bold?700:400}}>{r.l}</span>
+                    <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid var(--border)"}}>
+                      <span style={{fontSize:11,color:r.bold?"var(--text)":"var(--text-muted)",fontWeight:r.bold?700:400}}>{r.l}</span>
                       <span className="mn" style={{fontSize:11,color:r.c}}>{r.v}</span>
                     </div>
                   ))}
@@ -1786,7 +1790,7 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                     <span className="mn" style={{fontSize:18,color:"#22c55e"}}>{fmt(seC.total)}</span>
                   </div>
                   {seC.depAmt>0&&(<>
-                    <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderTop:"1px dashed #1e2535"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderTop:"1px dashed var(--border-2)"}}>
                       <span style={{fontSize:11,color:"#f59e0b",fontWeight:700}}>Deposit Required{se.depositType==="percent"?` (${se.depositValue}%)`:""}</span>
                       <span className="mn" style={{fontSize:11,color:"#f59e0b"}}>{fmt(seC.depAmt)}</span>
                     </div>
@@ -1798,21 +1802,21 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                 </div>
               </div>
             </div>
-            {se.notes&&<div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:10,padding:"12px 15px"}}><div className="stl">Notes</div><div style={{fontSize:12,color:"#9aabb8",lineHeight:1.7}}>{se.notes}</div></div>}
+            {se.notes&&<div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 15px"}}><div className="stl">Notes</div><div style={{fontSize:12,color:"var(--text-3)",lineHeight:1.7}}>{se.notes}</div></div>}
           </div>
         </div>
       ):(
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"var(--text-ghost)",gap:12}}>
           <I n="estimates" s={40}/><div style={{fontSize:14,fontWeight:600}}>Select an estimate</div>
           <button onClick={openNew} className="bb b-bl" style={{padding:"8px 16px",fontSize:12,marginTop:4}}><I n="plus" s={13}/>New Estimate</button>
         </div>
       )}
     </div>):(
         <div style={{display:"flex",flexDirection:"column",flex:1,overflow:"hidden"}}>
-          <div style={{padding:"12px 20px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0,background:"#0a0d15"}}>
+          <div style={{padding:"12px 20px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0,background:"var(--bg-sidebar)"}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e",display:"flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600}}><I n="arrow" s={15}/> Back</button>
-              <div style={{width:1,height:18,background:"#1e2535"}}/>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)",display:"flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600}}><I n="arrow" s={15}/> Back</button>
+              <div style={{width:1,height:18,background:"var(--border)"}}/>
               <div style={{fontSize:15,fontWeight:800}}>{form._id?"Edit Estimate":"New Estimate"}</div>
             </div>
             <div style={{display:"flex",gap:8}}>
@@ -1822,7 +1826,7 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
           </div>
           <div style={{flex:1,overflow:"auto"}}>
             <div className="full-form-grid" style={{display:"grid",gridTemplateColumns:"1fr 240px",minHeight:"100%"}}>
-              <div style={{padding:"22px 28px",borderRight:"1px solid #1e2535"}}>
+              <div style={{padding:"22px 28px",borderRight:"1px solid var(--border-2)"}}>
                 <div className="g2" style={{marginBottom:12}}>
                   <div><label className="lbl">Name *</label><input className="inp" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Kitchen Remodel Bid"/></div>
                   <div><label className="lbl">Customer *</label>
@@ -1836,7 +1840,7 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                   <div><label className="lbl">Date</label><input className="inp" type="date" value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))}/></div>
                   <div><label className="lbl">Expiry</label><input className="inp" type="date" value={form.expiry} onChange={e=>setForm(f=>({...f,expiry:e.target.value}))}/></div>
                   <div><label className="lbl">Tax Rate %</label><input className="inp" type="number" step=".1" value={form.taxRate} onChange={e=>setForm(f=>({...f,taxRate:Number(e.target.value)}))}/></div>
-                  <div><label className="lbl">Discount %</label><input className="inp" type="number" step=".5" min="0" max="100" value={form.discount||0} onChange={e=>setForm(f=>({...f,discount:Number(e.target.value)||0}))} style={{borderColor:form.discount>0?"#a78bfa":"#1e2535"}}/></div>
+                  <div><label className="lbl">Discount %</label><input className="inp" type="number" step=".5" min="0" max="100" value={form.discount||0} onChange={e=>setForm(f=>({...f,discount:Number(e.target.value)||0}))} style={{borderColor:form.discount>0?"#a78bfa":"var(--border-2)"}}/></div>
                 </div>
                 <div className="g3" style={{marginBottom:12}}>
                   <div><label className="lbl">Deposit</label>
@@ -1848,7 +1852,7 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                   </div>
                   {form.depositType&&form.depositType!=="none"&&(<>
                     <div><label className="lbl">{form.depositType==="percent"?"Deposit %":"Deposit $"}</label><input className="inp" type="number" step={form.depositType==="percent"?".5":".01"} min="0" value={form.depositValue||0} onChange={e=>setForm(f=>({...f,depositValue:Number(e.target.value)||0}))} style={{borderColor:"#f59e0b"}}/></div>
-                    <div><label className="lbl">Deposit Amount</label><div className="mn" style={{padding:"9px 13px",background:"#0c0f17",border:"1px solid #f59e0b",borderRadius:8,color:"#f59e0b",fontSize:13}}>{fmt(formC.depAmt)}</div></div>
+                    <div><label className="lbl">Deposit Amount</label><div className="mn" style={{padding:"9px 13px",background:"var(--bg-card)",border:"1px solid #f59e0b",borderRadius:8,color:"#f59e0b",fontSize:13}}>{fmt(formC.depAmt)}</div></div>
                   </>)}
                 </div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
@@ -1860,29 +1864,29 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                   </div>
                 </div>
                 {picker&&(
-                  <div style={{border:"1px solid var(--accent)",borderRadius:9,background:"#0a0d15",marginBottom:10,overflow:"hidden",animation:"up .18s ease"}}>
-                    <div style={{padding:"8px 10px",borderBottom:"1px solid #1e2535",display:"flex",gap:7,alignItems:"center"}}>
+                  <div style={{border:"1px solid var(--accent)",borderRadius:9,background:"var(--bg-sidebar)",marginBottom:10,overflow:"hidden",animation:"up .18s ease"}}>
+                    <div style={{padding:"8px 10px",borderBottom:"1px solid var(--border-2)",display:"flex",gap:7,alignItems:"center"}}>
                       <div style={{position:"relative",flex:1}}>
-                        <div style={{position:"absolute",left:7,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={11}/></div>
+                        <div style={{position:"absolute",left:7,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={11}/></div>
                         <input className="inp" autoFocus value={picker.search} onChange={e=>setPicker(p=>({...p,search:e.target.value}))} placeholder={picker.type==="material"?"Search materials…":"Search labor roles…"} style={{paddingLeft:24,fontSize:11,padding:"5px 7px 5px 24px"}}/>
                       </div>
-                      <button onClick={()=>setPicker(null)} style={{color:"#4a566e",flexShrink:0}}><I n="x" s={14}/></button>
+                      <button onClick={()=>setPicker(null)} style={{color:"var(--text-dim)",flexShrink:0}}><I n="x" s={14}/></button>
                     </div>
                     <div style={{maxHeight:180,overflowY:"auto"}}>
                       {picker.type==="material"&&(()=>{
                         const fMats=mats.filter(m=>!picker.search||m.name.toLowerCase().includes(picker.search.toLowerCase())||m.category.toLowerCase().includes(picker.search.toLowerCase())||m.supplier.toLowerCase().includes(picker.search.toLowerCase()));
                         return fMats.length===0
-                          ?<div style={{padding:"14px",textAlign:"center",color:"#3a4160",fontSize:11}}>No materials found</div>
+                          ?<div style={{padding:"14px",textAlign:"center",color:"var(--text-faint)",fontSize:11}}>No materials found</div>
                           :fMats.map(m=>{
                             const sp2=m.cost*(1+m.markup/100);
-                            return <div key={m.id} onClick={()=>addMaterial(m)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid #0e1119",cursor:"pointer",transition:"background .1s"}} className="rh">
+                            return <div key={m.id} onClick={()=>addMaterial(m)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"}} className="rh">
                               <div style={{flex:1,minWidth:0}}>
-                                <div style={{fontSize:11,fontWeight:600,color:"#c8d0e0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.name}</div>
-                                <div style={{fontSize:9,color:"#3a4160",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,background:`${CAT_C[m.category]||"#4a566e"}18`,color:CAT_C[m.category]||"#7a8299",fontSize:8,fontWeight:700}}>{m.category}</span> · {m.supplier} · {m.stock} {m.unit} in stock</div>
+                                <div style={{fontSize:11,fontWeight:600,color:"var(--text-2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.name}</div>
+                                <div style={{fontSize:9,color:"var(--text-faint)",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,background:`${CAT_C[m.category]||"#4a566e"}18`,color:CAT_C[m.category]||"var(--text-muted)",fontSize:8,fontWeight:700}}>{m.category}</span> · {m.supplier} · {m.stock} {m.unit} in stock</div>
                               </div>
                               <div style={{textAlign:"right",flexShrink:0,marginLeft:10}}>
-                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(sp2)}<span style={{fontSize:8,color:"#3a4160"}}>/{m.unit}</span></div>
-                                <div style={{fontSize:8,color:"#4a566e"}}>cost {fmtD(m.cost)} +{m.markup}%</div>
+                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(sp2)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/{m.unit}</span></div>
+                                <div style={{fontSize:8,color:"var(--text-dim)"}}>cost {fmtD(m.cost)} +{m.markup}%</div>
                               </div>
                             </div>;
                           });
@@ -1890,20 +1894,20 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                       {picker.type==="labor"&&(()=>{
                         const fRoles=roles.filter(r=>!MGMT_ROLES.has(r.title)&&(!picker.search||r.title.toLowerCase().includes(picker.search.toLowerCase())));
                         return fRoles.length===0
-                          ?<div style={{padding:"14px",textAlign:"center",color:"#3a4160",fontSize:11}}>No labor roles found</div>
+                          ?<div style={{padding:"14px",textAlign:"center",color:"var(--text-faint)",fontSize:11}}>No labor roles found</div>
                           :fRoles.map(r=>{
                             const b=calcBurden(r);const tc=ROLE_C[r.title]||"#4a566e";
-                            return <div key={r.id} onClick={()=>addLabor(r)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid #0e1119",cursor:"pointer",transition:"background .1s"}} className="rh">
+                            return <div key={r.id} onClick={()=>addLabor(r)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"}} className="rh">
                               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                                 <div style={{width:4,height:22,borderRadius:2,background:tc,flexShrink:0}}/>
                                 <div>
-                                  <div style={{fontSize:11,fontWeight:600,color:"#c8d0e0"}}>{r.title}</div>
-                                  <div style={{fontSize:8,color:"#3a4160",marginTop:1}}>Base ${r.baseRate}/hr · Burden {b.totalBurdenPct.toFixed(1)}%</div>
+                                  <div style={{fontSize:11,fontWeight:600,color:"var(--text-2)"}}>{r.title}</div>
+                                  <div style={{fontSize:8,color:"var(--text-faint)",marginTop:1}}>Base ${r.baseRate}/hr · Burden {b.totalBurdenPct.toFixed(1)}%</div>
                                 </div>
                               </div>
                               <div style={{textAlign:"right",flexShrink:0}}>
-                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>${b.fullyBurdenedRate.toFixed(2)}<span style={{fontSize:8,color:"#3a4160"}}>/hr</span></div>
-                                <div style={{fontSize:8,color:"#4a566e"}}>fully burdened</div>
+                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>${b.fullyBurdenedRate.toFixed(2)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/hr</span></div>
+                                <div style={{fontSize:8,color:"var(--text-dim)"}}>fully burdened</div>
                               </div>
                             </div>;
                           });
@@ -1915,16 +1919,16 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                   const labLines=form.lineItems.filter(l=>!l.isMaterial);
                   const matLines=form.lineItems.filter(l=>l.isMaterial);
                   const renderEditSection=(title,items,color,qtyLabel,icon)=>(
-                    items.length>0&&<div style={{border:"1px solid #1e2535",borderRadius:9,overflow:"hidden",marginBottom:10}}>
-                      <div style={{padding:"6px 10px",background:"#0c0f17",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    items.length>0&&<div style={{border:"1px solid var(--border-2)",borderRadius:9,overflow:"hidden",marginBottom:10}}>
+                      <div style={{padding:"6px 10px",background:"var(--bg-card)",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <span style={{fontWeight:700,fontSize:10,color,display:"flex",alignItems:"center",gap:5}}><I n={icon} s={11}/>{title}</span>
                         <span className="mn" style={{fontSize:10,color}}>{fmt(items.reduce((s,l)=>s+l.qty*l.unitPrice,0))}</span>
                       </div>
                       <table style={{width:"100%",borderCollapse:"collapse"}}>
-                        <thead><tr style={{background:"#0c0f17"}}>{["Description",qtyLabel,"Rate/Price","Total",""].map(h=><th key={h} style={{padding:"5px 7px",textAlign:"left",fontSize:8,fontWeight:700,color:"#4a566e",textTransform:"uppercase",borderBottom:"1px solid #1e2535"}}>{h}</th>)}</tr></thead>
+                        <thead><tr style={{background:"var(--bg-card)"}}>{["Description",qtyLabel,"Rate/Price","Total",""].map(h=><th key={h} style={{padding:"5px 7px",textAlign:"left",fontSize:8,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",borderBottom:"1px solid var(--border-2)"}}>{h}</th>)}</tr></thead>
                         <tbody>
                           {items.map((li,i)=>(
-                            <tr key={li.id} style={{borderTop:i>0?"1px solid #111826":"none"}}>
+                            <tr key={li.id} style={{borderTop:i>0?"1px solid var(--border)":"none"}}>
                               <td style={{padding:"4px 6px"}}><input className="inp" value={li.description} onChange={e=>updLine(li.id,"description",e.target.value)} placeholder="Description" style={{fontSize:11,padding:"5px 7px"}}/></td>
                               <td style={{padding:"4px 6px"}}><input className="inp" type="number" value={li.qty} onChange={e=>updLine(li.id,"qty",e.target.value)} style={{fontSize:11,padding:"5px 5px",width:56}} placeholder={qtyLabel==="Hours"?"hrs":"qty"}/></td>
                               <td style={{padding:"4px 6px"}}><input className="inp" type="number" step=".01" value={li.unitPrice} onChange={e=>updLine(li.id,"unitPrice",e.target.value)} style={{fontSize:11,padding:"5px 5px",width:82}}/></td>
@@ -1945,19 +1949,19 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                   <button onClick={save} className="bb b-bl" style={{flex:2,padding:"10px",fontSize:13,justifyContent:"center"}}><I n="check" s={13}/>{form._id?"Update":"Create"}</button>
                 </div>
               </div>
-              <div style={{padding:"18px 16px",background:"#0a0d15",overflowY:"auto",borderLeft:"1px solid #1e2535"}}>
+              <div style={{padding:"18px 16px",background:"var(--bg-sidebar)",overflowY:"auto",borderLeft:"1px solid var(--border-2)"}}>
                 <div className="stl">Preview</div>
-                <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:9,overflow:"hidden"}}>
+                <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:9,overflow:"hidden"}}>
                   {[
                     {l:"Labor",v:fmt(formC.lab),c:"#f5a623"},
                     {l:"Materials",v:fmt(formC.mat),c:"#6c8ebf",note:"taxable"},
-                    {l:"Subtotal",v:fmt(formC.sub),c:"#dde1ec",bold:true},
+                    {l:"Subtotal",v:fmt(formC.sub),c:"var(--text)",bold:true},
                     ...(formC.discountPct>0?[{l:`Discount (${formC.discountPct}%)`,v:`−${fmt(formC.discAmt)}`,c:"#a78bfa",disc:true}]:[]),
-                    ...(formC.discountPct>0?[{l:"After Discount",v:fmt(formC.discSub),c:"#dde1ec",bold:true}]:[]),
+                    ...(formC.discountPct>0?[{l:"After Discount",v:fmt(formC.discSub),c:"var(--text)",bold:true}]:[]),
                     {l:`Tax ${form.taxRate}%`+(formC.discountPct>0?" (on disc. materials)":""),v:fmt(formC.tax),c:"#14b8a6"},
                   ].map(r=>(
-                    <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderBottom:"1px solid #111826",background:r.disc?"rgba(167,139,250,.04)":"transparent"}}>
-                      <div><span style={{fontSize:10,color:r.disc?"#a78bfa":r.bold?"#dde1ec":"#7a8299",fontWeight:r.bold||r.disc?700:400}}>{r.l}</span>{r.note&&<span style={{fontSize:8,color:"#3a4160",marginLeft:4}}>({r.note})</span>}</div>
+                    <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderBottom:"1px solid var(--border)",background:r.disc?"rgba(167,139,250,.04)":"transparent"}}>
+                      <div><span style={{fontSize:10,color:r.disc?"#a78bfa":r.bold?"var(--text)":"var(--text-muted)",fontWeight:r.bold||r.disc?700:400}}>{r.l}</span>{r.note&&<span style={{fontSize:8,color:"var(--text-faint)",marginLeft:4}}>({r.note})</span>}</div>
                       <span className="mn" style={{fontSize:10,color:r.c}}>{r.v}</span>
                     </div>
                   ))}
@@ -1965,7 +1969,7 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                     <div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontWeight:800,fontSize:12}}>TOTAL</span><span className="mn" style={{fontSize:17,color:"#22c55e"}}>{fmt(formC.total)}</span></div>
                   </div>
                   {formC.depAmt>0&&(<>
-                    <div style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderTop:"1px solid #111826",background:"rgba(245,158,11,.04)"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderTop:"1px solid var(--border)",background:"rgba(245,158,11,.04)"}}>
                       <span style={{fontSize:10,color:"#f59e0b",fontWeight:700}}>Deposit Required{form.depositType==="percent"?` (${form.depositValue}%)`:""}</span>
                       <span className="mn" style={{fontSize:12,color:"#f59e0b"}}>{fmt(formC.depAmt)}</span>
                     </div>
@@ -1975,11 +1979,11 @@ function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,co
                     </div>
                   </>)}
                 </div>
-                <div style={{marginTop:10,background:"rgba(20,184,166,.06)",border:"1px solid rgba(20,184,166,.15)",borderRadius:8,padding:"9px 10px",fontSize:9,color:"#7a8299",lineHeight:1.7}}>
+                <div style={{marginTop:10,background:"rgba(20,184,166,.06)",border:"1px solid rgba(20,184,166,.15)",borderRadius:8,padding:"9px 10px",fontSize:9,color:"var(--text-muted)",lineHeight:1.7}}>
                   <div style={{color:"#14b8a6",fontWeight:700,marginBottom:2}}>Calculation</div>
                   {formC.discountPct>0&&<div>Discount = Subtotal × {formC.discountPct}% = −{fmt(formC.discAmt)}</div>}
                   <div>Tax = {formC.discountPct>0?"Discounted ":""}Materials × {form.taxRate}%</div>
-                  <div style={{fontWeight:700,color:"#dde1ec"}}>Total = {formC.discountPct>0?"After Discount":"Subtotal"} + Tax</div>
+                  <div style={{fontWeight:700,color:"var(--text)"}}>Total = {formC.discountPct>0?"After Discount":"Subtotal"} + Tax</div>
                 </div>
               </div>
             </div>
@@ -2061,8 +2065,8 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
   return (
     <div className="spl">
       <div className="spl-l">
-        <div style={{padding:"10px 12px",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
-          <div style={{fontSize:10,color:"#4a566e",fontWeight:700}}>{projs.length} PROJECTS</div>
+        <div style={{padding:"10px 12px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+          <div style={{fontSize:10,color:"var(--text-dim)",fontWeight:700}}>{projs.length} PROJECTS</div>
           <button onClick={openNew} className="bb b-bl" style={{padding:"7px 11px",fontSize:11}}><I n="plus" s={11}/>New</button>
         </div>
         <div style={{flex:1,overflowY:"auto"}}>
@@ -2071,16 +2075,16 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
             const is=sel===p.id;
             const sc=PRJ_SC[p.status]||PRJ_SC.active;
             const pc=p.progress>=90?"#22c55e":p.progress>=50?"#3b82f6":"#f5a623";
-            return <div key={p.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(p.id)} style={{padding:"11px 12px",borderBottom:"1px solid #0e1119",background:is?"rgba(59,130,246,.06)":"transparent"}}>
+            return <div key={p.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(p.id)} style={{padding:"11px 12px",borderBottom:"1px solid var(--border)",background:is?"rgba(59,130,246,.06)":"transparent"}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
-                <span className="mn" style={{fontSize:10,color:is?"#63b3ed":"#3a4160"}}>{p.id}</span>
+                <span className="mn" style={{fontSize:10,color:is?"#63b3ed":"var(--text-faint)"}}>{p.id}</span>
                 <span style={{padding:"2px 6px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:sc.bg,color:sc.c}}>{sc.label}</span>
               </div>
-              <div style={{fontWeight:700,fontSize:12,color:is?"#e2e8f0":"#c8d0e0",marginBottom:2,lineHeight:1.3}}>{p.name}</div>
-              <div style={{fontSize:10,color:"#3a4160",marginBottom:6}}>{c?.name}</div>
+              <div style={{fontWeight:700,fontSize:12,color:is?"var(--text)":"var(--text-2)",marginBottom:2,lineHeight:1.3}}>{p.name}</div>
+              <div style={{fontSize:10,color:"var(--text-faint)",marginBottom:6}}>{c?.name}</div>
               <div style={{display:"flex",alignItems:"center",gap:6}}>
                 <div style={{flex:1}}><Pr v={p.progress} color={pc}/></div>
-                <span className="mn" style={{fontSize:9,color:"#4a566e"}}>{p.progress}%</span>
+                <span className="mn" style={{fontSize:9,color:"var(--text-dim)"}}>{p.progress}%</span>
                 <span className="mn" style={{fontSize:11,color:"var(--accent)",marginLeft:4}}>{fmt(p.contractValue)}</span>
               </div>
 
@@ -2091,12 +2095,12 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
 
       {sp?(
         <div className="spl-r">
-          <div style={{padding:"15px 20px",borderBottom:"1px solid #111826",flexShrink:0}}>
+          <div style={{padding:"15px 20px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:9}}>
               <div>
-                <div style={{display:"flex",gap:9,alignItems:"center"}}><span className="mn" style={{fontSize:12,color:"#4a566e"}}>{sp.id}</span><Chip s={sp.status} map={PRJ_SC}/></div>
+                <div style={{display:"flex",gap:9,alignItems:"center"}}><span className="mn" style={{fontSize:12,color:"var(--text-dim)"}}>{sp.id}</span><Chip s={sp.status} map={PRJ_SC}/></div>
                 <div style={{fontWeight:800,fontSize:18,marginTop:2,letterSpacing:-.3}}>{sp.name}</div>
-                <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>{custs.find(c=>c.id===sp.custId)?.name} · Phase: {sp.phase} · {sp.start} → {sp.end}</div>
+                <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>{custs.find(c=>c.id===sp.custId)?.name} · Phase: {sp.phase} · {sp.start} → {sp.end}</div>
               </div>
               <div className="act-bar" style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {sp.status==="active"&&<button onClick={()=>markComplete(sp)} className="bb b-gr" style={{padding:"6px 11px",fontSize:11}}><I n="check" s={11}/>Mark Complete</button>}
@@ -2106,21 +2110,21 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
               </div>
             </div>
             <div style={{marginBottom:11}}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:11}}><span style={{color:"#4a566e"}}>Progress</span><span className="mn" style={{color:sp.progress>=90?"#22c55e":sp.progress>=50?"#3b82f6":"#f5a623"}}>{sp.progress}%</span></div>
-              <div style={{height:8,background:"#0c0f17",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",borderRadius:4,width:`${sp.progress}%`,background:sp.progress>=90?"#22c55e":sp.progress>=50?"linear-gradient(90deg,#3b82f6,#6366f1)":"#f5a623",transition:"width .6s ease"}}/></div>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:11}}><span style={{color:"var(--text-dim)"}}>Progress</span><span className="mn" style={{color:sp.progress>=90?"#22c55e":sp.progress>=50?"#3b82f6":"#f5a623"}}>{sp.progress}%</span></div>
+              <div style={{height:8,background:"var(--bg-card)",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",borderRadius:4,width:`${sp.progress}%`,background:sp.progress>=90?"#22c55e":sp.progress>=50?"linear-gradient(90deg,#3b82f6,#6366f1)":"#f5a623",transition:"width .6s ease"}}/></div>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {[{l:"Contract",v:fmt(sp.contractValue),c:"#3b82f6"},{l:"Budget Labor",v:fmt(sp.budgetLabor),c:"#f5a623"},{l:"Budget Mat",v:fmt(sp.budgetMaterials),c:"#6c8ebf"},{l:"Actual Labor",v:fmt(sp.actualLabor),c:laborVar>0?"#ef4444":"#22c55e"},{l:"Actual Mat",v:fmt(sp.actualMaterials),c:matVar>0?"#ef4444":"#22c55e"},{l:"Gross Profit",v:fmt(grossProfit),c:grossProfit>=0?"#22c55e":"#ef4444"}].map(k=>(
-                <div key={k.l} style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:8,padding:"6px 11px"}}>
-                  <div style={{fontSize:8,color:"#3a4160",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
+                <div key={k.l} style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:8,padding:"6px 11px"}}>
+                  <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
                   <div className="mn" style={{fontSize:12,color:k.c,marginTop:2}}>{k.v}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="sub-tabs" style={{display:"flex",gap:2,background:"#0a0d15",borderRadius:10,padding:3,border:"1px solid #111826",width:"fit-content",maxWidth:"100%",overflowX:"auto",margin:"10px 20px 0"}}>
+          <div className="sub-tabs" style={{display:"flex",gap:2,background:"var(--bg-sidebar)",borderRadius:10,padding:3,border:"1px solid var(--border)",width:"fit-content",maxWidth:"100%",overflowX:"auto",margin:"10px 20px 0"}}>
             {[{id:"overview",icon:"dashboard",label:"Overview"},{id:"contracts",icon:"shield",label:"Contracts"}].map(t=>(
-              <button key={t.id} onClick={()=>setDetailTab(t.id)} style={{display:"flex",alignItems:"center",gap:7,padding:"8px 14px",borderRadius:8,fontSize:12,fontWeight:700,color:detailTab===t.id?"#63b3ed":"#4a566e",background:detailTab===t.id?"rgba(99,179,237,.1)":"transparent",transition:"all .18s",border:"none",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}}>
+              <button key={t.id} onClick={()=>setDetailTab(t.id)} style={{display:"flex",alignItems:"center",gap:7,padding:"8px 14px",borderRadius:8,fontSize:12,fontWeight:700,color:detailTab===t.id?"#63b3ed":"var(--text-dim)",background:detailTab===t.id?"rgba(99,179,237,.1)":"transparent",transition:"all .18s",border:"none",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}}>
                 <I n={t.icon} s={13}/>{t.label}
               </button>
             ))}
@@ -2130,18 +2134,18 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
               {[{l:"Labor Budget vs Actual",budget:sp.budgetLabor,actual:sp.actualLabor,c:"#f5a623"},{l:"Materials Budget vs Actual",budget:sp.budgetMaterials,actual:sp.actualMaterials,c:"#6c8ebf"}].map(item=>{
                 const over=item.actual>item.budget;
                 const usePct=item.budget>0?Math.min((item.actual/item.budget)*100,100):0;
-                return <div key={item.l} style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:11,padding:13}}>
+                return <div key={item.l} style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:11,padding:13}}>
                   <div style={{fontWeight:700,fontSize:12,marginBottom:8}}>{item.l}</div>
-                  <div style={{height:7,background:"#0a0d15",borderRadius:3,overflow:"hidden",marginBottom:8}}><div style={{height:"100%",borderRadius:3,width:`${usePct}%`,background:over?"#ef4444":item.c,transition:"width .6s ease"}}/></div>
+                  <div style={{height:7,background:"var(--bg-sidebar)",borderRadius:3,overflow:"hidden",marginBottom:8}}><div style={{height:"100%",borderRadius:3,width:`${usePct}%`,background:over?"#ef4444":item.c,transition:"width .6s ease"}}/></div>
                   <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}>
-                    <div><div style={{color:"#4a566e",fontSize:9,textTransform:"uppercase",letterSpacing:.3}}>Budget</div><div className="mn" style={{color:item.c}}>{fmt(item.budget)}</div></div>
-                    <div style={{textAlign:"right"}}><div style={{color:"#4a566e",fontSize:9,textTransform:"uppercase",letterSpacing:.3}}>Actual</div><div className="mn" style={{color:over?"#ef4444":"#22c55e"}}>{fmt(item.actual)}</div></div>
+                    <div><div style={{color:"var(--text-dim)",fontSize:9,textTransform:"uppercase",letterSpacing:.3}}>Budget</div><div className="mn" style={{color:item.c}}>{fmt(item.budget)}</div></div>
+                    <div style={{textAlign:"right"}}><div style={{color:"var(--text-dim)",fontSize:9,textTransform:"uppercase",letterSpacing:.3}}>Actual</div><div className="mn" style={{color:over?"#ef4444":"#22c55e"}}>{fmt(item.actual)}</div></div>
                   </div>
                   {over&&<div style={{marginTop:5,fontSize:10,color:"#ef4444",fontWeight:700}}>Over by {fmt(item.actual-item.budget)}</div>}
                 </div>;
               })}
             </div>
-            {sp.notes&&<div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:10,padding:"12px 15px",marginBottom:14}}><div className="stl">Notes</div><div style={{fontSize:12,color:"#9aabb8",lineHeight:1.7}}>{sp.notes}</div></div>}
+            {sp.notes&&<div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 15px",marginBottom:14}}><div className="stl">Notes</div><div style={{fontSize:12,color:"var(--text-3)",lineHeight:1.7}}>{sp.notes}</div></div>}
 
             {/* ── PROJECT TASKS ── */}
             {(()=>{
@@ -2173,42 +2177,42 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
 
               const donePct=projTasks.length>0?Math.round(projTasks.filter(t=>t.status==="done").length/projTasks.length*100):0;
 
-              return <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:10,overflow:"hidden"}}>
-                <div style={{padding:"10px 15px",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              return <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:10,overflow:"hidden"}}>
+                <div style={{padding:"10px 15px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
                     <span className="stl" style={{margin:0}}>Tasks</span>
-                    <span style={{fontSize:10,color:"#4a566e"}}>{projTasks.filter(t=>t.status==="done").length}/{projTasks.length} done</span>
+                    <span style={{fontSize:10,color:"var(--text-dim)"}}>{projTasks.filter(t=>t.status==="done").length}/{projTasks.length} done</span>
                     {projTasks.length>0&&<span style={{fontSize:10,color:donePct===100?"#22c55e":"#3b82f6",fontWeight:700}}>{donePct}%</span>}
                   </div>
                   <button onClick={addTask} className="bb b-bl" style={{padding:"4px 10px",fontSize:10}}><I n="plus" s={10}/>Add Task</button>
                 </div>
-                {projTasks.length===0&&<div style={{padding:20,textAlign:"center",color:"#3a4160",fontSize:12}}>No tasks yet. Click "Add Task" to get started.</div>}
+                {projTasks.length===0&&<div style={{padding:20,textAlign:"center",color:"var(--text-faint)",fontSize:12}}>No tasks yet. Click "Add Task" to get started.</div>}
                 {Object.keys(byPhase).map(function(ph){
                   var pTasks=byPhase[ph];
-                  var phColor=ph===sp.phase?"var(--accent)":"#4a566e";
+                  var phColor=ph===sp.phase?"var(--accent)":"var(--text-dim)";
                   return <div key={ph}>
-                    <div style={{padding:"6px 15px",background:"#080b12",borderBottom:"1px solid #0e1119",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{padding:"6px 15px",background:"var(--bg-sidebar)",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <span style={{fontSize:10,fontWeight:700,color:phColor,textTransform:"uppercase",letterSpacing:.5}}>{ph}</span>
-                      <span style={{fontSize:9,color:"#3a4160"}}>{pTasks.filter(function(t){return t.status==="done";}).length}/{pTasks.length}</span>
+                      <span style={{fontSize:9,color:"var(--text-faint)"}}>{pTasks.filter(function(t){return t.status==="done";}).length}/{pTasks.length}</span>
                     </div>
                     {pTasks.map(function(t){
                       var sub=subs.find(function(s){return s.id===t.assignedTo;});
                       var st=TASK_SC[t.status]||TASK_SC.todo;
-                      return <div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 15px",borderBottom:"1px solid #0e1119"}} className="rh">
-                        <button onClick={function(){toggleTask(t.id);}} style={{width:20,height:20,borderRadius:6,border:"2px solid "+(t.status==="done"?"#22c55e":"#2d3a52"),background:t.status==="done"?"rgba(34,197,94,.15)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,transition:"all .15s"}}>
+                      return <div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 15px",borderBottom:"1px solid var(--border)"}} className="rh">
+                        <button onClick={function(){toggleTask(t.id);}} style={{width:20,height:20,borderRadius:6,border:"2px solid "+(t.status==="done"?"#22c55e":"var(--border-2)"),background:t.status==="done"?"rgba(34,197,94,.15)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,transition:"all .15s"}}>
                           {t.status==="done"&&<I n="check" s={12} style={{color:"#22c55e"}}/>}
                         </button>
                         <div style={{flex:1,minWidth:0}}>
-                          <div style={{fontSize:12,fontWeight:600,color:t.status==="done"?"#4a566e":"#c8d0e0",textDecoration:t.status==="done"?"line-through":"none"}}>{t.title}</div>
+                          <div style={{fontSize:12,fontWeight:600,color:t.status==="done"?"var(--text-dim)":"var(--text-2)",textDecoration:t.status==="done"?"line-through":"none"}}>{t.title}</div>
                           <div style={{display:"flex",gap:8,marginTop:2,alignItems:"center",flexWrap:"wrap"}}>
                             <span style={{padding:"1px 6px",borderRadius:6,fontSize:8,fontWeight:700,background:st.bg,color:st.c}}>{st.label}</span>
-                            {sub&&<span style={{fontSize:9,color:"#7a8299"}}>{sub.name}</span>}
-                            {t.dueDate&&<span style={{fontSize:9,color:t.dueDate<tod()&&t.status!=="done"?"#ef4444":"#4a566e"}}>{t.dueDate}</span>}
+                            {sub&&<span style={{fontSize:9,color:"var(--text-muted)"}}>{sub.name}</span>}
+                            {t.dueDate&&<span style={{fontSize:9,color:t.dueDate<tod()&&t.status!=="done"?"#ef4444":"var(--text-dim)"}}>{t.dueDate}</span>}
                           </div>
                         </div>
                         <div style={{display:"flex",gap:3,flexShrink:0}}>
-                          <button onClick={function(){setTaskForm({...t});}} style={{padding:3,color:"#3a4160"}}><I n="edit" s={12}/></button>
-                          <button onClick={function(){delTask(t.id);}} style={{padding:3,color:"#3a4160"}}><I n="x" s={12}/></button>
+                          <button onClick={function(){setTaskForm({...t});}} style={{padding:3,color:"var(--text-faint)"}}><I n="edit" s={12}/></button>
+                          <button onClick={function(){delTask(t.id);}} style={{padding:3,color:"var(--text-faint)"}}><I n="x" s={12}/></button>
                         </div>
                       </div>;
                     })}
@@ -2216,7 +2220,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
                 })}
 
                 {taskForm&&(
-                  <div style={{padding:"12px 15px",borderTop:"1px solid #1e2535",background:"#0a0d15"}}>
+                  <div style={{padding:"12px 15px",borderTop:"1px solid var(--border-2)",background:"var(--bg-sidebar)"}}>
                     <div style={{fontSize:12,fontWeight:700,marginBottom:8}}>{taskForm.id?"Edit Task":"New Task"}</div>
                     <div style={{marginBottom:8}}>
                       <label className="lbl">Title *</label><input className="inp" value={taskForm.title} onChange={function(e){setTaskForm(function(f){return{...f,title:e.target.value};})}} placeholder="Task description"/>
@@ -2248,7 +2252,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
           {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={sp.id} apiBaseUrl="/api"/></div>}
         </div>
       ):(
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"var(--text-ghost)",gap:12}}>
           <I n="projects" s={40}/><div style={{fontSize:14,fontWeight:600}}>Select a project</div>
           <button onClick={openNew} className="bb b-bl" style={{padding:"8px 16px",fontSize:12,marginTop:4}}><I n="plus" s={13}/>New Project</button>
         </div>
@@ -2257,9 +2261,9 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:640,marginTop:20}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>{form._id?"Edit Project":"New Project"}</div>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13,overflowY:"auto",maxHeight:"78vh"}}>
               <div className="g2">
@@ -2350,7 +2354,7 @@ function JobCosting({projs,custs,hrs,subs,roles}) {
   return (
     <div style={{display:"flex",flexDirection:"column",gap:14}}>
       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-        {projs.map(p=><button key={p.id} onClick={()=>setSelP(p.id)} style={{padding:"7px 13px",borderRadius:9,fontSize:12,fontWeight:700,border:`1px solid ${selP===p.id?"var(--accent)":"#111826"}`,background:selP===p.id?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.12)":"#0c0f17",color:selP===p.id?"var(--accent-light)":"#7a8299",transition:"all .14s"}}>{p.name.split(" ").slice(0,3).join(" ")}</button>)}
+        {projs.map(p=><button key={p.id} onClick={()=>setSelP(p.id)} style={{padding:"7px 13px",borderRadius:9,fontSize:12,fontWeight:700,border:`1px solid ${selP===p.id?"var(--accent)":"var(--border)"}`,background:selP===p.id?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.12)":"var(--bg-card)",color:selP===p.id?"var(--accent-light)":"var(--text-muted)",transition:"all .14s"}}>{p.name.split(" ").slice(0,3).join(" ")}</button>)}
       </div>
 
       {sp&&<>
@@ -2361,17 +2365,17 @@ function JobCosting({projs,custs,hrs,subs,roles}) {
         </div>
 
         <div className="jc-grid" style={{display:"grid",gridTemplateColumns:"1.3fr 1fr",gap:13}}>
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
-            <div style={{padding:"11px 16px",borderBottom:"1px solid #111826",fontWeight:800,fontSize:12}}>Labor Detail — {sp.name.split(" ").slice(0,3).join(" ")}</div>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
+            <div style={{padding:"11px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Labor Detail — {sp.name.split(" ").slice(0,3).join(" ")}</div>
             {pSubHrs.length===0?<ES icon="employees" text="No hours logged for this project."/>:<>
               <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-                <thead><tr style={{background:"#0a0d15"}}>{["Crew Member","Role","Hours","Billed","True Cost","Margin"].map(h=><th key={h} style={{padding:"7px 13px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Crew Member","Role","Hours","Billed","True Cost","Margin"].map(h=><th key={h} style={{padding:"7px 13px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                 <tbody>
                   {pSubHrs.map((h,i)=>{
                     const m=h.billed>0?pct(h.billed-h.trueCost,h.billed):0;
-                    return <tr key={h.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                      <td style={{padding:"7px 13px",color:"#c8d0e0",fontWeight:600}}>{h.sub?.company||h.sub?.name}</td>
-                      <td style={{padding:"7px 13px"}}><span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:`${ROLE_C[h.sub?.role]||"#4a566e"}22`,color:ROLE_C[h.sub?.role]||"#7a8299"}}>{h.sub?.role}</span></td>
+                    return <tr key={h.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                      <td style={{padding:"7px 13px",color:"var(--text-2)",fontWeight:600}}>{h.sub?.company||h.sub?.name}</td>
+                      <td style={{padding:"7px 13px"}}><span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:`${ROLE_C[h.sub?.role]||"#4a566e"}22`,color:ROLE_C[h.sub?.role]||"var(--text-muted)"}}>{h.sub?.role}</span></td>
                       <td className="mn" style={{padding:"7px 13px",color:"#63b3ed"}}>{h.hours}h</td>
                       <td className="mn" style={{padding:"7px 13px",color:"#22c55e"}}>{fmt(h.billed)}</td>
                       <td className="mn" style={{padding:"7px 13px",color:"#ef4444"}}>{fmt(h.trueCost)}</td>
@@ -2380,35 +2384,35 @@ function JobCosting({projs,custs,hrs,subs,roles}) {
                   })}
                 </tbody>
               </table>
-              <div style={{padding:"9px 16px",background:"#0a0d15",borderTop:"2px solid #1e2535",display:"flex",gap:18}}>
+              <div style={{padding:"9px 16px",background:"var(--bg-sidebar)",borderTop:"2px solid var(--border-2)",display:"flex",gap:18}}>
                 {[{l:"Total Hrs",v:`${totHrs}h`,c:"#63b3ed"},{l:"Total Billed",v:fmt(totBilled),c:"#22c55e"},{l:"True Labor Cost",v:fmt(totCost),c:"#ef4444"},{l:"Labor Margin",v:`${laborMargin}%`,c:laborMargin>=30?"#22c55e":"#f5a623"}].map(k=>(
-                  <div key={k.l}><div style={{fontSize:8,color:"#3a4160",fontWeight:700,textTransform:"uppercase"}}>{k.l}</div><div className="mn" style={{fontSize:12,color:k.c,marginTop:2}}>{k.v}</div></div>
+                  <div key={k.l}><div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase"}}>{k.l}</div><div className="mn" style={{fontSize:12,color:k.c,marginTop:2}}>{k.v}</div></div>
                 ))}
               </div>
             </>}
           </div>
 
           <div style={{display:"flex",flexDirection:"column",gap:12}}>
-            <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:13}}>
+            <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:13}}>
               <div style={{fontWeight:800,fontSize:12,marginBottom:11}}>Budget vs. Actual</div>
               {[{l:"Labor",budget:sp.budgetLabor,actual:sp.actualLabor,c:"#f5a623"},{l:"Materials",budget:sp.budgetMaterials,actual:sp.actualMaterials,c:"#6c8ebf"},{l:"Total",budget:totalBudget,actual:totalActual,c:"#3b82f6"}].map(row=>{
                 const over=row.actual>row.budget;
                 const usePct=row.budget>0?Math.min((row.actual/row.budget)*100,100):0;
                 return <div key={row.l} style={{marginBottom:10}}>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:3,fontSize:11}}>
-                    <span style={{color:"#7a8299"}}>{row.l}</span>
-                    <span><span className="mn" style={{color:row.c,fontSize:10}}>{fmt(row.budget)}</span><span style={{color:"#3a4160",fontSize:10}}> → </span><span className="mn" style={{color:over?"#ef4444":"#22c55e",fontSize:10}}>{fmt(row.actual)}</span></span>
+                    <span style={{color:"var(--text-muted)"}}>{row.l}</span>
+                    <span><span className="mn" style={{color:row.c,fontSize:10}}>{fmt(row.budget)}</span><span style={{color:"var(--text-faint)",fontSize:10}}> → </span><span className="mn" style={{color:over?"#ef4444":"#22c55e",fontSize:10}}>{fmt(row.actual)}</span></span>
                   </div>
-                  <div style={{height:5,background:"#0a0d15",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",borderRadius:3,width:`${usePct}%`,background:over?"#ef4444":row.c}}/></div>
+                  <div style={{height:5,background:"var(--bg-sidebar)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",borderRadius:3,width:`${usePct}%`,background:over?"#ef4444":row.c}}/></div>
                   {over&&<div style={{fontSize:9,color:"#ef4444",marginTop:2}}>Over by {fmt(row.actual-row.budget)}</div>}
                 </div>;
               })}
             </div>
-            <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:13}}>
+            <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:13}}>
               <div style={{fontWeight:800,fontSize:12,marginBottom:9}}>By Role</div>
-              {Object.values(byRole).length===0?<div style={{fontSize:11,color:"#3a4160"}}>No labor logged.</div>:Object.values(byRole).map(t=>(
-                <div key={t.role} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid #111826",fontSize:11}}>
-                  <div style={{display:"flex",gap:6,alignItems:"center"}}><div style={{width:6,height:6,borderRadius:2,background:ROLE_C[t.role]||"#4a566e"}}/><span style={{color:"#c8d0e0"}}>{t.role}</span></div>
+              {Object.values(byRole).length===0?<div style={{fontSize:11,color:"var(--text-faint)"}}>No labor logged.</div>:Object.values(byRole).map(t=>(
+                <div key={t.role} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid var(--border)",fontSize:11}}>
+                  <div style={{display:"flex",gap:6,alignItems:"center"}}><div style={{width:6,height:6,borderRadius:2,background:ROLE_C[t.role]||"#4a566e"}}/><span style={{color:"var(--text-2)"}}>{t.role}</span></div>
                   <div style={{display:"flex",gap:12}}><span className="mn" style={{color:"#63b3ed",fontSize:10}}>{t.hours}h</span><span className="mn" style={{color:"#22c55e",fontSize:10}}>{fmt(t.billed)}</span></div>
                 </div>
               ))}
@@ -2416,13 +2420,13 @@ function JobCosting({projs,custs,hrs,subs,roles}) {
           </div>
         </div>
 
-        <div className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"13px 16px 8px"}}>
+        <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"13px 16px 8px"}}>
           <div style={{fontWeight:800,fontSize:12,marginBottom:9}}>All Projects — Contract vs Actual vs Profit</div>
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={allProjData} margin={{top:4,right:8,left:-18,bottom:0}} barSize={14} barGap={2}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#111826" vertical={false}/>
-              <XAxis dataKey="name" tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
+              <XAxis dataKey="name" tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false}/>
+              <YAxis tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
               <Tooltip content={<CTip/>}/>
               <Bar dataKey="contract" name="Contract" fill="#3b82f6" radius={[3,3,0,0]}/>
               <Bar dataKey="actual"   name="Actual Cost" fill="#ef4444" radius={[3,3,0,0]}/>
@@ -2485,36 +2489,36 @@ function Materials({mats,setMats,showToast,db}) {
 
       <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
         <div style={{position:"relative",flex:1,minWidth:200}}>
-          <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={12}/></div>
+          <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={12}/></div>
           <input className="inp" value={srch} onChange={e=>setSrch(e.target.value)} placeholder="Search materials…" style={{paddingLeft:27,fontSize:12}}/>
         </div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-          {cats.map(c=><button key={c} onClick={()=>setCatF(c)} style={{padding:"5px 11px",borderRadius:18,fontSize:10,fontWeight:700,border:`1px solid ${catF===c?"var(--accent)":"#111826"}`,background:catF===c?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"#0c0f17",color:catF===c?"var(--accent-light)":"#4a566e",transition:"all .13s"}}>{c}</button>)}
+          {cats.map(c=><button key={c} onClick={()=>setCatF(c)} style={{padding:"5px 11px",borderRadius:18,fontSize:10,fontWeight:700,border:`1px solid ${catF===c?"var(--accent)":"var(--border)"}`,background:catF===c?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"var(--bg-card)",color:catF===c?"var(--accent-light)":"var(--text-dim)",transition:"all .13s"}}>{c}</button>)}
         </div>
         <button onClick={openNew} className="bb b-bl" style={{padding:"8px 14px",fontSize:12}}><I n="plus" s={13}/>Add Item</button>
       </div>
 
-      <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
+      <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-          <thead><tr style={{background:"#0a0d15"}}>{["Name","Category","Supplier","Unit","Cost","Markup","Sell Price","Stock","Reorder At","Status",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+          <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Name","Category","Supplier","Unit","Cost","Markup","Sell Price","Stock","Reorder At","Status",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((m,i)=>{
               const sp=sellPrice(m);
               const low=m.stock<=m.reorderAt;
-              return <tr key={m.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                <td style={{padding:"8px 12px",fontWeight:700,color:"#c8d0e0"}}>{m.name}</td>
-                <td style={{padding:"8px 12px"}}><span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:`${CAT_C[m.category]||"#4a566e"}18`,color:CAT_C[m.category]||"#7a8299"}}>{m.category}</span></td>
-                <td style={{padding:"8px 12px",color:"#7a8299"}}>{m.supplier}</td>
-                <td style={{padding:"8px 12px",color:"#4a566e"}}>{m.unit}</td>
-                <td className="mn" style={{padding:"8px 12px",color:"#dde1ec"}}>{fmtD(m.cost)}</td>
+              return <tr key={m.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                <td style={{padding:"8px 12px",fontWeight:700,color:"var(--text-2)"}}>{m.name}</td>
+                <td style={{padding:"8px 12px"}}><span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:`${CAT_C[m.category]||"#4a566e"}18`,color:CAT_C[m.category]||"var(--text-muted)"}}>{m.category}</span></td>
+                <td style={{padding:"8px 12px",color:"var(--text-muted)"}}>{m.supplier}</td>
+                <td style={{padding:"8px 12px",color:"var(--text-dim)"}}>{m.unit}</td>
+                <td className="mn" style={{padding:"8px 12px",color:"var(--text)"}}>{fmtD(m.cost)}</td>
                 <td className="mn" style={{padding:"8px 12px",color:"#a78bfa"}}>{m.markup}%</td>
                 <td className="mn" style={{padding:"8px 12px",color:"#22c55e",fontWeight:700}}>{fmtD(sp)}</td>
-                <td className="mn" style={{padding:"8px 12px",color:low?"#ef4444":"#dde1ec",fontWeight:low?700:400}}>{m.stock}</td>
-                <td className="mn" style={{padding:"8px 12px",color:"#4a566e"}}>{m.reorderAt}</td>
+                <td className="mn" style={{padding:"8px 12px",color:low?"#ef4444":"var(--text)",fontWeight:low?700:400}}>{m.stock}</td>
+                <td className="mn" style={{padding:"8px 12px",color:"var(--text-dim)"}}>{m.reorderAt}</td>
                 <td style={{padding:"8px 12px"}}><span style={{padding:"2px 7px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:low?"rgba(239,68,68,.1)":"rgba(34,197,94,.08)",color:low?"#ef4444":"#22c55e"}}>{low?"Low Stock":"In Stock"}</span></td>
                 <td style={{padding:"8px 12px"}}>
                   <div style={{display:"flex",gap:5}}>
-                    <button onClick={()=>openEdit(m)} style={{color:"#4a566e",opacity:.7,transition:"opacity .12s"}} className="rh"><I n="edit" s={13}/></button>
+                    <button onClick={()=>openEdit(m)} style={{color:"var(--text-dim)",opacity:.7,transition:"opacity .12s"}} className="rh"><I n="edit" s={13}/></button>
                     <button onClick={()=>del(m.id)} style={{color:"#ef4444",opacity:.5,transition:"opacity .12s"}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
@@ -2528,9 +2532,9 @@ function Materials({mats,setMats,showToast,db}) {
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:560,marginTop:30}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>{form._id?"Edit Material":"Add Material"}</div>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13}}>
               <div><label className="lbl">Name *</label><input className="inp" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Framing Lumber 2x4x8"/></div>
@@ -2550,7 +2554,7 @@ function Materials({mats,setMats,showToast,db}) {
               <div className="g3">
                 <div><label className="lbl">Cost</label><input className="inp" type="number" step=".01" value={form.cost} onChange={e=>setForm(f=>({...f,cost:e.target.value}))}/></div>
                 <div><label className="lbl">Markup %</label><input className="inp" type="number" value={form.markup} onChange={e=>setForm(f=>({...f,markup:e.target.value}))}/></div>
-                <div><label className="lbl">Sell Price</label><div className="inp" style={{background:"#080a0f",cursor:"default"}}><span className="mn" style={{color:"#22c55e"}}>{fmtD((Number(form.cost)||0)*(1+(Number(form.markup)||0)/100))}</span></div></div>
+                <div><label className="lbl">Sell Price</label><div className="inp" style={{background:"var(--bg)",cursor:"default"}}><span className="mn" style={{color:"#22c55e"}}>{fmtD((Number(form.cost)||0)*(1+(Number(form.markup)||0)/100))}</span></div></div>
               </div>
               <div className="g2">
                 <div><label className="lbl">Stock Qty</label><input className="inp" type="number" value={form.stock} onChange={e=>setForm(f=>({...f,stock:e.target.value}))}/></div>
@@ -2614,8 +2618,8 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
   return (
     <div className="spl">
       <div className="spl-l">
-        <div style={{padding:"10px 12px",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
-          <div style={{fontSize:10,color:"#4a566e",fontWeight:700}}>{subs.length} CREW MEMBERS</div>
+        <div style={{padding:"10px 12px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+          <div style={{fontSize:10,color:"var(--text-dim)",fontWeight:700}}>{subs.length} CREW MEMBERS</div>
           <button onClick={openNew} className="bb b-bl" style={{padding:"7px 11px",fontSize:11}}><I n="plus" s={11}/>Add</button>
         </div>
         <div style={{flex:1,overflowY:"auto"}}>
@@ -2624,19 +2628,19 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
             const eH=hrs.filter(h=>h.subId===e.id);
             const totH=eH.reduce((s,h)=>s+h.hours,0);
             const tc=ROLE_C[e.role]||"#4a566e";
-            return <div key={e.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(e.id)} style={{padding:"11px 12px",borderBottom:"1px solid #0e1119",background:is?"rgba(59,130,246,.06)":"transparent"}}>
+            return <div key={e.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(e.id)} style={{padding:"11px 12px",borderBottom:"1px solid var(--border)",background:is?"rgba(59,130,246,.06)":"transparent"}}>
               <div style={{display:"flex",gap:9,alignItems:"center"}}>
                 <div style={{width:36,height:36,borderRadius:10,background:avC(e.id),display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:13,flexShrink:0}}>{ini(e.name)}</div>
                 <div style={{flex:1}}>
-                  <div style={{fontWeight:700,fontSize:12,color:is?"#e2e8f0":"#c8d0e0"}}>{e.name}</div>
-                  <div style={{fontSize:9,color:"#3a4160",marginTop:1}}>{e.company||"Independent"}</div>
+                  <div style={{fontWeight:700,fontSize:12,color:is?"var(--text)":"var(--text-2)"}}>{e.name}</div>
+                  <div style={{fontSize:9,color:"var(--text-faint)",marginTop:1}}>{e.company||"Independent"}</div>
                   <div style={{display:"flex",gap:5,marginTop:2,alignItems:"center",flexWrap:"wrap"}}>
                     <span style={{fontSize:8,fontWeight:700,padding:"1px 5px",borderRadius:6,background:e.employeeType==="W2"?"rgba(34,197,94,.1)":e.employeeType==="sub_company"?"rgba(167,139,250,.1)":"rgba(59,130,246,.1)",color:e.employeeType==="W2"?"#22c55e":e.employeeType==="sub_company"?"#a78bfa":"#3b82f6"}}>{e.employeeType==="W2"?"W-2":e.employeeType==="sub_company"?"Sub":"1099"}</span>
                     <span style={{fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:8,background:`${tc}18`,color:tc}}>{e.role}</span>
-                    <span style={{fontSize:9,color:"#3a4160"}}>{totH}h</span>
+                    <span style={{fontSize:9,color:"var(--text-faint)"}}>{totH}h</span>
                   </div>
                   <div style={{display:"flex",justifyContent:"space-between",marginTop:3}}>
-                    <span className="mn" style={{fontSize:10,color:"#4a566e"}}>Wage ${e.hourlyWage}/hr</span>
+                    <span className="mn" style={{fontSize:10,color:"var(--text-dim)"}}>Wage ${e.hourlyWage}/hr</span>
                     <span className="mn" style={{fontSize:10,color:"#22c55e"}}>Bill ${e.billableRate}/hr</span>
                   </div>
                 </div>
@@ -2648,16 +2652,16 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
 
       {se?(
         <div className="spl-r">
-          <div style={{padding:"15px 20px",borderBottom:"1px solid #111826",flexShrink:0}}>
+          <div style={{padding:"15px 20px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:11}}>
               <div style={{display:"flex",gap:11,alignItems:"center"}}>
                 <div style={{width:46,height:46,borderRadius:13,background:avC(se.id),display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:17}}>{ini(se.name)}</div>
                 <div>
                   <div style={{fontWeight:800,fontSize:18,letterSpacing:-.3}}>{se.name}</div>
-                  {se.company&&<div style={{fontSize:11,color:"#7a8299",marginTop:1}}>{se.company}</div>}
+                  {se.company&&<div style={{fontSize:11,color:"var(--text-muted)",marginTop:1}}>{se.company}</div>}
                   <div style={{display:"flex",gap:6,marginTop:3,alignItems:"center",flexWrap:"wrap"}}>
                     <span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:se.employeeType==="W2"?"rgba(34,197,94,.1)":se.employeeType==="sub_company"?"rgba(167,139,250,.1)":"rgba(59,130,246,.1)",color:se.employeeType==="W2"?"#22c55e":se.employeeType==="sub_company"?"#a78bfa":"#3b82f6"}}>{se.employeeType==="W2"?"W-2":se.employeeType==="sub_company"?"Sub Co":"1099"}</span>
-                    <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:8,background:`${ROLE_C[se.role]||"#4a566e"}18`,color:ROLE_C[se.role]||"#7a8299"}}>{se.role}</span>
+                    <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:8,background:`${ROLE_C[se.role]||"#4a566e"}18`,color:ROLE_C[se.role]||"var(--text-muted)"}}>{se.role}</span>
                     <span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:se.status==="active"?"rgba(34,197,94,.1)":se.status==="terminated"?"rgba(239,68,68,.1)":"rgba(245,166,35,.1)",color:se.status==="active"?"#22c55e":se.status==="terminated"?"#ef4444":"#f5a623"}}>{se.status}</span>
                   </div>
                 </div>
@@ -2669,7 +2673,7 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
               </div>
             </div>
             {(se.phone||se.email||se.hireDate||se.certifications||se.emergencyContact)&&(
-              <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:10,fontSize:10,color:"#4a566e"}}>
+              <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:10,fontSize:10,color:"var(--text-dim)"}}>
                 {se.phone&&<span><I n="phone" s={10}/> {se.phone}</span>}
                 {se.email&&<span><I n="mail" s={10}/> {se.email}</span>}
                 {se.hireDate&&<span>Hired: {se.hireDate}</span>}
@@ -2679,8 +2683,8 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
             {se.certifications&&<div style={{marginBottom:10,display:"flex",gap:5,flexWrap:"wrap"}}>{se.certifications.split(",").map(function(c,i){return <span key={i} style={{fontSize:8,fontWeight:700,padding:"2px 7px",borderRadius:6,background:"rgba(20,184,166,.08)",color:"#14b8a6",border:"1px solid rgba(20,184,166,.15)"}}>{c.trim()}</span>;})}</div>}
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {[{l:"Wage",v:`$${se.hourlyWage}/hr`,c:"#f5a623"},{l:"Billable Rate",v:`$${se.billableRate}/hr`,c:"#3b82f6"},{l:"True Cost",v:`$${getBurdenedRate(roles,se.role,se.hourlyWage).toFixed(2)}/hr`,c:"#ef4444"},{l:"Total Hours",v:`${totHrs}h`,c:"#63b3ed"},{l:"Total Billed",v:fmt(totBilled),c:"#22c55e"},{l:"True Cost Total",v:fmt(totCost),c:"#ef4444"},{l:"Labor Margin",v:`${laborMargin}%`,c:laborMargin>=30?"#22c55e":"#f5a623"}].map(k=>(
-                <div key={k.l} style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:8,padding:"6px 11px"}}>
-                  <div style={{fontSize:8,color:"#3a4160",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
+                <div key={k.l} style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:8,padding:"6px 11px"}}>
+                  <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
                   <div className="mn" style={{fontSize:12,color:k.c,marginTop:2}}>{k.v}</div>
                 </div>
               ))}
@@ -2689,19 +2693,19 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
           <div style={{flex:1,overflowY:"auto",padding:"14px 20px"}}>
             <div className="stl">Hour Log ({eHrs.length} entries)</div>
             {eHrs.length===0?<ES icon="clock" text="No hours logged yet."/>:(
-              <div style={{border:"1px solid #111826",borderRadius:11,overflow:"hidden"}}>
+              <div style={{border:"1px solid var(--border)",borderRadius:11,overflow:"hidden"}}>
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-                  <thead><tr style={{background:"#0a0d15"}}>{["Date","Project","Hours","Description","Billed","True Cost","Approved"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+                  <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Date","Project","Hours","Description","Billed","True Cost","Approved"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                   <tbody>
                     {eHrs.sort((a,b)=>b.date.localeCompare(a.date)).map((h,i)=>{
                       const p=projs.find(x=>x.id===h.projId);
                       const billed=h.hours*se.billableRate;
                       const cost=h.hours*getBurdenedRate(roles,se.role,se.hourlyWage);
-                      return <tr key={h.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                        <td className="mn" style={{padding:"7px 12px",color:"#7a8299",fontSize:10}}>{h.date}</td>
-                        <td style={{padding:"7px 12px",color:"#c8d0e0",maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p?.name||h.projId}</td>
+                      return <tr key={h.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                        <td className="mn" style={{padding:"7px 12px",color:"var(--text-muted)",fontSize:10}}>{h.date}</td>
+                        <td style={{padding:"7px 12px",color:"var(--text-2)",maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p?.name||h.projId}</td>
                         <td className="mn" style={{padding:"7px 12px",color:"#63b3ed"}}>{h.hours}h</td>
-                        <td style={{padding:"7px 12px",color:"#7a8299",maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.desc}</td>
+                        <td style={{padding:"7px 12px",color:"var(--text-muted)",maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.desc}</td>
                         <td className="mn" style={{padding:"7px 12px",color:"#22c55e"}}>{fmt(billed)}</td>
                         <td className="mn" style={{padding:"7px 12px",color:"#ef4444"}}>{fmt(cost)}</td>
                         <td style={{padding:"7px 12px"}}>{canApprove?(
@@ -2718,7 +2722,7 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
           </div>
         </div>
       ):(
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"var(--text-ghost)",gap:12}}>
           <I n="employees" s={40}/><div style={{fontSize:14,fontWeight:600}}>Select a crew member</div>
         </div>
       )}
@@ -2726,9 +2730,9 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:520,marginTop:40}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>{form._id?"Edit Crew Member":"Add Crew Member"}</div>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13,maxHeight:"78vh",overflowY:"auto"}}>
               <div className="g2">
@@ -2758,11 +2762,11 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
                 <div><label className="lbl">Hourly Wage $</label><input className="inp" type="number" step=".5" value={form.hourlyWage} onChange={e=>setForm(f=>({...f,hourlyWage:e.target.value}))}/></div>
                 <div><label className="lbl">Billable Rate $</label><input className="inp" type="number" step=".5" value={form.billableRate} onChange={e=>setForm(f=>({...f,billableRate:e.target.value}))}/></div>
               </div>
-              <div style={{background:"rgba(239,68,68,.05)",border:"1px solid rgba(239,68,68,.15)",borderRadius:8,padding:"9px 12px",fontSize:11,color:"#7a8299"}}>
+              <div style={{background:"rgba(239,68,68,.05)",border:"1px solid rgba(239,68,68,.15)",borderRadius:8,padding:"9px 12px",fontSize:11,color:"var(--text-muted)"}}>
                 {(()=>{const rObj=roles.find(r=>r.title===form.role);const bm=rObj?(rObj.payrollPct+rObj.benefitsPct):28;const br=getBurdenedRate(roles,form.role,Number(form.hourlyWage)||0);return <>
                   Fully Burdened Rate (wage + {bm.toFixed(1)}%): <span className="mn" style={{color:"#ef4444",fontSize:12}}>${br.toFixed(2)}/hr</span>
                   &nbsp;·&nbsp; Margin: <span className="mn" style={{color:"#22c55e",fontSize:12}}>{form.billableRate&&form.hourlyWage?`${pct((Number(form.billableRate)||0)-br,Number(form.billableRate)||0)}%`:"—"}</span>
-                  {rObj&&<span style={{marginLeft:8,fontSize:9,color:"#4a566e"}}>(Payroll {rObj.payrollPct}% + Benefits {rObj.benefitsPct}%)</span>}
+                  {rObj&&<span style={{marginLeft:8,fontSize:9,color:"var(--text-dim)"}}>(Payroll {rObj.payrollPct}% + Benefits {rObj.benefitsPct}%)</span>}
                 </>;})()}
               </div>
               <div className="g2">
@@ -2786,9 +2790,9 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
       {hrForm&&se&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setHrForm(null)}>
           <div className="mo" style={{maxWidth:460,marginTop:50}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>Log Hours — {se.name}</div>
-              <button onClick={()=>setHrForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setHrForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13}}>
               <div><label className="lbl">Project *</label>
@@ -2801,9 +2805,9 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
                 <div><label className="lbl">Hours *</label><input className="inp" type="number" step=".5" value={hrForm.hours} onChange={e=>setHrForm(h=>({...h,hours:e.target.value}))}/></div>
               </div>
               <div><label className="lbl">Description</label><input className="inp" value={hrForm.desc} onChange={e=>setHrForm(h=>({...h,desc:e.target.value}))} placeholder="Framing day 1…"/></div>
-              <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:9,padding:"10px 14px",display:"flex",gap:18}}>
+              <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:9,padding:"10px 14px",display:"flex",gap:18}}>
                 {[{l:"Billed",v:fmt(formPreview.billed),c:"#22c55e"},{l:"True Cost",v:fmt(formPreview.cost),c:"#ef4444"},{l:"Net",v:fmt(formPreview.billed-formPreview.cost),c:formPreview.billed>=formPreview.cost?"#22c55e":"#ef4444"}].map(k=>(
-                  <div key={k.l}><div style={{fontSize:8,color:"#3a4160",fontWeight:700,textTransform:"uppercase"}}>{k.l}</div><div className="mn" style={{fontSize:13,color:k.c,marginTop:2}}>{k.v}</div></div>
+                  <div key={k.l}><div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase"}}>{k.l}</div><div className="mn" style={{fontSize:13,color:k.c,marginTop:2}}>{k.v}</div></div>
                 ))}
               </div>
               <div style={{display:"flex",gap:9}}>
@@ -2860,24 +2864,24 @@ function LaborRoles({roles,setRoles,showToast,db,filterFn,heading}) {
 
       <div style={{display:"flex",gap:9,alignItems:"center"}}>
         <div style={{position:"relative",flex:1,maxWidth:320}}>
-          <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={12}/></div>
+          <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={12}/></div>
           <input className="inp" value={srch} onChange={e=>setSrch(e.target.value)} placeholder="Search roles…" style={{paddingLeft:27,fontSize:12}}/>
         </div>
         <button onClick={openNew} className="bb b-bl" style={{padding:"8px 14px",fontSize:12}}><I n="plus" s={13}/>Add Role</button>
       </div>
 
-      <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
+      <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-          <thead><tr style={{background:"#0a0d15"}}>{["Role Title","Base Rate","Payroll %","Benefits %","Total Burden %","Fully Burdened Rate",""].map(h=><th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+          <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Role Title","Base Rate","Payroll %","Benefits %","Total Burden %","Fully Burdened Rate",""].map(h=><th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((r,i)=>{
               const b=calcBurden(r);
               const tc=ROLE_C[r.title]||"#4a566e";
-              return <tr key={r.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+              return <tr key={r.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
                 <td style={{padding:"9px 14px"}}>
                   <div style={{display:"flex",gap:8,alignItems:"center"}}>
                     <div style={{width:4,height:22,borderRadius:2,background:tc,flexShrink:0}}/>
-                    <span style={{fontWeight:700,color:"#c8d0e0"}}>{r.title}</span>
+                    <span style={{fontWeight:700,color:"var(--text-2)"}}>{r.title}</span>
                   </div>
                 </td>
                 <td className="mn" style={{padding:"9px 14px",color:"#f5a623"}}>${r.baseRate.toFixed(2)}</td>
@@ -2887,7 +2891,7 @@ function LaborRoles({roles,setRoles,showToast,db,filterFn,heading}) {
                 <td className="mn" style={{padding:"9px 14px",color:"#22c55e",fontWeight:700,fontSize:12}}>${b.fullyBurdenedRate.toFixed(2)}</td>
                 <td style={{padding:"9px 14px"}}>
                   <div style={{display:"flex",gap:5}}>
-                    <button onClick={()=>openEdit(r)} style={{color:"#4a566e",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
+                    <button onClick={()=>openEdit(r)} style={{color:"var(--text-dim)",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
                     <button onClick={()=>del(r.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
@@ -2900,7 +2904,7 @@ function LaborRoles({roles,setRoles,showToast,db,filterFn,heading}) {
 
       <div style={{background:"rgba(59,130,246,.04)",border:"1px solid rgba(59,130,246,.15)",borderRadius:10,padding:"12px 16px"}}>
         <div style={{fontSize:10,fontWeight:700,color:"#3b82f6",textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>Burden Rate Guide</div>
-        <div style={{fontSize:11,color:"#7a8299",lineHeight:1.8}}>
+        <div style={{fontSize:11,color:"var(--text-muted)",lineHeight:1.8}}>
           <span style={{fontWeight:700,color:"#a78bfa"}}>Payroll %</span> — FICA, FUTA, SUTA, workers comp, payroll taxes · <span style={{fontWeight:700,color:"#3b82f6"}}>Benefits %</span> — health insurance, retirement, PTO, training, safety equipment<br/>
           <span style={{fontWeight:700,color:"#ef4444"}}>Total Burden %</span> = Payroll % + Benefits % · <span style={{fontWeight:700,color:"#22c55e"}}>Fully Burdened Rate</span> = Base Rate × (1 + Total Burden %)
         </div>
@@ -2909,9 +2913,9 @@ function LaborRoles({roles,setRoles,showToast,db,filterFn,heading}) {
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:520,marginTop:60}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>{form._id?"Edit Role":"Add Role"}</div>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13}}>
               <div><label className="lbl">Role Title *</label><input className="inp" value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} placeholder="e.g. Electrician"/></div>
@@ -2923,24 +2927,24 @@ function LaborRoles({roles,setRoles,showToast,db,filterFn,heading}) {
               {(()=>{
                 const br=Number(form.baseRate)||0;const pp=Number(form.payrollPct)||0;const bp=Number(form.benefitsPct)||0;
                 const tb=pp+bp;const fbr=Math.round(br*(1+tb/100)*100)/100;
-                return <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:10,padding:"12px 14px"}}>
+                return <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 14px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                    <span style={{fontSize:10,color:"#4a566e",fontWeight:700,textTransform:"uppercase"}}>Total Burden %</span>
+                    <span style={{fontSize:10,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase"}}>Total Burden %</span>
                     <span className="mn" style={{fontSize:13,color:"#ef4444"}}>{tb.toFixed(1)}%</span>
                   </div>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                    <span style={{fontSize:10,color:"#4a566e",fontWeight:700,textTransform:"uppercase"}}>Payroll Cost</span>
+                    <span style={{fontSize:10,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase"}}>Payroll Cost</span>
                     <span className="mn" style={{fontSize:11,color:"#a78bfa"}}>${(br*pp/100).toFixed(2)}/hr</span>
                   </div>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                    <span style={{fontSize:10,color:"#4a566e",fontWeight:700,textTransform:"uppercase"}}>Benefits Cost</span>
+                    <span style={{fontSize:10,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase"}}>Benefits Cost</span>
                     <span className="mn" style={{fontSize:11,color:"#3b82f6"}}>${(br*bp/100).toFixed(2)}/hr</span>
                   </div>
-                  <div style={{borderTop:"1px solid #1e2535",paddingTop:8,display:"flex",justifyContent:"space-between"}}>
+                  <div style={{borderTop:"1px solid var(--border-2)",paddingTop:8,display:"flex",justifyContent:"space-between"}}>
                     <span style={{fontWeight:800,fontSize:12}}>Fully Burdened Rate</span>
                     <span className="mn" style={{fontSize:16,color:"#22c55e"}}>${fbr.toFixed(2)}/hr</span>
                   </div>
-                  <div style={{fontSize:9,color:"#3a4160",marginTop:4}}>${br.toFixed(2)} base + ${(fbr-br).toFixed(2)} burden = ${fbr.toFixed(2)}/hr</div>
+                  <div style={{fontSize:9,color:"var(--text-faint)",marginTop:4}}>${br.toFixed(2)} base + ${(fbr-br).toFixed(2)} burden = ${fbr.toFixed(2)}/hr</div>
                 </div>;
               })()}
               <div style={{display:"flex",gap:9,marginTop:4}}>
@@ -3000,25 +3004,25 @@ function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setInvs,showToast,se
         {[{l:"Total COs",v:cos.length,c:"#63b3ed"},{l:"Pending",v:fmt(totPending),c:"#f5a623"},{l:"Approved",v:fmt(totApproved),c:"#22c55e"},{l:"Net Contract Impact",v:fmt(totApproved),c:"#3b82f6"}].map(k=>(<KpiCard key={k.l} label={k.l} val={k.v} sub="" color={k.c}/>))}
       </div>
       <div style={{display:"flex",gap:9,alignItems:"center"}}>
-        <div style={{display:"flex",borderRadius:7,overflow:"hidden",border:"1px solid #111826",flex:1,maxWidth:480}}>
+        <div style={{display:"flex",borderRadius:7,overflow:"hidden",border:"1px solid var(--border)",flex:1,maxWidth:480}}>
           {[["all",`All (${cnts.all})`],["pending",`Pending (${cnts.pending})`],["approved",`Approved (${cnts.approved})`],["declined",`Declined (${cnts.declined})`]].map(([v,l])=>(
-            <button key={v} onClick={()=>setStF(v)} style={{flex:1,padding:"6px 4px",fontSize:9,fontWeight:700,background:stF===v?"rgba(59,130,246,.15)":"transparent",color:stF===v?"#63b3ed":"#4a566e",borderRight:"1px solid #111826"}}>{l}</button>
+            <button key={v} onClick={()=>setStF(v)} style={{flex:1,padding:"6px 4px",fontSize:9,fontWeight:700,background:stF===v?"rgba(59,130,246,.15)":"transparent",color:stF===v?"#63b3ed":"var(--text-dim)",borderRight:"1px solid var(--border)"}}>{l}</button>
           ))}
         </div>
         <button onClick={openNew} className="bb b-bl" style={{padding:"8px 14px",fontSize:12}}><I n="plus" s={13}/>New CO</button>
       </div>
-      <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
+      <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-          <thead><tr style={{background:"#0a0d15"}}>{["CO #","Project","Customer","Description","Reason","Labor","Material","Total","Status",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+          <thead><tr style={{background:"var(--bg-sidebar)"}}>{["CO #","Project","Customer","Description","Reason","Labor","Material","Total","Status",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((co,i)=>{
               const p=projs.find(x=>x.id===co.projId);const c=custs.find(x=>x.id===co.custId);
-              return <tr key={co.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                <td className="mn" style={{padding:"8px 12px",color:"#7a8299",fontSize:10}}>{co.number}</td>
-                <td style={{padding:"8px 12px",color:"#c8d0e0",fontWeight:600,maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p?.name||"—"}</td>
-                <td style={{padding:"8px 12px",color:"#7a8299"}}>{c?.name||"—"}</td>
-                <td style={{padding:"8px 12px",color:"#dde1ec",maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{co.description}</td>
-                <td style={{padding:"8px 12px",color:"#4a566e",fontSize:10}}>{co.reason}</td>
+              return <tr key={co.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                <td className="mn" style={{padding:"8px 12px",color:"var(--text-muted)",fontSize:10}}>{co.number}</td>
+                <td style={{padding:"8px 12px",color:"var(--text-2)",fontWeight:600,maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p?.name||"—"}</td>
+                <td style={{padding:"8px 12px",color:"var(--text-muted)"}}>{c?.name||"—"}</td>
+                <td style={{padding:"8px 12px",color:"var(--text)",maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{co.description}</td>
+                <td style={{padding:"8px 12px",color:"var(--text-dim)",fontSize:10}}>{co.reason}</td>
                 <td className="mn" style={{padding:"8px 12px",color:"#f5a623"}}>{fmt(co.laborAmt)}</td>
                 <td className="mn" style={{padding:"8px 12px",color:"#6c8ebf"}}>{fmt(co.materialAmt)}</td>
                 <td className="mn" style={{padding:"8px 12px",color:"#22c55e",fontWeight:700}}>{fmt(co.totalAmt)}</td>
@@ -3027,7 +3031,7 @@ function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setInvs,showToast,se
                   <div style={{display:"flex",gap:4}}>
                     {co.status==="pending"&&<button onClick={()=>approve(co)} style={{color:"#22c55e",opacity:.8}} className="rh"><I n="check" s={13}/></button>}
                     {co.status==="pending"&&<button onClick={()=>decline(co.id)} style={{color:"#ef4444",opacity:.6}} className="rh"><I n="x" s={13}/></button>}
-                    <button onClick={()=>openEdit(co)} style={{color:"#4a566e",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
+                    <button onClick={()=>openEdit(co)} style={{color:"var(--text-dim)",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
                     <button onClick={()=>del(co.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
@@ -3040,9 +3044,9 @@ function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setInvs,showToast,se
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:560,marginTop:50}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>{form._id?"Edit Change Order":"New Change Order"}</div>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13}}>
               <div><label className="lbl">Project *</label>
@@ -3061,7 +3065,7 @@ function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setInvs,showToast,se
                 <div><label className="lbl">Labor Amount $</label><input className="inp" type="number" value={form.laborAmt} onChange={e=>setForm(f=>({...f,laborAmt:e.target.value}))} placeholder="0"/></div>
                 <div><label className="lbl">Material Amount $</label><input className="inp" type="number" value={form.materialAmt} onChange={e=>setForm(f=>({...f,materialAmt:e.target.value}))} placeholder="0"/></div>
               </div>
-              <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:9,padding:"10px 14px",display:"flex",justifyContent:"space-between"}}>
+              <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:9,padding:"10px 14px",display:"flex",justifyContent:"space-between"}}>
                 <span style={{fontWeight:700,fontSize:12}}>CO Total</span>
                 <span className="mn" style={{fontSize:16,color:"#22c55e"}}>{fmt((Number(form.laborAmt)||0)+(Number(form.materialAmt)||0))}</span>
               </div>
@@ -3119,7 +3123,7 @@ function Expenses({expenses,setExpenses,projs,showToast,db}) {
       </div>
       <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}>
         <div style={{position:"relative",flex:1,minWidth:180,maxWidth:280}}>
-          <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={12}/></div>
+          <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={12}/></div>
           <input className="inp" value={srch} onChange={e=>setSrch(e.target.value)} placeholder="Search expenses…" style={{paddingLeft:27,fontSize:12}}/>
         </div>
         <select className="inp" value={projF} onChange={e=>setProjF(e.target.value)} style={{width:180,fontSize:11}}>
@@ -3128,28 +3132,28 @@ function Expenses({expenses,setExpenses,projs,showToast,db}) {
           {projs.map(p=><option key={p.id} value={p.id}>{p.name.split(" ").slice(0,3).join(" ")}</option>)}
         </select>
         <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-          {cats.slice(0,7).map(c=><button key={c} onClick={()=>setCatF(c)} style={{padding:"4px 10px",borderRadius:18,fontSize:10,fontWeight:700,border:`1px solid ${catF===c?"var(--accent)":"#111826"}`,background:catF===c?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"#0c0f17",color:catF===c?"var(--accent-light)":"#4a566e"}}>{c}</button>)}
+          {cats.slice(0,7).map(c=><button key={c} onClick={()=>setCatF(c)} style={{padding:"4px 10px",borderRadius:18,fontSize:10,fontWeight:700,border:`1px solid ${catF===c?"var(--accent)":"var(--border)"}`,background:catF===c?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"var(--bg-card)",color:catF===c?"var(--accent-light)":"var(--text-dim)"}}>{c}</button>)}
         </div>
         <button onClick={openNew} className="bb b-bl" style={{padding:"8px 14px",fontSize:12,marginLeft:"auto"}}><I n="plus" s={13}/>Add Expense</button>
       </div>
-      <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
+      <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-          <thead><tr style={{background:"#0a0d15"}}>{["Date","Project","Category","Vendor","Description","Amount","Receipt","Reimb.",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+          <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Date","Project","Category","Vendor","Description","Amount","Receipt","Reimb.",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((ex,i)=>{
               const p=projs.find(x=>x.id===ex.projId);
-              return <tr key={ex.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                <td className="mn" style={{padding:"8px 12px",color:"#4a566e",fontSize:10}}>{ex.date}</td>
-                <td style={{padding:"8px 12px",color:p?"#c8d0e0":"#3a4160",fontSize:11}}>{p?p.name.split(" ").slice(0,2).join(" "):"Overhead"}</td>
+              return <tr key={ex.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                <td className="mn" style={{padding:"8px 12px",color:"var(--text-dim)",fontSize:10}}>{ex.date}</td>
+                <td style={{padding:"8px 12px",color:p?"var(--text-2)":"var(--text-faint)",fontSize:11}}>{p?p.name.split(" ").slice(0,2).join(" "):"Overhead"}</td>
                 <td style={{padding:"8px 12px"}}><span style={{padding:"2px 7px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:"rgba(99,179,237,.1)",color:"#63b3ed"}}>{ex.category}</span></td>
-                <td style={{padding:"8px 12px",color:"#7a8299"}}>{ex.vendor}</td>
-                <td style={{padding:"8px 12px",color:"#dde1ec",maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ex.description}</td>
+                <td style={{padding:"8px 12px",color:"var(--text-muted)"}}>{ex.vendor}</td>
+                <td style={{padding:"8px 12px",color:"var(--text)",maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ex.description}</td>
                 <td className="mn" style={{padding:"8px 12px",color:"#ef4444",fontWeight:700}}>{fmt(ex.amount)}</td>
-                <td style={{padding:"8px 12px",textAlign:"center"}}>{ex.receipt?<span style={{color:"#22c55e"}}><I n="check" s={12}/></span>:<span style={{color:"#3a4160"}}>—</span>}</td>
-                <td style={{padding:"8px 12px",textAlign:"center"}}>{ex.reimbursable?<span style={{padding:"2px 6px",borderRadius:10,fontSize:8,fontWeight:700,background:"rgba(34,197,94,.1)",color:"#22c55e"}}>Yes</span>:<span style={{color:"#3a4160"}}>—</span>}</td>
+                <td style={{padding:"8px 12px",textAlign:"center"}}>{ex.receipt?<span style={{color:"#22c55e"}}><I n="check" s={12}/></span>:<span style={{color:"var(--text-faint)"}}>—</span>}</td>
+                <td style={{padding:"8px 12px",textAlign:"center"}}>{ex.reimbursable?<span style={{padding:"2px 6px",borderRadius:10,fontSize:8,fontWeight:700,background:"rgba(34,197,94,.1)",color:"#22c55e"}}>Yes</span>:<span style={{color:"var(--text-faint)"}}>—</span>}</td>
                 <td style={{padding:"8px 12px"}}>
                   <div style={{display:"flex",gap:5}}>
-                    <button onClick={()=>openEdit(ex)} style={{color:"#4a566e",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
+                    <button onClick={()=>openEdit(ex)} style={{color:"var(--text-dim)",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
                     <button onClick={()=>del(ex.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
@@ -3162,9 +3166,9 @@ function Expenses({expenses,setExpenses,projs,showToast,db}) {
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:560,marginTop:40}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>{form._id?"Edit Expense":"Add Expense"}</div>
-              <button onClick={()=>setForm(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13}}>
               <div className="g2">
@@ -3187,10 +3191,10 @@ function Expenses({expenses,setExpenses,projs,showToast,db}) {
               <div><label className="lbl">Vendor</label><input className="inp" value={form.vendor} onChange={e=>setForm(f=>({...f,vendor:e.target.value}))} placeholder="Home Depot"/></div>
               <div><label className="lbl">Description *</label><input className="inp" value={form.description} onChange={e=>setForm(f=>({...f,description:e.target.value}))} placeholder="Framing lumber & hardware"/></div>
               <div style={{display:"flex",gap:16}}>
-                <label style={{display:"flex",gap:6,alignItems:"center",fontSize:12,color:"#7a8299",cursor:"pointer"}}>
+                <label style={{display:"flex",gap:6,alignItems:"center",fontSize:12,color:"var(--text-muted)",cursor:"pointer"}}>
                   <input type="checkbox" checked={form.receipt} onChange={e=>setForm(f=>({...f,receipt:e.target.checked}))} style={{accentColor:"#3b82f6"}}/> Receipt on file
                 </label>
-                <label style={{display:"flex",gap:6,alignItems:"center",fontSize:12,color:"#7a8299",cursor:"pointer"}}>
+                <label style={{display:"flex",gap:6,alignItems:"center",fontSize:12,color:"var(--text-muted)",cursor:"pointer"}}>
                   <input type="checkbox" checked={form.reimbursable} onChange={e=>setForm(f=>({...f,reimbursable:e.target.checked}))} style={{accentColor:"#22c55e"}}/> Reimbursable
                 </label>
               </div>
@@ -3279,9 +3283,9 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
 
   const passInput = (key, placeholder) => (
     <div style={{position:"relative"}}>
-      <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="lock" s={14}/></div>
+      <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="lock" s={14}/></div>
       <input className="inp" type={showPass[key]?"text":"password"} placeholder={placeholder} value={passForm[key]} onChange={e=>setPassForm({...passForm,[key]:e.target.value})} style={{paddingLeft:36,paddingRight:38}} onKeyDown={e=>e.key==="Enter"&&changePassword()}/>
-      <button onClick={()=>setShowPass({...showPass,[key]:!showPass[key]})} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"#3a4160",padding:3,display:"flex"}}><I n={showPass[key]?"eye-off":"eye"} s={14}/></button>
+      <button onClick={()=>setShowPass({...showPass,[key]:!showPass[key]})} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",padding:3,display:"flex"}}><I n={showPass[key]?"eye-off":"eye"} s={14}/></button>
     </div>
   );
 
@@ -3290,39 +3294,39 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
       {/* LEFT COLUMN — Avatar + Identity */}
       <div style={{width:280,flexShrink:0,display:"flex",flexDirection:"column",gap:16,minWidth:0,flex:"1 1 260px",maxWidth:320}}>
         {/* Avatar card */}
-        <div className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:14,padding:"28px 24px",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",overflow:"hidden"}}>
+        <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:14,padding:"28px 24px",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",overflow:"hidden"}}>
           <div style={{position:"absolute",top:0,left:0,right:0,height:70,background:`linear-gradient(135deg,${rc}22,${rc}08)`,borderBottom:`1px solid ${rc}18`}}/>
           <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={handlePhotoUpload}/>
           <div style={{position:"relative",marginTop:10,marginBottom:16}}>
             <div style={{width:96,height:96,borderRadius:"50%",border:`3px solid ${rc}`,background:auth.avatar?`url(${auth.avatar}) center/cover`:`linear-gradient(135deg,${rc},${rc}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,fontWeight:800,color:"#fff",boxShadow:`0 8px 32px ${rc}30`}}>
               {!auth.avatar && ini(auth.name)}
             </div>
-            <button onClick={()=>fileRef.current?.click()} title="Change photo" style={{position:"absolute",bottom:0,right:0,width:30,height:30,borderRadius:"50%",background:"linear-gradient(135deg,var(--accent),var(--accent-dark))",display:"flex",alignItems:"center",justifyContent:"center",border:"2px solid #0c0f17",cursor:"pointer",transition:"transform .15s",boxShadow:"0 4px 12px rgba(59,130,246,.4)"}} onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.1)";}} onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";}}>
+            <button onClick={()=>fileRef.current?.click()} title="Change photo" style={{position:"absolute",bottom:0,right:0,width:30,height:30,borderRadius:"50%",background:"linear-gradient(135deg,var(--accent),var(--accent-dark))",display:"flex",alignItems:"center",justifyContent:"center",border:"2px solid var(--bg)",cursor:"pointer",transition:"transform .15s",boxShadow:"0 4px 12px rgba(59,130,246,.4)"}} onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.1)";}} onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";}}>
               <I n="camera" s={13}/>
             </button>
           </div>
-          <div style={{fontSize:17,fontWeight:800,color:"#e2e8f0",marginBottom:3,textAlign:"center"}}>{auth.name}</div>
+          <div style={{fontSize:17,fontWeight:800,color:"var(--text-2)",marginBottom:3,textAlign:"center"}}>{auth.name}</div>
           <span style={{fontSize:10,fontWeight:700,padding:"3px 11px",borderRadius:10,background:`${rc}18`,color:rc,marginBottom:10}}>{auth.role}</span>
-          <div style={{fontSize:10,color:"#4a566e",textAlign:"center",lineHeight:1.6}}>{auth.email}</div>
+          <div style={{fontSize:10,color:"var(--text-dim)",textAlign:"center",lineHeight:1.6}}>{auth.email}</div>
           {auth.avatar && (
             <button onClick={removePhoto} style={{marginTop:12,fontSize:10,fontWeight:600,color:"#ef4444",background:"none",border:"1px solid rgba(239,68,68,.2)",borderRadius:6,padding:"4px 12px",cursor:"pointer",transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(239,68,68,.08)";}} onMouseLeave={e=>{e.currentTarget.style.background="none";}}>Remove Photo</button>
           )}
         </div>
 
         {/* Quick stats */}
-        <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"16px 18px"}}>
+        <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 18px"}}>
           <div className="stl">Account Details</div>
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"#7a8299"}}>Member Since</span><span className="mn" style={{color:"#63b3ed",fontSize:10}}>{memberSince}</span></div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"#7a8299"}}>Last Login</span><span className="mn" style={{color:"#22c55e",fontSize:10}}>{lastLogin}</span></div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"#7a8299"}}>Status</span><Chip s={auth.status||"active"} map={{"active":{bg:"rgba(34,197,94,.12)",c:"#22c55e",label:"Active"},"invited":{bg:"rgba(245,166,35,.12)",c:"#f5a623",label:"Invited"},"disabled":{bg:"rgba(239,68,68,.12)",c:"#ef4444",label:"Disabled"}}}/></div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"#7a8299"}}>Company</span><span style={{color:"#c8d0e0",fontWeight:600,fontSize:10}}>{company.name}</span></div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"#7a8299"}}>User ID</span><span className="mn" style={{color:"#4a566e",fontSize:9}}>USR-{String(auth.id).padStart(4,"0")}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"var(--text-muted)"}}>Member Since</span><span className="mn" style={{color:"#63b3ed",fontSize:10}}>{memberSince}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"var(--text-muted)"}}>Last Login</span><span className="mn" style={{color:"#22c55e",fontSize:10}}>{lastLogin}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"var(--text-muted)"}}>Status</span><Chip s={auth.status||"active"} map={{"active":{bg:"rgba(34,197,94,.12)",c:"#22c55e",label:"Active"},"invited":{bg:"rgba(245,166,35,.12)",c:"#f5a623",label:"Invited"},"disabled":{bg:"rgba(239,68,68,.12)",c:"#ef4444",label:"Disabled"}}}/></div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"var(--text-muted)"}}>Company</span><span style={{color:"var(--text-2)",fontWeight:600,fontSize:10}}>{company.name}</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span style={{color:"var(--text-muted)"}}>User ID</span><span className="mn" style={{color:"var(--text-dim)",fontSize:9}}>USR-{String(auth.id).padStart(4,"0")}</span></div>
           </div>
         </div>
 
         {/* Role permissions */}
-        <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"16px 18px"}}>
+        <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 18px"}}>
           <div className="stl">Your Permissions</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
             {perms.map(p => (
@@ -3335,11 +3339,11 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
       {/* RIGHT COLUMN — Edit forms */}
       <div style={{flex:"1 1 400px",display:"flex",flexDirection:"column",gap:16,minWidth:0}}>
         {/* Profile info */}
-        <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:14,overflow:"hidden"}}>
-          <div style={{padding:"16px 22px",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:14,overflow:"hidden"}}>
+          <div style={{padding:"16px 22px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
               <div style={{fontSize:15,fontWeight:800}}>Profile Information</div>
-              <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Update your name, email, and contact details</div>
+              <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Update your name, email, and contact details</div>
             </div>
             {!editing ? (
               <button onClick={()=>{setForm({name:auth.name,email:auth.email,phone:auth.phone||""});setEditing(true);}} className="bb b-bl" style={{padding:"8px 16px",fontSize:12}}><I n="edit" s={13}/>Edit Profile</button>
@@ -3355,24 +3359,24 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
               <div style={{display:"flex",flexDirection:"column",gap:16}}>
                 <div className="g2" style={{gap:20}}>
                   <div>
-                    <div style={{fontSize:10,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Full Name</div>
-                    <div style={{fontSize:14,fontWeight:600,color:"#e2e8f0"}}>{auth.name}</div>
+                    <div style={{fontSize:10,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Full Name</div>
+                    <div style={{fontSize:14,fontWeight:600,color:"var(--text-2)"}}>{auth.name}</div>
                   </div>
                   <div>
-                    <div style={{fontSize:10,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Email Address</div>
-                    <div style={{fontSize:14,fontWeight:600,color:"#e2e8f0",display:"flex",alignItems:"center",gap:6}}><I n="mail" s={14}/>{auth.email}</div>
+                    <div style={{fontSize:10,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Email Address</div>
+                    <div style={{fontSize:14,fontWeight:600,color:"var(--text-2)",display:"flex",alignItems:"center",gap:6}}><I n="mail" s={14}/>{auth.email}</div>
                   </div>
                 </div>
                 <div className="g2" style={{gap:20}}>
                   <div>
-                    <div style={{fontSize:10,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Phone</div>
-                    <div style={{fontSize:14,fontWeight:600,color:auth.phone?"#e2e8f0":"#3a4160",display:"flex",alignItems:"center",gap:6}}><I n="phone" s={14}/>{auth.phone||"Not set"}</div>
+                    <div style={{fontSize:10,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Phone</div>
+                    <div style={{fontSize:14,fontWeight:600,color:auth.phone?"var(--text-2)":"var(--text-faint)",display:"flex",alignItems:"center",gap:6}}><I n="phone" s={14}/>{auth.phone||"Not set"}</div>
                   </div>
                   <div>
-                    <div style={{fontSize:10,color:"#4a566e",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Role</div>
+                    <div style={{fontSize:10,color:"var(--text-dim)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>Role</div>
                     <div style={{display:"flex",alignItems:"center",gap:8}}>
                       <div style={{width:10,height:10,borderRadius:3,background:rc}}/>
-                      <span style={{fontSize:14,fontWeight:600,color:"#e2e8f0"}}>{auth.role}</span>
+                      <span style={{fontSize:14,fontWeight:600,color:"var(--text-2)"}}>{auth.role}</span>
                     </div>
                   </div>
                 </div>
@@ -3388,7 +3392,7 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
                   <div>
                     <label className="lbl">Role</label>
                     <input className="inp" value={auth.role} readOnly style={{opacity:.5,cursor:"not-allowed"}}/>
-                    <div style={{fontSize:9,color:"#3a4160",marginTop:4}}>Role can only be changed by an Admin</div>
+                    <div style={{fontSize:9,color:"var(--text-faint)",marginTop:4}}>Role can only be changed by an Admin</div>
                   </div>
                 </div>
               </div>
@@ -3397,11 +3401,11 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
         </div>
 
         {/* Change password */}
-        <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:14,overflow:"hidden"}}>
-          <div style={{padding:"16px 22px",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:14,overflow:"hidden"}}>
+          <div style={{padding:"16px 22px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
               <div style={{fontSize:15,fontWeight:800}}>Security</div>
-              <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Manage your password</div>
+              <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Manage your password</div>
             </div>
             {!showPassSection && (
               <button onClick={()=>setShowPassSection(true)} className="bb b-gh" style={{padding:"8px 16px",fontSize:12}}><I n="lock" s={13}/>Change Password</button>
@@ -3423,10 +3427,10 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
         </div>
 
         {/* Notification preferences */}
-        <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:14,overflow:"hidden"}}>
-          <div style={{padding:"16px 22px",borderBottom:"1px solid #111826"}}>
+        <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:14,overflow:"hidden"}}>
+          <div style={{padding:"16px 22px",borderBottom:"1px solid var(--border)"}}>
             <div style={{fontSize:15,fontWeight:800}}>Notification Preferences</div>
-            <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Choose what you want to be notified about</div>
+            <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Choose what you want to be notified about</div>
           </div>
           <div style={{padding:"18px 22px",display:"flex",flexDirection:"column",gap:14}}>
             {[
@@ -3441,8 +3445,8 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
               return (
                 <div key={n.k} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:13,fontWeight:600,color:"#c8d0e0"}}>{n.l}</div>
-                    <div style={{fontSize:10,color:"#4a566e",marginTop:2}}>{n.d}</div>
+                    <div style={{fontSize:13,fontWeight:600,color:"var(--text-2)"}}>{n.l}</div>
+                    <div style={{fontSize:10,color:"var(--text-dim)",marginTop:2}}>{n.d}</div>
                   </div>
                   <ToggleSwitch on={isOn} onChange={function(val){
                     var newPrefs = {...(auth.notifPrefs || {}), [n.k]: val};
@@ -3459,7 +3463,7 @@ function UserProfile({auth,setAuth,updateAuth,users,setUsers,company,showToast,s
         {/* Danger zone */}
         <div style={{background:"rgba(239,68,68,.03)",border:"1px solid rgba(239,68,68,.12)",borderRadius:14,padding:"18px 22px"}}>
           <div style={{fontSize:13,fontWeight:800,color:"#ef4444",marginBottom:4}}>Danger Zone</div>
-          <div style={{fontSize:11,color:"#7a8299",marginBottom:12}}>Once you sign out, you'll need to enter your credentials again. Account deletion requires admin approval.</div>
+          <div style={{fontSize:11,color:"var(--text-muted)",marginBottom:12}}>Once you sign out, you'll need to enter your credentials again. Account deletion requires admin approval.</div>
           <div style={{display:"flex",gap:10}}>
             <button onClick={handleLogout} className="bb b-rd" style={{padding:"8px 16px",fontSize:12}}><I n="arrow" s={13}/>Sign Out</button>
           </div>
@@ -3480,7 +3484,7 @@ function ToggleSwitch({defaultOn=false,on:controlledOn,onChange}) {
     if (onChange) onChange(next);
   };
   return (
-    <button onClick={toggle} style={{width:40,height:22,borderRadius:11,background:on?"#22c55e":"#1e2535",border:"none",cursor:"pointer",position:"relative",transition:"background .2s",flexShrink:0}}>
+    <button onClick={toggle} style={{width:40,height:22,borderRadius:11,background:on?"#22c55e":"var(--border-2)",border:"none",cursor:"pointer",position:"relative",transition:"background .2s",flexShrink:0}}>
       <div style={{width:16,height:16,borderRadius:"50%",background:"#fff",position:"absolute",top:3,left:on?21:3,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.3)"}}/>
     </button>
   );
@@ -3609,9 +3613,9 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
   return (
     <div style={{display:"flex",flexDirection:"column",gap:18}}>
       {/* SUB-TAB NAV */}
-      <div className="sub-tabs" style={{display:"flex",gap:2,background:"#0a0d15",borderRadius:10,padding:3,border:"1px solid #111826",width:"fit-content",maxWidth:"100%",overflowX:"auto"}}>
+      <div className="sub-tabs" style={{display:"flex",gap:2,background:"var(--bg-sidebar)",borderRadius:10,padding:3,border:"1px solid var(--border)",width:"fit-content",maxWidth:"100%",overflowX:"auto"}}>
         {STABS.map(t=>(
-          <button key={t.id} onClick={()=>setStab(t.id)} style={{display:"flex",alignItems:"center",gap:7,padding:"8px 14px",borderRadius:8,fontSize:12,fontWeight:700,color:stab===t.id?"#63b3ed":"#4a566e",background:stab===t.id?"rgba(99,179,237,.1)":"transparent",transition:"all .18s",border:"none",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}}>
+          <button key={t.id} onClick={()=>setStab(t.id)} style={{display:"flex",alignItems:"center",gap:7,padding:"8px 14px",borderRadius:8,fontSize:12,fontWeight:700,color:stab===t.id?"#63b3ed":"var(--text-dim)",background:stab===t.id?"rgba(99,179,237,.1)":"transparent",transition:"all .18s",border:"none",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}}>
             <I n={t.icon} s={13}/>{t.label}
           </button>
         ))}
@@ -3636,13 +3640,13 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
               const cnt=roleCounts[r]||0;
               const rc=USER_ROLE_C[r]||"#4a566e";
               return (
-                <button key={r} onClick={()=>setRoleF(roleF===r?"All":r)} style={{background:roleF===r?`${rc}14`:"#0c0f17",border:`1px solid ${roleF===r?rc:"#111826"}`,borderRadius:10,padding:"10px 14px",cursor:"pointer",textAlign:"left",transition:"all .18s"}}>
+                <button key={r} onClick={()=>setRoleF(roleF===r?"All":r)} style={{background:roleF===r?`${rc}14`:"var(--bg-card)",border:`1px solid ${roleF===r?rc:"var(--border)"}`,borderRadius:10,padding:"10px 14px",cursor:"pointer",textAlign:"left",transition:"all .18s"}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
                     <div style={{width:8,height:8,borderRadius:2,background:rc}}/>
-                    <span style={{fontSize:11,fontWeight:700,color:roleF===r?rc:"#7a8299"}}>{r}</span>
+                    <span style={{fontSize:11,fontWeight:700,color:roleF===r?rc:"var(--text-muted)"}}>{r}</span>
                   </div>
-                  <div className="mn" style={{fontSize:18,color:roleF===r?rc:"#4a566e"}}>{cnt}</div>
-                  <div style={{fontSize:9,color:"#3a4160",marginTop:2}}>{USER_ROLE_PERMS[r]?.length||0} permissions</div>
+                  <div className="mn" style={{fontSize:18,color:roleF===r?rc:"var(--text-dim)"}}>{cnt}</div>
+                  <div style={{fontSize:9,color:"var(--text-faint)",marginTop:2}}>{USER_ROLE_PERMS[r]?.length||0} permissions</div>
                 </button>
               );
             })}
@@ -3652,7 +3656,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{display:"flex",gap:10,alignItems:"center"}}>
               <div style={{position:"relative"}}>
-                <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={13}/></div>
+                <div style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={13}/></div>
                 <input className="inp" placeholder="Search users…" value={srch} onChange={e=>setSrch(e.target.value)} style={{paddingLeft:30,width:220,fontSize:12,height:34}}/>
               </div>
               {roleF!=="All"&&<button onClick={()=>setRoleF("All")} className="bb b-gh" style={{padding:"5px 10px",fontSize:10}}>Clear filter <I n="x" s={10}/></button>}
@@ -3661,12 +3665,12 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           </div>
 
           {/* Users table */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
               <thead>
-                <tr style={{background:"#0a0d15"}}>
+                <tr style={{background:"var(--bg-sidebar)"}}>
                   {["User","Email","Phone","Role","Status","Last Login","Actions"].map(h=>
-                    <th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.4,borderBottom:"1px solid #111826"}}>{h}</th>
+                    <th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.4,borderBottom:"1px solid var(--border)"}}>{h}</th>
                   )}
                 </tr>
               </thead>
@@ -3675,25 +3679,25 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
                 {filt.map((u,i)=>{
                   const rc=USER_ROLE_C[u.role]||"#4a566e";
                   return (
-                    <tr key={u.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                    <tr key={u.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
                       <td style={{padding:"8px 14px"}}>
                         <div style={{display:"flex",alignItems:"center",gap:10}}>
                           <div style={{width:30,height:30,borderRadius:"50%",background:`linear-gradient(135deg,${rc},${rc}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",flexShrink:0}}>{ini(u.name)}</div>
-                          <span style={{fontWeight:700,color:"#c8d0e0"}}>{u.name}</span>
+                          <span style={{fontWeight:700,color:"var(--text-2)"}}>{u.name}</span>
                         </div>
                       </td>
-                      <td className="mn" style={{padding:"8px 14px",color:"#7a8299",fontSize:10}}>{u.email}</td>
-                      <td className="mn" style={{padding:"8px 14px",color:"#4a566e",fontSize:10}}>{u.phone||"—"}</td>
+                      <td className="mn" style={{padding:"8px 14px",color:"var(--text-muted)",fontSize:10}}>{u.email}</td>
+                      <td className="mn" style={{padding:"8px 14px",color:"var(--text-dim)",fontSize:10}}>{u.phone||"—"}</td>
                       <td style={{padding:"8px 14px"}}>
                         <span style={{fontSize:9,fontWeight:700,padding:"3px 9px",borderRadius:8,background:`${rc}18`,color:rc}}>{u.role}</span>
                       </td>
                       <td style={{padding:"8px 14px"}}><Chip s={u.status} map={USR_SC}/></td>
-                      <td className="mn" style={{padding:"8px 14px",color:"#4a566e",fontSize:10}}>{u.lastLogin||"Never"}</td>
+                      <td className="mn" style={{padding:"8px 14px",color:"var(--text-dim)",fontSize:10}}>{u.lastLogin||"Never"}</td>
                       <td style={{padding:"8px 14px"}}>
                         <div style={{display:"flex",gap:4}}>
-                          <button onClick={()=>openEditUser(u)} title="Edit" style={{padding:5,color:"#4a566e",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color="#63b3ed";}} onMouseLeave={e=>{e.currentTarget.style.color="#4a566e";}}><I n="edit" s={13}/></button>
-                          <button onClick={()=>toggleStatus(u.id)} title={u.status==="active"?"Disable":"Enable"} style={{padding:5,color:"#4a566e",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color=u.status==="active"?"#ef4444":"#22c55e";}} onMouseLeave={e=>{e.currentTarget.style.color="#4a566e";}}>{u.status==="active"?<I n="x" s={13}/>:<I n="check" s={13}/>}</button>
-                          <button onClick={()=>delUser(u.id)} title="Remove" style={{padding:5,color:"#4a566e",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color="#ef4444";}} onMouseLeave={e=>{e.currentTarget.style.color="#4a566e";}}><I n="trash" s={13}/></button>
+                          <button onClick={()=>openEditUser(u)} title="Edit" style={{padding:5,color:"var(--text-dim)",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color="#63b3ed";}} onMouseLeave={e=>{e.currentTarget.style.color="var(--text-dim)";}}><I n="edit" s={13}/></button>
+                          <button onClick={()=>toggleStatus(u.id)} title={u.status==="active"?"Disable":"Enable"} style={{padding:5,color:"var(--text-dim)",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color=u.status==="active"?"#ef4444":"#22c55e";}} onMouseLeave={e=>{e.currentTarget.style.color="var(--text-dim)";}}>{u.status==="active"?<I n="x" s={13}/>:<I n="check" s={13}/>}</button>
+                          <button onClick={()=>delUser(u.id)} title="Remove" style={{padding:5,color:"var(--text-dim)",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color="#ef4444";}} onMouseLeave={e=>{e.currentTarget.style.color="var(--text-dim)";}}><I n="trash" s={13}/></button>
                         </div>
                       </td>
                     </tr>
@@ -3708,25 +3712,25 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
       {/* ── ROLE PERMISSIONS TAB ── */}
       {stab==="roles"&&(
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
-          <div style={{fontSize:12,color:"#7a8299",lineHeight:1.6}}>Each role grants a specific set of module permissions. Users inherit all permissions from their assigned role.</div>
+          <div style={{fontSize:12,color:"var(--text-muted)",lineHeight:1.6}}>Each role grants a specific set of module permissions. Users inherit all permissions from their assigned role.</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
             {USER_ROLES.map(r=>{
               const rc=USER_ROLE_C[r]||"#4a566e";
               const perms=USER_ROLE_PERMS[r]||[];
               const cnt=roleCounts[r]||0;
               return (
-                <div key={r} className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"16px 18px",overflow:"hidden",position:"relative"}}>
+                <div key={r} className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 18px",overflow:"hidden",position:"relative"}}>
                   <div style={{position:"absolute",top:0,right:0,width:60,height:60,background:rc,opacity:.04,borderRadius:"0 0 0 60px"}}/>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                     <div style={{display:"flex",alignItems:"center",gap:9}}>
                       <div style={{width:10,height:10,borderRadius:3,background:rc}}/>
-                      <span style={{fontSize:14,fontWeight:800,color:"#dde1ec"}}>{r}</span>
+                      <span style={{fontSize:14,fontWeight:800,color:"var(--text)"}}>{r}</span>
                     </div>
                     <span className="mn" style={{fontSize:10,color:rc}}>{cnt} user{cnt!==1?"s":""}</span>
                   </div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                     {perms.map(p=>(
-                      <span key={p} style={{fontSize:9,fontWeight:600,padding:"3px 8px",borderRadius:6,background:"rgba(99,179,237,.06)",color:"#7a8299",border:"1px solid #1e2535"}}>{p}</span>
+                      <span key={p} style={{fontSize:9,fontWeight:600,padding:"3px 8px",borderRadius:6,background:"rgba(99,179,237,.06)",color:"var(--text-muted)",border:"1px solid var(--border-2)"}}>{p}</span>
                     ))}
                   </div>
                 </div>
@@ -3752,12 +3756,12 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
               <div style={{fontSize:16,fontWeight:800}}>Business Information</div>
-              <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Business info, defaults, and document footers</div>
+              <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Business info, defaults, and document footers</div>
             </div>
             <button onClick={saveCompany} className={`bb ${dirty?"b-bl":"b-gh"}`} style={{padding:"8px 18px",fontSize:12}}><I n="check" s={13}/>Save Changes</button>
           </div>
 
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"18px 22px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"18px 22px"}}>
             <div className="stl">Business Information</div>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               <div className="g2">
@@ -3780,7 +3784,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
             </div>
           </div>
 
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"18px 22px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"18px 22px"}}>
             <div className="stl">Default Settings</div>
             <div className="g3">
               <div><label className="lbl">Default Tax Rate %</label><input className="inp" type="number" step=".1" value={form.defaultTaxRate} onChange={e=>upd("defaultTaxRate",Number(e.target.value)||0)}/></div>
@@ -3789,7 +3793,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
             </div>
           </div>
 
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"18px 22px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"18px 22px"}}>
             <div className="stl">Document Footers</div>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               <div><label className="lbl">Invoice Footer</label><textarea className="inp" value={form.invoiceFooter} onChange={e=>upd("invoiceFooter",e.target.value)} rows={2} style={{resize:"vertical",lineHeight:1.6}}/></div>
@@ -3799,7 +3803,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
 
           <div style={{background:"rgba(59,130,246,.04)",border:"1px solid rgba(59,130,246,.15)",borderRadius:10,padding:"12px 16px"}}>
             <div style={{fontSize:10,fontWeight:700,color:"#3b82f6",textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>Current Configuration</div>
-            <div style={{display:"flex",gap:16,flexWrap:"wrap",fontSize:11,color:"#7a8299"}}>
+            <div style={{display:"flex",gap:16,flexWrap:"wrap",fontSize:11,color:"var(--text-muted)"}}>
               <span>Tax: <span className="mn" style={{color:"#f5a623"}}>{form.defaultTaxRate}%</span></span>
               <span>Terms: <span className="mn" style={{color:"#3b82f6"}}>Net {form.paymentTerms}</span></span>
               <span>Burden: <span className="mn" style={{color:"#ef4444"}}>{form.laborBurdenDefault}%</span></span>
@@ -3816,7 +3820,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
               <div style={{fontSize:16,fontWeight:800}}>Email & Notification Setup</div>
-              <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Configure outgoing email for estimates, invoices, and payment reminders</div>
+              <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Configure outgoing email for estimates, invoices, and payment reminders</div>
             </div>
             <div style={{display:"flex",gap:8}}>
               <button onClick={sendTestEmail} disabled={testingEmail} className="bb b-am" style={{padding:"8px 14px",fontSize:11}}><I n="send" s={12}/>{testingEmail?"Sending...":"Send Test"}</button>
@@ -3825,7 +3829,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           </div>
 
           {/* SMTP Settings */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"18px 22px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"18px 22px"}}>
             <div className="stl">SMTP Server Configuration</div>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               <div className="g3">
@@ -3834,7 +3838,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
                 <div><label className="lbl">Encryption</label>
                   <div style={{display:"flex",gap:8,marginTop:2}}>
                     {["TLS","SSL","None"].map(s=>(
-                      <button key={s} onClick={()=>upd("smtpSecure",s!=="None")} style={{flex:1,padding:"8px 0",borderRadius:8,fontSize:11,fontWeight:700,border:"1px solid "+(form.smtpSecure===(s!=="None")?"#3b82f6":"#1e2535"),background:form.smtpSecure===(s!=="None")?"rgba(59,130,246,.1)":"transparent",color:form.smtpSecure===(s!=="None")?"#63b3ed":"#4a566e",cursor:"pointer",transition:"all .15s"}}>{s}</button>
+                      <button key={s} onClick={()=>upd("smtpSecure",s!=="None")} style={{flex:1,padding:"8px 0",borderRadius:8,fontSize:11,fontWeight:700,border:"1px solid "+(form.smtpSecure===(s!=="None")?"#3b82f6":"var(--border-2)"),background:form.smtpSecure===(s!=="None")?"rgba(59,130,246,.1)":"transparent",color:form.smtpSecure===(s!=="None")?"#63b3ed":"var(--text-dim)",cursor:"pointer",transition:"all .15s"}}>{s}</button>
                     ))}
                   </div>
                 </div>
@@ -3847,7 +3851,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           </div>
 
           {/* Sender identity */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"18px 22px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"18px 22px"}}>
             <div className="stl">Sender Identity</div>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               <div className="g2">
@@ -3859,16 +3863,16 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           </div>
 
           {/* Email templates */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"18px 22px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"18px 22px"}}>
             <div className="stl">Email Templates</div>
-            <div style={{fontSize:10,color:"#4a566e",marginBottom:12,lineHeight:1.6}}>Use placeholders: <span className="mn" style={{color:"#63b3ed",fontSize:9}}>{"{customer}"} {"{company}"} {"{number}"} {"{project}"} {"{total}"} {"{dueDate}"}</span></div>
+            <div style={{fontSize:10,color:"var(--text-dim)",marginBottom:12,lineHeight:1.6}}>Use placeholders: <span className="mn" style={{color:"#63b3ed",fontSize:9}}>{"{customer}"} {"{company}"} {"{number}"} {"{project}"} {"{total}"} {"{dueDate}"}</span></div>
             <div style={{display:"flex",flexDirection:"column",gap:14}}>
-              <div style={{padding:"14px 16px",background:"#080a0f",borderRadius:10,border:"1px solid #111826"}}>
+              <div style={{padding:"14px 16px",background:"var(--bg)",borderRadius:10,border:"1px solid var(--border)"}}>
                 <div style={{fontSize:12,fontWeight:700,color:"#14b8a6",marginBottom:8,display:"flex",alignItems:"center",gap:6}}><I n="estimates" s={13}/>Estimate Email</div>
                 <div style={{marginBottom:8}}><label className="lbl">Subject Line</label><input className="inp" value={form.emailSubjectEstimate||""} onChange={e=>upd("emailSubjectEstimate",e.target.value)}/></div>
                 <div><label className="lbl">Body</label><textarea className="inp" value={form.emailBodyEstimate||""} onChange={e=>upd("emailBodyEstimate",e.target.value)} rows={4} style={{resize:"vertical",lineHeight:1.6,fontSize:12}}/></div>
               </div>
-              <div style={{padding:"14px 16px",background:"#080a0f",borderRadius:10,border:"1px solid #111826"}}>
+              <div style={{padding:"14px 16px",background:"var(--bg)",borderRadius:10,border:"1px solid var(--border)"}}>
                 <div style={{fontSize:12,fontWeight:700,color:"#3b82f6",marginBottom:8,display:"flex",alignItems:"center",gap:6}}><I n="invoices" s={13}/>Invoice Email</div>
                 <div style={{marginBottom:8}}><label className="lbl">Subject Line</label><input className="inp" value={form.emailSubjectInvoice||""} onChange={e=>upd("emailSubjectInvoice",e.target.value)}/></div>
                 <div><label className="lbl">Body</label><textarea className="inp" value={form.emailBodyInvoice||""} onChange={e=>upd("emailBodyInvoice",e.target.value)} rows={4} style={{resize:"vertical",lineHeight:1.6,fontSize:12}}/></div>
@@ -3877,7 +3881,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           </div>
 
           {/* Notification triggers */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"18px 22px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"18px 22px"}}>
             <div className="stl">Automatic Notifications</div>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               {[
@@ -3889,10 +3893,10 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
                 {k:"notifyInvoiceOverdue",l:"Invoice Overdue",d:"Auto-send overdue notice to customer",icon:"alert",c:"#ef4444"},
                 {k:"notifyPaymentReminder",l:"Payment Reminder",d:"Send reminder before due date",icon:"clock",c:"#f5a623"},
               ].map(n=>(
-                <div key={n.k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #0e1119"}}>
+                <div key={n.k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid var(--border)"}}>
                   <div style={{display:"flex",alignItems:"center",gap:10,flex:1}}>
                     <div style={{color:n.c}}><I n={n.icon} s={15}/></div>
-                    <div><div style={{fontSize:12,fontWeight:600,color:"#c8d0e0"}}>{n.l}</div><div style={{fontSize:10,color:"#4a566e"}}>{n.d}</div></div>
+                    <div><div style={{fontSize:12,fontWeight:600,color:"var(--text-2)"}}>{n.l}</div><div style={{fontSize:10,color:"var(--text-dim)"}}>{n.d}</div></div>
                   </div>
                   <ToggleSwitch on={form[n.k]!==false} onChange={v=>upd(n.k,v)}/>
                 </div>
@@ -3921,29 +3925,29 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
               <div style={{fontSize:16,fontWeight:800}}>Theme & Branding</div>
-              <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>Upload your company logo and choose your accent color</div>
+              <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>Upload your company logo and choose your accent color</div>
             </div>
             <button onClick={saveCompany} className={`bb ${dirty?"b-bl":"b-gh"}`} style={{padding:"8px 18px",fontSize:12}}><I n="check" s={13}/>Save Changes</button>
           </div>
 
           {/* Company logo */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:14,padding:"24px 28px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:14,padding:"24px 28px"}}>
             <div className="stl">Company Logo</div>
             <div style={{display:"flex",gap:24,alignItems:"flex-start"}}>
-              <div style={{width:140,height:140,borderRadius:14,border:"2px dashed "+(form.logo?"transparent":"#1e2535"),background:form.logo?"transparent":"#080a0f",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0,position:"relative",cursor:"pointer",transition:"border-color .2s"}} onClick={()=>logoRef.current?.click()} onMouseEnter={e=>{if(!form.logo)e.currentTarget.style.borderColor="#3b82f6";}} onMouseLeave={e=>{if(!form.logo)e.currentTarget.style.borderColor="#1e2535";}}>
+              <div style={{width:140,height:140,borderRadius:14,border:"2px dashed "+(form.logo?"transparent":"var(--border-2)"),background:form.logo?"transparent":"var(--bg-sidebar)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0,position:"relative",cursor:"pointer",transition:"border-color .2s"}} onClick={()=>logoRef.current?.click()} onMouseEnter={e=>{if(!form.logo)e.currentTarget.style.borderColor="#3b82f6";}} onMouseLeave={e=>{if(!form.logo)e.currentTarget.style.borderColor="var(--border-2)";}}>
                 {form.logo ? (
                   <img src={form.logo} alt="Company Logo" style={{width:"100%",height:"100%",objectFit:"contain",padding:8}}/>
                 ) : (
                   <>
                     <I n="image" s={28}/>
-                    <div style={{fontSize:10,color:"#4a566e",marginTop:6,fontWeight:600}}>Click to upload</div>
-                    <div style={{fontSize:9,color:"#3a4160",marginTop:2}}>PNG, JPG, SVG</div>
+                    <div style={{fontSize:10,color:"var(--text-dim)",marginTop:6,fontWeight:600}}>Click to upload</div>
+                    <div style={{fontSize:9,color:"var(--text-faint)",marginTop:2}}>PNG, JPG, SVG</div>
                   </>
                 )}
               </div>
               <div style={{flex:1}}>
-                <div style={{fontSize:13,fontWeight:700,color:"#c8d0e0",marginBottom:6}}>Logo Guidelines</div>
-                <div style={{fontSize:11,color:"#4a566e",lineHeight:1.8}}>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--text-2)",marginBottom:6}}>Logo Guidelines</div>
+                <div style={{fontSize:11,color:"var(--text-dim)",lineHeight:1.8}}>
                   Your logo appears on printed estimates, invoices, and PDF exports. For best results use a transparent PNG or SVG at least 400px wide. Max file size is 5MB.
                 </div>
                 <div style={{display:"flex",gap:8,marginTop:14}}>
@@ -3966,9 +3970,9 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           </div>
 
           {/* Accent color */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:14,padding:"24px 28px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:14,padding:"24px 28px"}}>
             <div className="stl">Accent Color</div>
-            <div style={{fontSize:11,color:"#4a566e",marginBottom:16}}>Choose a primary accent color for your workspace. This color is used for buttons, links, active states, and document headers.</div>
+            <div style={{fontSize:11,color:"var(--text-dim)",marginBottom:16}}>Choose a primary accent color for your workspace. This color is used for buttons, links, active states, and document headers.</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(90px,1fr))",gap:10,marginBottom:18}}>
               {[
                 {name:"Ocean Blue",color:"#3b82f6"},
@@ -3986,23 +3990,23 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
               ].map(t=>{
                 const active=form.themeAccent===t.color;
                 return (
-                  <button key={t.color} onClick={()=>{upd("themeAccent",t.color);upd("themeName",t.name);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,padding:"12px 8px",borderRadius:10,border:active?("2px solid "+t.color):"2px solid #111826",background:active?(t.color+"10"):"transparent",cursor:"pointer",transition:"all .18s"}} onMouseEnter={e=>{if(!active)e.currentTarget.style.borderColor=t.color+"60";}} onMouseLeave={e=>{if(!active)e.currentTarget.style.borderColor=active?t.color:"#111826";}}>
+                  <button key={t.color} onClick={()=>{upd("themeAccent",t.color);upd("themeName",t.name);}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,padding:"12px 8px",borderRadius:10,border:active?("2px solid "+t.color):"2px solid var(--border)",background:active?(t.color+"10"):"transparent",cursor:"pointer",transition:"all .18s"}} onMouseEnter={e=>{if(!active)e.currentTarget.style.borderColor=t.color+"60";}} onMouseLeave={e=>{if(!active)e.currentTarget.style.borderColor=active?t.color:"var(--border)";}}>
                     <div style={{width:32,height:32,borderRadius:"50%",background:t.color,boxShadow:active?("0 4px 16px "+t.color+"50"):"none",transition:"box-shadow .2s",display:"flex",alignItems:"center",justifyContent:"center"}}>{active&&<I n="check" s={14}/>}</div>
-                    <span style={{fontSize:9,fontWeight:active?700:500,color:active?t.color:"#4a566e"}}>{t.name}</span>
+                    <span style={{fontSize:9,fontWeight:active?700:500,color:active?t.color:"var(--text-dim)"}}>{t.name}</span>
                   </button>
                 );
               })}
             </div>
 
             {/* Custom color picker */}
-            <div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:"#080a0f",borderRadius:10,border:"1px solid #111826"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:"var(--bg)",borderRadius:10,border:"1px solid var(--border)"}}>
               <input type="color" value={form.themeAccent||"var(--accent)"} onChange={e=>{upd("themeAccent",e.target.value);upd("themeName","Custom");}} style={{width:36,height:36,border:"none",borderRadius:8,cursor:"pointer",background:"none",padding:0}}/>
               <div>
-                <div style={{fontSize:12,fontWeight:700,color:"#c8d0e0"}}>Custom Color</div>
-                <div className="mn" style={{fontSize:11,color:"#4a566e"}}>{form.themeAccent||"var(--accent)"}</div>
+                <div style={{fontSize:12,fontWeight:700,color:"var(--text-2)"}}>Custom Color</div>
+                <div className="mn" style={{fontSize:11,color:"var(--text-dim)"}}>{form.themeAccent||"var(--accent)"}</div>
               </div>
               <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:10,color:"#4a566e"}}>Current:</span>
+                <span style={{fontSize:10,color:"var(--text-dim)"}}>Current:</span>
                 <div style={{width:20,height:20,borderRadius:5,background:form.themeAccent||"var(--accent)"}}/>
                 <span className="mn" style={{fontSize:10,color:form.themeAccent||"var(--accent)"}}>{form.themeName||"Ocean Blue"}</span>
               </div>
@@ -4010,16 +4014,16 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
           </div>
 
           {/* Preview section */}
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:14,padding:"24px 28px"}}>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:14,padding:"24px 28px"}}>
             <div className="stl">Live Preview</div>
             <div style={{display:"flex",gap:14,flexWrap:"wrap",alignItems:"center",marginBottom:16}}>
               <button style={{padding:"9px 18px",borderRadius:8,background:form.themeAccent||"var(--accent)",color:"#fff",fontWeight:700,fontSize:12,border:"none",fontFamily:"inherit"}}>Primary Button</button>
               <button style={{padding:"9px 18px",borderRadius:8,background:"transparent",color:form.themeAccent||"var(--accent)",fontWeight:700,fontSize:12,border:"1px solid "+(form.themeAccent||"var(--accent)"),fontFamily:"inherit"}}>Ghost Button</button>
               <span style={{fontSize:10,fontWeight:700,padding:"4px 11px",borderRadius:10,background:(form.themeAccent||"var(--accent)")+"18",color:form.themeAccent||"var(--accent)"}}>Status Chip</span>
-              <div style={{height:6,width:120,borderRadius:3,background:"#1e2535",overflow:"hidden"}}><div style={{height:"100%",width:"68%",borderRadius:3,background:form.themeAccent||"var(--accent)"}}/></div>
-              <div style={{display:"flex",alignItems:"center",gap:5}}><div style={{width:12,height:12,borderRadius:3,background:form.themeAccent||"var(--accent)"}}/><span style={{fontSize:11,color:"#7a8299"}}>Legend item</span></div>
+              <div style={{height:6,width:120,borderRadius:3,background:"var(--border)",overflow:"hidden"}}><div style={{height:"100%",width:"68%",borderRadius:3,background:form.themeAccent||"var(--accent)"}}/></div>
+              <div style={{display:"flex",alignItems:"center",gap:5}}><div style={{width:12,height:12,borderRadius:3,background:form.themeAccent||"var(--accent)"}}/><span style={{fontSize:11,color:"var(--text-muted)"}}>Legend item</span></div>
             </div>
-            <div style={{padding:"12px 16px",background:"#080a0f",borderRadius:8,border:"1px solid #111826",fontSize:11,color:"#4a566e",lineHeight:1.7}}>
+            <div style={{padding:"12px 16px",background:"var(--bg)",borderRadius:8,border:"1px solid var(--border)",fontSize:11,color:"var(--text-dim)",lineHeight:1.7}}>
               This preview shows how your accent color will appear across the app. The sidebar active state, buttons, progress bars, charts, and status chips will all use <span style={{color:form.themeAccent||"var(--accent)",fontWeight:700}}>{form.themeName||"Ocean Blue"}</span> as the primary accent.
             </div>
           </div>
@@ -4030,9 +4034,9 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
       {uForm&&(
         <div className="ov" onClick={()=>setUForm(null)}>
           <div className="mo" style={{maxWidth:520,marginTop:60}} onClick={e=>e.stopPropagation()}>
-            <div style={{padding:"16px 20px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"16px 20px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontWeight:800,fontSize:15}}>{uForm._id?"Edit User":"Invite New User"}</div>
-              <button onClick={()=>setUForm(null)} style={{color:"#4a566e",padding:4}}><I n="x" s={16}/></button>
+              <button onClick={()=>setUForm(null)} style={{color:"var(--text-dim)",padding:4}}><I n="x" s={16}/></button>
             </div>
             <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
               <div className="g2">
@@ -4059,16 +4063,16 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
                 </div>
               )}
               {/* Role permission preview */}
-              <div style={{background:"#080a0f",border:"1px solid #111826",borderRadius:10,padding:"12px 14px"}}>
-                <div style={{fontSize:10,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.5,marginBottom:8}}>Permissions for {uForm.role}</div>
+              <div style={{background:"var(--bg)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 14px"}}>
+                <div style={{fontSize:10,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.5,marginBottom:8}}>Permissions for {uForm.role}</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
                   {(USER_ROLE_PERMS[uForm.role]||[]).map(p=>(
-                    <span key={p} style={{fontSize:9,fontWeight:600,padding:"3px 8px",borderRadius:6,background:`${USER_ROLE_C[uForm.role]||"#4a566e"}12`,color:USER_ROLE_C[uForm.role]||"#7a8299",border:"1px solid #1e2535"}}>{p}</span>
+                    <span key={p} style={{fontSize:9,fontWeight:600,padding:"3px 8px",borderRadius:6,background:`${USER_ROLE_C[uForm.role]||"#4a566e"}12`,color:USER_ROLE_C[uForm.role]||"var(--text-muted)",border:"1px solid var(--border-2)"}}>{p}</span>
                   ))}
                 </div>
               </div>
             </div>
-            <div style={{padding:"14px 20px",borderTop:"1px solid #1e2535",display:"flex",justifyContent:"flex-end",gap:9}}>
+            <div style={{padding:"14px 20px",borderTop:"1px solid var(--border-2)",display:"flex",justifyContent:"flex-end",gap:9}}>
               <button onClick={()=>setUForm(null)} className="bb b-gh" style={{padding:"8px 16px",fontSize:12}}>Cancel</button>
               <button onClick={saveUser} className="bb b-bl" style={{padding:"8px 20px",fontSize:12}}><I n={uForm._id?"check":"send"} s={13}/>{uForm._id?"Save Changes":"Send Invite"}</button>
             </div>
@@ -4118,22 +4122,22 @@ function EmailSendModal({type,docNumber,customer,total,dueDate,project,company,o
   return (
     <div className="ov" onClick={onClose}>
       <div className="mo" style={{maxWidth:580,marginTop:50}} onClick={e=>e.stopPropagation()}>
-        <div style={{padding:"16px 20px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{padding:"16px 20px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <div style={{width:32,height:32,borderRadius:8,background:type==="estimate"?"rgba(20,184,166,.12)":"rgba(59,130,246,.12)",display:"flex",alignItems:"center",justifyContent:"center",color:type==="estimate"?"#14b8a6":"#3b82f6"}}><I n="mail" s={16}/></div>
             <div>
               <div style={{fontWeight:800,fontSize:14}}>Email {type==="estimate"?"Estimate":"Invoice"}</div>
-              <div className="mn" style={{fontSize:10,color:"#4a566e"}}>{docNumber}</div>
+              <div className="mn" style={{fontSize:10,color:"var(--text-dim)"}}>{docNumber}</div>
             </div>
           </div>
-          <button onClick={onClose} style={{color:"#4a566e",padding:4}}><I n="x" s={16}/></button>
+          <button onClick={onClose} style={{color:"var(--text-dim)",padding:4}}><I n="x" s={16}/></button>
         </div>
 
         {sent ? (
           <div style={{padding:"40px 20px",display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
             <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(34,197,94,.12)",display:"flex",alignItems:"center",justifyContent:"center",color:"#22c55e"}}><I n="check" s={26}/></div>
             <div style={{fontSize:16,fontWeight:800,color:"#22c55e"}}>Email Sent!</div>
-            <div style={{fontSize:12,color:"#7a8299"}}>{type==="estimate"?"Estimate":"Invoice"} {docNumber} sent to {to}</div>
+            <div style={{fontSize:12,color:"var(--text-muted)"}}>{type==="estimate"?"Estimate":"Invoice"} {docNumber} sent to {to}</div>
           </div>
         ) : (
           <>
@@ -4143,7 +4147,7 @@ function EmailSendModal({type,docNumber,customer,total,dueDate,project,company,o
                 <label className="lbl">To</label>
                 <div style={{display:"flex",gap:8,alignItems:"center"}}>
                   <input className="inp" type="email" value={to} onChange={e=>setTo(e.target.value)} placeholder="customer@email.com" style={{flex:1}} onKeyDown={e=>e.key==="Enter"&&handleSend()}/>
-                  {customer?.name&&<span style={{fontSize:10,color:"#4a566e",whiteSpace:"nowrap"}}>{customer.name}</span>}
+                  {customer?.name&&<span style={{fontSize:10,color:"var(--text-dim)",whiteSpace:"nowrap"}}>{customer.name}</span>}
                 </div>
               </div>
               <div>
@@ -4160,23 +4164,23 @@ function EmailSendModal({type,docNumber,customer,total,dueDate,project,company,o
               </div>
 
               {/* Attachment preview */}
-              <div style={{background:"#080a0f",border:"1px solid #111826",borderRadius:10,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+              <div style={{background:"var(--bg)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
                 <div style={{width:36,height:36,borderRadius:8,background:type==="estimate"?"rgba(20,184,166,.1)":"rgba(59,130,246,.1)",display:"flex",alignItems:"center",justifyContent:"center",color:type==="estimate"?"#14b8a6":"#3b82f6",flexShrink:0}}><I n={type==="estimate"?"estimates":"invoices"} s={16}/></div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:12,fontWeight:700,color:"#c8d0e0",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{docNumber}.pdf</div>
-                  <div style={{fontSize:9,color:"#4a566e"}}>PDF attachment · Auto-generated</div>
+                  <div style={{fontSize:12,fontWeight:700,color:"var(--text-2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{docNumber}.pdf</div>
+                  <div style={{fontSize:9,color:"var(--text-dim)"}}>PDF attachment · Auto-generated</div>
                 </div>
                 <span style={{fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:6,background:"rgba(34,197,94,.1)",color:"#22c55e"}}>Attached</span>
               </div>
 
               {/* From info */}
-              <div style={{display:"flex",gap:12,fontSize:10,color:"#3a4160"}}>
-                <span>From: <span style={{color:"#7a8299"}}>{company.emailFromName||company.name||"—"}</span></span>
-                <span>Reply-To: <span style={{color:"#7a8299"}}>{company.emailReplyTo||company.email||"—"}</span></span>
+              <div style={{display:"flex",gap:12,fontSize:10,color:"var(--text-faint)"}}>
+                <span>From: <span style={{color:"var(--text-muted)"}}>{company.emailFromName||company.name||"—"}</span></span>
+                <span>Reply-To: <span style={{color:"var(--text-muted)"}}>{company.emailReplyTo||company.email||"—"}</span></span>
               </div>
             </div>
 
-            <div style={{padding:"14px 20px",borderTop:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"14px 20px",borderTop:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <button onClick={onClose} className="bb b-gh" style={{padding:"8px 16px",fontSize:12}}>Cancel</button>
               <button onClick={handleSend} disabled={sending||!to.trim()} className="bb b-bl" style={{padding:"8px 20px",fontSize:12,opacity:(!to.trim()?.length)?0.5:1}}>
                 {sending ? (<><div style={{width:14,height:14,border:"2px solid rgba(255,255,255,.3)",borderTop:"2px solid #fff",borderRadius:"50%",animation:"pulse 1s linear infinite"}}/> Sending...</>) : (<><I n="send" s={13}/>Send Email</>)}
@@ -4335,21 +4339,21 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
     <div style={{display:"flex",flexDirection:"column",gap:12,height:"100%"}}>
     {!editForm?(<>
       <div className="g4">
-        {[{l:"Collected",v:fmt(arKpis.coll),c:"#22c55e"},{l:"Overdue",v:fmt(arKpis.ov),c:"#ef4444"},{l:"Sent / Pending",v:fmt(arKpis.sent),c:"#f5a623"},{l:"Draft",v:fmt(arKpis.draft),c:"#4a566e"}].map(k=>(
+        {[{l:"Collected",v:fmt(arKpis.coll),c:"#22c55e"},{l:"Overdue",v:fmt(arKpis.ov),c:"#ef4444"},{l:"Sent / Pending",v:fmt(arKpis.sent),c:"#f5a623"},{l:"Draft",v:fmt(arKpis.draft),c:"var(--text-dim)"}].map(k=>(
           <KpiCard key={k.l} label={k.l} val={k.v} sub="" color={k.c}/>
         ))}
       </div>
 
       <div className="spl" style={{flex:1}}>
         <div className="spl-l">
-          <div style={{padding:"10px 12px",borderBottom:"1px solid #111826",flexShrink:0}}>
+          <div style={{padding:"10px 12px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
             <div style={{display:"flex",gap:7,marginBottom:7}}>
-              <span style={{flex:1,fontSize:10,color:"#4a566e",fontWeight:700,display:"flex",alignItems:"center"}}>{filt.length} INVOICES</span>
+              <span style={{flex:1,fontSize:10,color:"var(--text-dim)",fontWeight:700,display:"flex",alignItems:"center"}}>{filt.length} INVOICES</span>
               <button onClick={()=>setNewMd("pick")} className="bb b-bl" style={{padding:"7px 11px",fontSize:11}}><I n="plus" s={11}/>New</button>
             </div>
-            <div style={{display:"flex",borderRadius:7,overflow:"hidden",border:"1px solid #111826"}}>
+            <div style={{display:"flex",borderRadius:7,overflow:"hidden",border:"1px solid var(--border)"}}>
               {[["all",`All (${cnts.all})`],["draft",`Draft (${cnts.draft})`],["sent",`Sent (${cnts.sent})`],["overdue",`OD (${cnts.overdue})`],["paid",`Paid (${cnts.paid})`]].map(([v,l])=>(
-                <button key={v} onClick={()=>setStF(v)} style={{flex:1,padding:"4px 2px",fontSize:8,fontWeight:700,background:stF===v?"rgba(59,130,246,.15)":"transparent",color:stF===v?"#63b3ed":"#4a566e",borderRight:"1px solid #111826",transition:"all .13s"}}>{l}</button>
+                <button key={v} onClick={()=>setStF(v)} style={{flex:1,padding:"4px 2px",fontSize:8,fontWeight:700,background:stF===v?"rgba(59,130,246,.15)":"transparent",color:stF===v?"#63b3ed":"var(--text-dim)",borderRight:"1px solid var(--border)",transition:"all .13s"}}>{l}</button>
               ))}
             </div>
           </div>
@@ -4359,29 +4363,29 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
               const calc=calcInv(inv.lineItems,inv.taxRate,inv.discount||0);
               const is=sel===inv.id;
               const sc=INV_SC[inv.status]||INV_SC.draft;
-              return <div key={inv.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(inv.id)} style={{padding:"10px 12px",borderBottom:"1px solid #0e1119",background:is?"rgba(59,130,246,.06)":"transparent"}}>
+              return <div key={inv.id} className={`sl ${is?"on":""}`} onClick={()=>setSel(inv.id)} style={{padding:"10px 12px",borderBottom:"1px solid var(--border)",background:is?"rgba(59,130,246,.06)":"transparent"}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
-                  <span className="mn" style={{fontSize:10,color:is?"#63b3ed":"#4a566e"}}>{inv.number}</span>
+                  <span className="mn" style={{fontSize:10,color:is?"#63b3ed":"var(--text-dim)"}}>{inv.number}</span>
                   <span style={{padding:"2px 6px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:sc.bg,color:sc.c}}>{sc.label}</span>
                 </div>
-                <div style={{fontSize:12,color:is?"#e2e8f0":"#c8d0e0",fontWeight:600}}>{c?.name||"Unassigned"}</div>
+                <div style={{fontSize:12,color:is?"var(--text)":"var(--text-2)",fontWeight:600}}>{c?.name||"Unassigned"}</div>
                 <div style={{display:"flex",justifyContent:"space-between",marginTop:2}}>
-                  <div style={{fontSize:10,color:"#3a4160"}}>Due {inv.dueDate}</div>
+                  <div style={{fontSize:10,color:"var(--text-faint)"}}>Due {inv.dueDate}</div>
                   <div className="mn" style={{fontSize:12,color:"#22c55e"}}>{fmt(calc.total)}</div>
                 </div>
               </div>;
             })}
-            {filt.length===0&&<div style={{padding:"28px",textAlign:"center",color:"#2d3a52",fontSize:12}}>No invoices</div>}
+            {filt.length===0&&<div style={{padding:"28px",textAlign:"center",color:"var(--text-ghost)",fontSize:12}}>No invoices</div>}
           </div>
         </div>
 
         {si?(
           <div className="spl-r">
-            <div style={{padding:"14px 20px",borderBottom:"1px solid #111826",flexShrink:0}}>
+            <div style={{padding:"14px 20px",borderBottom:"1px solid var(--border)",flexShrink:0}}>
               <div className="inv-detail-header" style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:9}}>
                 <div style={{minWidth:0}}>
-                  <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}><span className="mn" style={{fontSize:16,color:"#e2e8f0"}}>{si.number}</span><Chip s={si.status} map={INV_SC}/></div>
-                  <div style={{fontSize:11,color:"#4a566e",marginTop:2}}>{custs.find(c=>c.id===si.custId)?.name||"Unassigned"} · Issued {si.issueDate} · Due {si.dueDate}{si.paidDate?` · Paid ${si.paidDate}`:""}</div>
+                  <div style={{display:"flex",gap:9,alignItems:"center",flexWrap:"wrap"}}><span className="mn" style={{fontSize:16,color:"var(--text-2)"}}>{si.number}</span><Chip s={si.status} map={INV_SC}/></div>
+                  <div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>{custs.find(c=>c.id===si.custId)?.name||"Unassigned"} · Issued {si.issueDate} · Due {si.dueDate}{si.paidDate?` · Paid ${si.paidDate}`:""}</div>
                 </div>
                 <div className="act-bar" style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                   {si.status==="draft"&&<button onClick={()=>setStatus(si.id,"sent")} className="bb b-am" style={{padding:"5px 10px",fontSize:11}}><I n="send" s={11}/>Send</button>}
@@ -4397,9 +4401,9 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                 </div>
               </div>
               <div className="inv-kpi-row" style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {[{l:"Labor",v:fmt(siC.lab),c:"#f5a623"},{l:"Materials",v:fmt(siC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(siC.sub),c:"#dde1ec"},...(siC.discountPct>0?[{l:`Disc ${siC.discountPct}%`,v:`−${fmt(siC.discAmt)}`,c:"#a78bfa"}]:[]),{l:`Tax ${si.taxRate}%`,v:fmt(siC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(siC.total),c:"#22c55e",big:true},...(siC.depAmt>0?[{l:"Deposit",v:fmt(siC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(siC.balanceDue),c:"#63b3ed",big:true}]:[])].map(k=>(
-                  <div key={k.l} style={{background:"#0c0f17",border:`1px solid ${k.big?"rgba(34,197,94,.28)":"#111826"}`,borderRadius:8,padding:"6px 11px"}}>
-                    <div style={{fontSize:8,color:"#3a4160",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
+                {[{l:"Labor",v:fmt(siC.lab),c:"#f5a623"},{l:"Materials",v:fmt(siC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(siC.sub),c:"var(--text)"},...(siC.discountPct>0?[{l:`Disc ${siC.discountPct}%`,v:`−${fmt(siC.discAmt)}`,c:"#a78bfa"}]:[]),{l:`Tax ${si.taxRate}%`,v:fmt(siC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(siC.total),c:"#22c55e",big:true},...(siC.depAmt>0?[{l:"Deposit",v:fmt(siC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(siC.balanceDue),c:"#63b3ed",big:true}]:[])].map(k=>(
+                  <div key={k.l} style={{background:"var(--bg-card)",border:`1px solid ${k.big?"rgba(34,197,94,.28)":"var(--border)"}`,borderRadius:8,padding:"6px 11px"}}>
+                    <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
                     <div className="mn" style={{fontSize:k.big?14:11,color:k.c,marginTop:2}}>{k.v}</div>
                   </div>
                 ))}
@@ -4414,20 +4418,20 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                 const coLabItems=coItems.filter(l=>!l.isMaterial);
                 const coMatItems=coItems.filter(l=>l.isMaterial);
                 const renderSection=(title,items,color,qtyLabel)=>(
-                  items.length>0&&<div style={{border:"1px solid #111826",borderRadius:11,overflow:"hidden",marginBottom:12}}>
-                    <div style={{padding:"8px 14px",background:"#0a0d15",borderBottom:"1px solid #111826",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  items.length>0&&<div style={{border:"1px solid var(--border)",borderRadius:11,overflow:"hidden",marginBottom:12}}>
+                    <div style={{padding:"8px 14px",background:"var(--bg-sidebar)",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div style={{fontWeight:700,fontSize:11,color}}><I n={title==="Labor"||title==="CO Labor"?"wrench":"materials"} s={12}/> {title}</div>
                       <span className="mn" style={{fontSize:11,color}}>{fmt(items.reduce((s,l)=>s+l.qty*l.unitPrice,0))}</span>
                     </div>
                     <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-                      <thead><tr style={{background:"#0a0d15"}}>{["#","Description",qtyLabel,"Rate","Total"].map(h=><th key={h} style={{padding:"6px 12px",textAlign:"left",fontSize:8,fontWeight:700,color:"#4a566e",textTransform:"uppercase",borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+                      <thead><tr style={{background:"var(--bg-sidebar)"}}>{["#","Description",qtyLabel,"Rate","Total"].map(h=><th key={h} style={{padding:"6px 12px",textAlign:"left",fontSize:8,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                       <tbody>
                         {items.map((li,i)=>(
-                          <tr key={li.id} className="rh" style={{borderTop:i>0?"1px solid #0e1119":"none"}}>
-                            <td style={{padding:"7px 12px",color:"#4a566e",fontSize:10}}>{i+1}</td>
-                            <td style={{padding:"7px 12px",color:"#c8d0e0"}}>{li.description}</td>
-                            <td className="mn" style={{padding:"7px 12px",color:"#7a8299"}}>{li.qty}{qtyLabel==="Hours"?" hrs":""}</td>
-                            <td className="mn" style={{padding:"7px 12px",color:"#dde1ec"}}>{fmtD(li.unitPrice)}{qtyLabel==="Hours"?"/hr":""}</td>
+                          <tr key={li.id} className="rh" style={{borderTop:i>0?"1px solid var(--border)":"none"}}>
+                            <td style={{padding:"7px 12px",color:"var(--text-dim)",fontSize:10}}>{i+1}</td>
+                            <td style={{padding:"7px 12px",color:"var(--text-2)"}}>{li.description}</td>
+                            <td className="mn" style={{padding:"7px 12px",color:"var(--text-muted)"}}>{li.qty}{qtyLabel==="Hours"?" hrs":""}</td>
+                            <td className="mn" style={{padding:"7px 12px",color:"var(--text)"}}>{fmtD(li.unitPrice)}{qtyLabel==="Hours"?"/hr":""}</td>
                             <td className="mn" style={{padding:"7px 12px",color:"#22c55e",fontWeight:700}}>{fmtD(li.qty*li.unitPrice)}</td>
                           </tr>
                         ))}
@@ -4440,7 +4444,7 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                   {renderSection("Labor",labItems,"#f5a623","Hours")}
                   {renderSection("Materials",matItems,"#6c8ebf","Qty")}
                   {coItems.length>0&&(<>
-                    <div style={{marginTop:8,marginBottom:4,paddingTop:10,borderTop:"1px dashed #1e2535"}}><div className="stl" style={{color:"#a78bfa"}}>Change Orders</div></div>
+                    <div style={{marginTop:8,marginBottom:4,paddingTop:10,borderTop:"1px dashed var(--border-2)"}}><div className="stl" style={{color:"#a78bfa"}}>Change Orders</div></div>
                     {renderSection("CO Labor",coLabItems,"#a78bfa","Qty")}
                     {renderSection("CO Materials",coMatItems,"#8b5cf6","Qty")}
                     <div style={{background:"rgba(167,139,250,.06)",border:"1px solid rgba(167,139,250,.15)",borderRadius:9,padding:"8px 12px",marginBottom:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -4450,19 +4454,19 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                   </>)}
                 </>;
               })()}
-              <div style={{border:"1px solid #111826",borderRadius:11,overflow:"hidden",marginBottom:12}}>
-                <div style={{padding:"10px 15px",background:"#0a0d15"}}>
+              <div style={{border:"1px solid var(--border)",borderRadius:11,overflow:"hidden",marginBottom:12}}>
+                <div style={{padding:"10px 15px",background:"var(--bg-sidebar)"}}>
                   <div style={{maxWidth:260,marginLeft:"auto"}}>
                     {[
                       {l:"Labor",v:fmt(siC.lab),c:"#f5a623"},
                       {l:"Materials (taxable)",v:fmt(siC.mat),c:"#6c8ebf"},
-                      {l:"Subtotal",v:fmt(siC.sub),c:"#dde1ec",bold:true},
+                      {l:"Subtotal",v:fmt(siC.sub),c:"var(--text)",bold:true},
                       ...(siC.discountPct>0?[{l:`Discount (${siC.discountPct}%)`,v:`−${fmt(siC.discAmt)}`,c:"#a78bfa"}]:[]),
-                      ...(siC.discountPct>0?[{l:"After Discount",v:fmt(siC.discSub),c:"#dde1ec",bold:true}]:[]),
+                      ...(siC.discountPct>0?[{l:"After Discount",v:fmt(siC.discSub),c:"var(--text)",bold:true}]:[]),
                       {l:`Tax ${si.taxRate}% on materials`,v:fmt(siC.tax),c:"#14b8a6"},
                     ].map(r=>(
-                      <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid #111826"}}>
-                        <span style={{fontSize:11,color:r.bold?"#dde1ec":"#7a8299",fontWeight:r.bold?700:400}}>{r.l}</span>
+                      <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid var(--border)"}}>
+                        <span style={{fontSize:11,color:r.bold?"var(--text)":"var(--text-muted)",fontWeight:r.bold?700:400}}>{r.l}</span>
                         <span className="mn" style={{fontSize:11,color:r.c}}>{r.v}</span>
                       </div>
                     ))}
@@ -4471,7 +4475,7 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                       <span className="mn" style={{fontSize:17,color:"#22c55e"}}>{fmt(siC.total)}</span>
                     </div>
                     {siC.depAmt>0&&(<>
-                      <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderTop:"1px dashed #1e2535"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderTop:"1px dashed var(--border-2)"}}>
                         <span style={{fontSize:11,color:"#f59e0b",fontWeight:700}}>Deposit</span>
                         <span className="mn" style={{fontSize:11,color:"#f59e0b"}}>{fmt(siC.depAmt)}</span>
                       </div>
@@ -4483,11 +4487,11 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                   </div>
                 </div>
               </div>
-              {si.notes&&<div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:9,padding:"11px 14px"}}><div className="stl">Notes</div><div style={{fontSize:12,color:"#9aabb8",lineHeight:1.7}}>{si.notes}</div></div>}
+              {si.notes&&<div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:9,padding:"11px 14px"}}><div className="stl">Notes</div><div style={{fontSize:12,color:"var(--text-3)",lineHeight:1.7}}>{si.notes}</div></div>}
             </div>
           </div>
         ):(
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"#2d3a52",gap:12}}>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"var(--text-ghost)",gap:12}}>
             <I n="invoices" s={38}/><div style={{fontSize:14,fontWeight:600}}>Select an invoice</div>
             <button onClick={()=>setNewMd("pick")} className="bb b-bl" style={{padding:"8px 16px",fontSize:12,marginTop:4}}><I n="plus" s={13}/>New Invoice</button>
           </div>
@@ -4497,15 +4501,15 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
       {newMd==="pick"&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setNewMd(null)}>
           <div className="mo" style={{maxWidth:440,marginTop:120}}>
-            <div style={{padding:"18px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"18px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:17,fontWeight:800}}>New Invoice</div>
-              <button onClick={()=>setNewMd(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setNewMd(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:10}}>
               {[{id:"project",label:"From Project",sub:"Auto-populate labor & materials from a project",icon:"projects",c:"#3b82f6"},{id:"manual",label:"Manual",sub:"Start with a blank invoice",icon:"plus",c:"#22c55e"}].map(opt=>(
-                <button key={opt.id} onClick={()=>opt.id==="manual"?createManual():setNewMd(opt.id)} style={{display:"flex",gap:12,alignItems:"center",background:"#0c0f17",border:"1px solid #111826",borderRadius:11,padding:"13px 15px",textAlign:"left",transition:"all .15s",cursor:"pointer"}}>
+                <button key={opt.id} onClick={()=>opt.id==="manual"?createManual():setNewMd(opt.id)} style={{display:"flex",gap:12,alignItems:"center",background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:11,padding:"13px 15px",textAlign:"left",transition:"all .15s",cursor:"pointer"}}>
                   <div style={{width:38,height:38,borderRadius:10,background:`${opt.c}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:opt.c}}><I n={opt.icon} s={17}/></div>
-                  <div><div style={{fontWeight:700,fontSize:13,color:"#e2e8f0"}}>{opt.label}</div><div style={{fontSize:11,color:"#4a566e",marginTop:2}}>{opt.sub}</div></div>
+                  <div><div style={{fontWeight:700,fontSize:13,color:"var(--text-2)"}}>{opt.label}</div><div style={{fontSize:11,color:"var(--text-dim)",marginTop:2}}>{opt.sub}</div></div>
                 </button>
               ))}
             </div>
@@ -4516,9 +4520,9 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
       {newMd==="project"&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setNewMd(null)}>
           <div className="mo" style={{maxWidth:420,marginTop:120}}>
-            <div style={{padding:"17px 24px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{fontSize:16,fontWeight:800}}>Select Project</div>
-              <button onClick={()=>setNewMd(null)} style={{color:"#4a566e"}}><I n="x"/></button>
+              <button onClick={()=>setNewMd(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"18px 24px",display:"flex",flexDirection:"column",gap:12}}>
               <select className="inp" value={srcId} onChange={e=>setSrcId(e.target.value)}>
@@ -4536,12 +4540,12 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
       {emailMd&&si&&<EmailSendModal type="invoice" docNumber={si.number} customer={custs.find(c=>c.id===si.custId)} total={fmt(siC.total)} dueDate={si.dueDate} project={projs.find(p=>p.id===si.projId)?.name||""} company={company} onClose={()=>setEmailMd(false)} onSend={(to)=>{if(si.status==="draft"){setStatus(si.id,"sent");}showToast("Invoice emailed to "+to);}}/>}
     </>):(
       <div style={{display:"flex",flexDirection:"column",flex:1,overflow:"hidden"}}>
-          <div style={{padding:"12px 20px",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0,background:"#0a0d15"}}>
+          <div style={{padding:"12px 20px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0,background:"var(--bg-sidebar)"}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={()=>setEditForm(null)} style={{color:"#4a566e",display:"flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600}}><I n="arrow" s={15}/> Back</button>
-              <div style={{width:1,height:18,background:"#1e2535"}}/>
+              <button onClick={()=>setEditForm(null)} style={{color:"var(--text-dim)",display:"flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600}}><I n="arrow" s={15}/> Back</button>
+              <div style={{width:1,height:18,background:"var(--border)"}}/>
               <div style={{fontSize:15,fontWeight:800}}>{editForm._id?"Edit Invoice":"New Invoice"}</div>
-              {editForm._id&&<span className="mn" style={{fontSize:12,color:"#4a566e"}}>{editForm.number}</span>}
+              {editForm._id&&<span className="mn" style={{fontSize:12,color:"var(--text-dim)"}}>{editForm.number}</span>}
             </div>
             <div style={{display:"flex",gap:8}}>
               <button onClick={()=>setEditForm(null)} className="bb b-gh" style={{padding:"7px 14px",fontSize:11}}>Cancel</button>
@@ -4550,7 +4554,7 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
           </div>
           <div style={{flex:1,overflow:"auto"}}>
             <div className="full-form-grid" style={{display:"grid",gridTemplateColumns:"1fr 280px",maxWidth:1100,margin:"0 auto",minHeight:"100%"}}>
-              <div style={{padding:"22px 28px",borderRight:"1px solid #1e2535"}}>
+              <div style={{padding:"22px 28px",borderRight:"1px solid var(--border-2)"}}>
                 <div className="g2" style={{marginBottom:14}}>
                   <div><label className="lbl">Customer</label>
                     <select className="inp" value={editForm.custId} onChange={e=>setEditForm(f=>({...f,custId:e.target.value}))}>
@@ -4583,7 +4587,7 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                   </div>
                   {editForm.depositType&&editForm.depositType!=="none"&&(<>
                     <div><label className="lbl">{editForm.depositType==="percent"?"Deposit %":"Deposit $"}</label><input className="inp" type="number" step={editForm.depositType==="percent"?".5":".01"} min="0" value={editForm.depositValue||0} onChange={e=>setEditForm(f=>({...f,depositValue:Number(e.target.value)||0}))} style={{borderColor:"#f59e0b"}}/></div>
-                    <div><label className="lbl">Deposit Amount</label><div className="mn" style={{padding:"9px 13px",background:"#0c0f17",border:"1px solid #f59e0b",borderRadius:8,color:"#f59e0b",fontSize:13}}>{fmt(editFormC.depAmt)}</div></div>
+                    <div><label className="lbl">Deposit Amount</label><div className="mn" style={{padding:"9px 13px",background:"var(--bg-card)",border:"1px solid #f59e0b",borderRadius:8,color:"#f59e0b",fontSize:13}}>{fmt(editFormC.depAmt)}</div></div>
                   </>)}
                 </div>
 
@@ -4596,29 +4600,29 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                   </div>
                 </div>
                 {invPicker&&(
-                  <div style={{border:"1px solid var(--accent)",borderRadius:9,background:"#0a0d15",marginBottom:10,overflow:"hidden",animation:"up .18s ease"}}>
-                    <div style={{padding:"8px 10px",borderBottom:"1px solid #1e2535",display:"flex",gap:7,alignItems:"center"}}>
+                  <div style={{border:"1px solid var(--accent)",borderRadius:9,background:"var(--bg-sidebar)",marginBottom:10,overflow:"hidden",animation:"up .18s ease"}}>
+                    <div style={{padding:"8px 10px",borderBottom:"1px solid var(--border-2)",display:"flex",gap:7,alignItems:"center"}}>
                       <div style={{position:"relative",flex:1}}>
-                        <div style={{position:"absolute",left:7,top:"50%",transform:"translateY(-50%)",color:"#3a4160",pointerEvents:"none"}}><I n="search" s={11}/></div>
+                        <div style={{position:"absolute",left:7,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={11}/></div>
                         <input className="inp" autoFocus value={invPicker.search} onChange={function(e){setInvPicker(function(p){return{...p,search:e.target.value};});}} placeholder={invPicker.type==="material"?"Search materials…":"Search labor roles…"} style={{paddingLeft:24,fontSize:11,padding:"5px 7px 5px 24px"}}/>
                       </div>
-                      <button onClick={()=>setInvPicker(null)} style={{color:"#4a566e",flexShrink:0}}><I n="x" s={14}/></button>
+                      <button onClick={()=>setInvPicker(null)} style={{color:"var(--text-dim)",flexShrink:0}}><I n="x" s={14}/></button>
                     </div>
                     <div style={{maxHeight:180,overflowY:"auto"}}>
                       {invPicker.type==="material"&&(function(){
                         var fMats=(mats||[]).filter(function(m){return !invPicker.search||m.name.toLowerCase().includes(invPicker.search.toLowerCase())||m.category.toLowerCase().includes(invPicker.search.toLowerCase())||m.supplier.toLowerCase().includes(invPicker.search.toLowerCase());});
                         return fMats.length===0
-                          ?<div style={{padding:"14px",textAlign:"center",color:"#3a4160",fontSize:11}}>No materials found</div>
+                          ?<div style={{padding:"14px",textAlign:"center",color:"var(--text-faint)",fontSize:11}}>No materials found</div>
                           :fMats.map(function(m){
                             var sp2=m.cost*(1+m.markup/100);
-                            return <div key={m.id} onClick={function(){addInvMaterial(m);}} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid #0e1119",cursor:"pointer",transition:"background .1s"}} className="rh">
+                            return <div key={m.id} onClick={function(){addInvMaterial(m);}} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"}} className="rh">
                               <div style={{flex:1,minWidth:0}}>
-                                <div style={{fontSize:11,fontWeight:600,color:"#c8d0e0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.name}</div>
-                                <div style={{fontSize:9,color:"#3a4160",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,background:(CAT_C[m.category]||"#4a566e")+"18",color:CAT_C[m.category]||"#7a8299",fontSize:8,fontWeight:700}}>{m.category}</span> · {m.supplier} · {m.stock} {m.unit} in stock</div>
+                                <div style={{fontSize:11,fontWeight:600,color:"var(--text-2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.name}</div>
+                                <div style={{fontSize:9,color:"var(--text-faint)",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,background:(CAT_C[m.category]||"#4a566e")+"18",color:CAT_C[m.category]||"var(--text-muted)",fontSize:8,fontWeight:700}}>{m.category}</span> · {m.supplier} · {m.stock} {m.unit} in stock</div>
                               </div>
                               <div style={{textAlign:"right",flexShrink:0,marginLeft:10}}>
-                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(sp2)}<span style={{fontSize:8,color:"#3a4160"}}>/{m.unit}</span></div>
-                                <div style={{fontSize:8,color:"#4a566e"}}>cost {fmtD(m.cost)} +{m.markup}%</div>
+                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(sp2)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/{m.unit}</span></div>
+                                <div style={{fontSize:8,color:"var(--text-dim)"}}>cost {fmtD(m.cost)} +{m.markup}%</div>
                               </div>
                             </div>;
                           });
@@ -4626,20 +4630,20 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                       {invPicker.type==="labor"&&(function(){
                         var fRoles=(roles||[]).filter(function(r){return !MGMT_ROLES.has(r.title)&&(!invPicker.search||r.title.toLowerCase().includes(invPicker.search.toLowerCase()));});
                         return fRoles.length===0
-                          ?<div style={{padding:"14px",textAlign:"center",color:"#3a4160",fontSize:11}}>No labor roles found</div>
+                          ?<div style={{padding:"14px",textAlign:"center",color:"var(--text-faint)",fontSize:11}}>No labor roles found</div>
                           :fRoles.map(function(r){
                             var b=calcBurden(r);var tc=ROLE_C[r.title]||"#4a566e";
-                            return <div key={r.id} onClick={function(){addInvLabor(r);}} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid #0e1119",cursor:"pointer",transition:"background .1s"}} className="rh">
+                            return <div key={r.id} onClick={function(){addInvLabor(r);}} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"}} className="rh">
                               <div style={{display:"flex",gap:8,alignItems:"center"}}>
                                 <div style={{width:4,height:22,borderRadius:2,background:tc,flexShrink:0}}/>
                                 <div>
-                                  <div style={{fontSize:11,fontWeight:600,color:"#c8d0e0"}}>{r.title}</div>
-                                  <div style={{fontSize:8,color:"#3a4160",marginTop:1}}>Base ${r.baseRate}/hr · Burden {b.totalBurdenPct.toFixed(1)}%</div>
+                                  <div style={{fontSize:11,fontWeight:600,color:"var(--text-2)"}}>{r.title}</div>
+                                  <div style={{fontSize:8,color:"var(--text-faint)",marginTop:1}}>Base ${r.baseRate}/hr · Burden {b.totalBurdenPct.toFixed(1)}%</div>
                                 </div>
                               </div>
                               <div style={{textAlign:"right",flexShrink:0}}>
-                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>${b.fullyBurdenedRate.toFixed(2)}<span style={{fontSize:8,color:"#3a4160"}}>/hr</span></div>
-                                <div style={{fontSize:8,color:"#4a566e"}}>fully burdened</div>
+                                <div className="mn" style={{fontSize:11,color:"#22c55e"}}>${b.fullyBurdenedRate.toFixed(2)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/hr</span></div>
+                                <div style={{fontSize:8,color:"var(--text-dim)"}}>fully burdened</div>
                               </div>
                             </div>;
                           });
@@ -4653,16 +4657,16 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                   var matLines=editForm.lineItems.filter(l=>l.isMaterial);
                   var renderSec=function(title,items,color,qtyLabel,icon){
                     if(items.length===0) return null;
-                    return <div style={{border:"1px solid #1e2535",borderRadius:9,overflow:"hidden",marginBottom:10}}>
-                      <div style={{padding:"6px 10px",background:"#0c0f17",borderBottom:"1px solid #1e2535",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    return <div style={{border:"1px solid var(--border-2)",borderRadius:9,overflow:"hidden",marginBottom:10}}>
+                      <div style={{padding:"6px 10px",background:"var(--bg-card)",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <span style={{fontWeight:700,fontSize:10,color:color,display:"flex",alignItems:"center",gap:5}}><I n={icon} s={11}/>{title}</span>
                         <span className="mn" style={{fontSize:10,color:color}}>{fmt(items.reduce(function(s,l){return s+l.qty*l.unitPrice;},0))}</span>
                       </div>
                       <table style={{width:"100%",borderCollapse:"collapse"}}>
-                        <thead><tr style={{background:"#0c0f17"}}>{["Description",qtyLabel,"Rate","Total","Type",""].map(function(h){return <th key={h} style={{padding:"5px 7px",textAlign:"left",fontSize:8,fontWeight:700,color:"#4a566e",textTransform:"uppercase",borderBottom:"1px solid #1e2535"}}>{h}</th>;})}</tr></thead>
+                        <thead><tr style={{background:"var(--bg-card)"}}>{["Description",qtyLabel,"Rate","Total","Type",""].map(function(h){return <th key={h} style={{padding:"5px 7px",textAlign:"left",fontSize:8,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",borderBottom:"1px solid var(--border-2)"}}>{h}</th>;})}</tr></thead>
                         <tbody>
                           {items.map(function(li,i){return (
-                            <tr key={li.id} style={{borderTop:i>0?"1px solid #111826":"none"}}>
+                            <tr key={li.id} style={{borderTop:i>0?"1px solid var(--border)":"none"}}>
                               <td style={{padding:"4px 6px"}}><input className="inp" value={li.description} onChange={function(e){updEditLine(li.id,"description",e.target.value);}} placeholder="Description" style={{fontSize:11,padding:"5px 7px"}}/></td>
                               <td style={{padding:"4px 6px"}}><input className="inp" type="number" value={li.qty} onChange={function(e){updEditLine(li.id,"qty",e.target.value);}} style={{fontSize:11,padding:"5px 5px",width:56}}/></td>
                               <td style={{padding:"4px 6px"}}><input className="inp" type="number" step=".01" value={li.unitPrice} onChange={function(e){updEditLine(li.id,"unitPrice",e.target.value);}} style={{fontSize:11,padding:"5px 5px",width:82}}/></td>
@@ -4678,7 +4682,7 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                   return <>{renderSec("Labor",labLines,"#f5a623","Hrs","wrench")}{renderSec("Materials",matLines,"#6c8ebf","Qty","materials")}</>;
                 })()}
 
-                {editForm.lineItems.length===0&&<div style={{padding:20,textAlign:"center",color:"#3a4160",fontSize:12,border:"1px dashed #1e2535",borderRadius:9}}>No line items yet. Add from Materials, Labor, or Custom above.</div>}
+                {editForm.lineItems.length===0&&<div style={{padding:20,textAlign:"center",color:"var(--text-faint)",fontSize:12,border:"1px dashed var(--border-2)",borderRadius:9}}>No line items yet. Add from Materials, Labor, or Custom above.</div>}
 
                 <div style={{marginBottom:12,marginTop:10}}><label className="lbl">Notes</label><textarea className="inp" value={editForm.notes||""} onChange={e=>setEditForm(f=>({...f,notes:e.target.value}))} rows={2} style={{resize:"vertical"}}/></div>
 
@@ -4688,19 +4692,19 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                 </div>
               </div>
 
-              <div style={{padding:"18px 16px",background:"#0a0d15",overflowY:"auto",borderLeft:"1px solid #1e2535"}}>
+              <div style={{padding:"18px 16px",background:"var(--bg-sidebar)",overflowY:"auto",borderLeft:"1px solid var(--border-2)"}}>
                 <div className="stl">Preview</div>
-                <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:9,overflow:"hidden"}}>
+                <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:9,overflow:"hidden"}}>
                   {[
                     {l:"Labor",v:fmt(editFormC.lab),c:"#f5a623"},
                     {l:"Materials",v:fmt(editFormC.mat),c:"#6c8ebf",note:"taxable"},
-                    {l:"Subtotal",v:fmt(editFormC.sub),c:"#dde1ec",bold:true},
+                    {l:"Subtotal",v:fmt(editFormC.sub),c:"var(--text)",bold:true},
                     ...(editFormC.discountPct>0?[{l:"Discount ("+editFormC.discountPct+"%)",v:"-"+fmt(editFormC.discAmt),c:"#a78bfa",disc:true}]:[]),
-                    ...(editFormC.discountPct>0?[{l:"After Discount",v:fmt(editFormC.discSub),c:"#dde1ec",bold:true}]:[]),
+                    ...(editFormC.discountPct>0?[{l:"After Discount",v:fmt(editFormC.discSub),c:"var(--text)",bold:true}]:[]),
                     {l:"Tax "+editForm.taxRate+"%",v:fmt(editFormC.tax),c:"#14b8a6"},
                   ].map(function(r){return (
-                    <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderBottom:"1px solid #111826",background:r.disc?"rgba(167,139,250,.04)":"transparent"}}>
-                      <div><span style={{fontSize:10,color:r.disc?"#a78bfa":r.bold?"#dde1ec":"#7a8299",fontWeight:r.bold||r.disc?700:400}}>{r.l}</span>{r.note&&<span style={{fontSize:8,color:"#3a4160",marginLeft:4}}>({r.note})</span>}</div>
+                    <div key={r.l} style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderBottom:"1px solid var(--border)",background:r.disc?"rgba(167,139,250,.04)":"transparent"}}>
+                      <div><span style={{fontSize:10,color:r.disc?"#a78bfa":r.bold?"var(--text)":"var(--text-muted)",fontWeight:r.bold||r.disc?700:400}}>{r.l}</span>{r.note&&<span style={{fontSize:8,color:"var(--text-faint)",marginLeft:4}}>({r.note})</span>}</div>
                       <span className="mn" style={{fontSize:10,color:r.c}}>{r.v}</span>
                     </div>
                   );})}
@@ -4708,7 +4712,7 @@ function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToas
                     <div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontWeight:800,fontSize:12}}>TOTAL</span><span className="mn" style={{fontSize:17,color:"#22c55e"}}>{fmt(editFormC.total)}</span></div>
                   </div>
                   {editFormC.depAmt>0&&(<>
-                    <div style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderTop:"1px solid #111826",background:"rgba(245,158,11,.04)"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",padding:"8px 11px",borderTop:"1px solid var(--border)",background:"rgba(245,158,11,.04)"}}>
                       <span style={{fontSize:10,color:"#f59e0b",fontWeight:700}}>Deposit{editForm.depositType==="percent"?(" ("+editForm.depositValue+"%)"):""}</span>
                       <span className="mn" style={{fontSize:12,color:"#f59e0b"}}>{fmt(editFormC.depAmt)}</span>
                     </div>
@@ -4782,9 +4786,9 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:14}}>
-      <div style={{display:"flex",gap:0,borderBottom:"1px solid #111826",marginBottom:4,alignItems:"center",overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+      <div style={{display:"flex",gap:0,borderBottom:"1px solid var(--border)",marginBottom:4,alignItems:"center",overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
         {tabs.map(t=>(
-          <button key={t.id} onClick={()=>setRtab(t.id)} style={{padding:"9px 16px",fontSize:12,fontWeight:700,color:rtab===t.id?"#63b3ed":"#4a566e",borderBottom:`2px solid ${rtab===t.id?"#3b82f6":"transparent"}`,transition:"all .14s",whiteSpace:"nowrap",flexShrink:0}}>{t.label}</button>
+          <button key={t.id} onClick={()=>setRtab(t.id)} style={{padding:"9px 16px",fontSize:12,fontWeight:700,color:rtab===t.id?"#63b3ed":"var(--text-dim)",borderBottom:`2px solid ${rtab===t.id?"#3b82f6":"transparent"}`,transition:"all .14s",whiteSpace:"nowrap",flexShrink:0}}>{t.label}</button>
         ))}
         <div style={{marginLeft:"auto",display:"flex",gap:4,flexShrink:0}}>
           <button onClick={()=>exportReport(true)} className="bb b-gh" style={{padding:"5px 12px",fontSize:11}}>⎙ Print</button>
@@ -4798,13 +4802,13 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
               <KpiCard key={k.l} label={k.l} val={k.v} sub="" color={k.c}/>
             ))}
           </div>
-          <div className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"14px 16px 8px"}}>
+          <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px 8px"}}>
             <div style={{fontWeight:800,fontSize:13,marginBottom:10}}>Monthly P&L — 2026</div>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={REV_DATA} margin={{top:4,right:8,left:-18,bottom:0}} barSize={12} barGap={2}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#111826" vertical={false}/>
-                <XAxis dataKey="month" tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false}/>
-                <YAxis tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
+                <XAxis dataKey="month" tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false}/>
+                <YAxis tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
                 <Tooltip content={<CTip/>}/>
                 <Bar dataKey="revenue"   name="Revenue"   fill="#3b82f6" radius={[3,3,0,0]}/>
                 <Bar dataKey="profit"    name="Profit"    fill="#22c55e" radius={[3,3,0,0]}/>
@@ -4813,30 +4817,30 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
-            <div style={{padding:"10px 16px",borderBottom:"1px solid #111826",fontWeight:800,fontSize:12}}>P&L Statement — YTD 2026</div>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
+            <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>P&L Statement — YTD 2026</div>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-              <thead><tr style={{background:"#0a0d15"}}>{["Month","Revenue","Labor","Materials","Other","Gross Profit","Margin"].map(h=><th key={h} style={{padding:"7px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Month","Revenue","Labor","Materials","Other","Gross Profit","Margin"].map(h=><th key={h} style={{padding:"7px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {REV_DATA.slice(0,3).map((m,i)=>{
                   const other=m.revenue-m.labor-m.materials-m.profit;
                   const mg=pct(m.profit,m.revenue);
-                  return <tr key={m.month} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                    <td style={{padding:"8px 14px",fontWeight:700,color:"#c8d0e0"}}>{m.month}</td>
+                  return <tr key={m.month} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                    <td style={{padding:"8px 14px",fontWeight:700,color:"var(--text-2)"}}>{m.month}</td>
                     <td className="mn" style={{padding:"8px 14px",color:"#3b82f6"}}>{fmt(m.revenue)}</td>
                     <td className="mn" style={{padding:"8px 14px",color:"#f5a623"}}>{fmt(m.labor)}</td>
                     <td className="mn" style={{padding:"8px 14px",color:"#6c8ebf"}}>{fmt(m.materials)}</td>
-                    <td className="mn" style={{padding:"8px 14px",color:"#4a566e"}}>{fmt(other)}</td>
+                    <td className="mn" style={{padding:"8px 14px",color:"var(--text-dim)"}}>{fmt(other)}</td>
                     <td className="mn" style={{padding:"8px 14px",color:"#22c55e",fontWeight:700}}>{fmt(m.profit)}</td>
                     <td className="mn" style={{padding:"8px 14px",color:mg>=25?"#22c55e":mg>=15?"#f5a623":"#ef4444"}}>{mg}%</td>
                   </tr>;
                 })}
-                <tr style={{borderTop:"2px solid #1e2535",background:"#0a0d15"}}>
-                  <td style={{padding:"9px 14px",fontWeight:800,color:"#dde1ec"}}>YTD Total</td>
+                <tr style={{borderTop:"2px solid var(--border-2)",background:"var(--bg-sidebar)"}}>
+                  <td style={{padding:"9px 14px",fontWeight:800,color:"var(--text)"}}>YTD Total</td>
                   <td className="mn" style={{padding:"9px 14px",color:"#3b82f6",fontWeight:700}}>{fmt(ytdRev)}</td>
                   <td className="mn" style={{padding:"9px 14px",color:"#f5a623",fontWeight:700}}>{fmt(ytdLabor)}</td>
                   <td className="mn" style={{padding:"9px 14px",color:"#6c8ebf",fontWeight:700}}>{fmt(ytdMats)}</td>
-                  <td className="mn" style={{padding:"9px 14px",color:"#4a566e"}}>{fmt(ytdRev-ytdLabor-ytdMats-ytdProfit)}</td>
+                  <td className="mn" style={{padding:"9px 14px",color:"var(--text-dim)"}}>{fmt(ytdRev-ytdLabor-ytdMats-ytdProfit)}</td>
                   <td className="mn" style={{padding:"9px 14px",color:"#22c55e",fontWeight:800,fontSize:13}}>{fmt(ytdProfit)}</td>
                   <td className="mn" style={{padding:"9px 14px",color:ytdMargin>=25?"#22c55e":"#f5a623",fontWeight:700}}>{ytdMargin}%</td>
                 </tr>
@@ -4848,13 +4852,13 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
 
       {rtab==="job"&&(
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
-          <div className="card" style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,padding:"14px 16px 8px"}}>
+          <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px 8px"}}>
             <div style={{fontWeight:800,fontSize:12,marginBottom:10}}>Job P&L Comparison</div>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={projs.map(p=>({name:p.name.split(" ").slice(0,2).join(" "),contract:p.contractValue,actual:p.actualLabor+p.actualMaterials,profit:p.contractValue-(p.actualLabor+p.actualMaterials)}))} margin={{top:4,right:8,left:-18,bottom:0}} barSize={14} barGap={2}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#111826" vertical={false}/>
-                <XAxis dataKey="name" tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false}/>
-                <YAxis tick={{fill:"#4a566e",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
+                <XAxis dataKey="name" tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false}/>
+                <YAxis tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
                 <Tooltip content={<CTip/>}/>
                 <Bar dataKey="contract" name="Contract"  fill="#3b82f6" radius={[3,3,0,0]}/>
                 <Bar dataKey="actual"   name="Actual Cost" fill="#ef4444" radius={[3,3,0,0]}/>
@@ -4862,19 +4866,19 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
-            <div style={{padding:"10px 16px",borderBottom:"1px solid #111826",fontWeight:800,fontSize:12}}>Job-by-Job P&L</div>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
+            <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Job-by-Job P&L</div>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-              <thead><tr style={{background:"#0a0d15"}}>{["Project","Customer","Contract","Actual Labor","Actual Mat","Total Actual","Gross Profit","Margin","Status"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Project","Customer","Contract","Actual Labor","Actual Mat","Total Actual","Gross Profit","Margin","Status"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {projs.map((p,i)=>{
                   const c=custs.find(x=>x.id===p.custId);
                   const tot=p.actualLabor+p.actualMaterials;
                   const gp=p.contractValue-tot;
                   const gm=p.contractValue>0?pct(gp,p.contractValue):0;
-                  return <tr key={p.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                    <td style={{padding:"8px 12px",fontWeight:700,color:"#c8d0e0",maxWidth:160,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</td>
-                    <td style={{padding:"8px 12px",color:"#7a8299"}}>{c?.name}</td>
+                  return <tr key={p.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                    <td style={{padding:"8px 12px",fontWeight:700,color:"var(--text-2)",maxWidth:160,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</td>
+                    <td style={{padding:"8px 12px",color:"var(--text-muted)"}}>{c?.name}</td>
                     <td className="mn" style={{padding:"8px 12px",color:"var(--accent)"}}>{fmt(p.contractValue)}</td>
                     <td className="mn" style={{padding:"8px 12px",color:"#f5a623"}}>{fmt(p.actualLabor)}</td>
                     <td className="mn" style={{padding:"8px 12px",color:"#6c8ebf"}}>{fmt(p.actualMaterials)}</td>
@@ -4897,19 +4901,19 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
               <KpiCard key={k.l} label={k.l} val={k.v} sub="" color={k.c}/>
             ))}
           </div>
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
-            <div style={{padding:"10px 16px",borderBottom:"1px solid #111826",fontWeight:800,fontSize:12}}>Invoice Aging Detail</div>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
+            <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Invoice Aging Detail</div>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-              <thead><tr style={{background:"#0a0d15"}}>{["Invoice","Customer","Issued","Due","Days Past Due","Amount","Status"].map(h=><th key={h} style={{padding:"7px 13px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Invoice","Customer","Issued","Due","Days Past Due","Amount","Status"].map(h=><th key={h} style={{padding:"7px 13px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {arData.map((inv,i)=>{
                   const c=custs.find(x=>x.id===inv.custId);
                   const isPast=inv.daysPast>0&&inv.status!=="paid"&&inv.status!=="void";
-                  return <tr key={inv.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                    <td className="mn" style={{padding:"8px 13px",color:"#7a8299",fontSize:10}}>{inv.number}</td>
-                    <td style={{padding:"8px 13px",color:"#c8d0e0",fontWeight:600}}>{c?.name||"—"}</td>
-                    <td className="mn" style={{padding:"8px 13px",color:"#4a566e",fontSize:10}}>{inv.issueDate}</td>
-                    <td className="mn" style={{padding:"8px 13px",color:"#4a566e",fontSize:10}}>{inv.dueDate}</td>
+                  return <tr key={inv.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                    <td className="mn" style={{padding:"8px 13px",color:"var(--text-muted)",fontSize:10}}>{inv.number}</td>
+                    <td style={{padding:"8px 13px",color:"var(--text-2)",fontWeight:600}}>{c?.name||"—"}</td>
+                    <td className="mn" style={{padding:"8px 13px",color:"var(--text-dim)",fontSize:10}}>{inv.issueDate}</td>
+                    <td className="mn" style={{padding:"8px 13px",color:"var(--text-dim)",fontSize:10}}>{inv.dueDate}</td>
                     <td className="mn" style={{padding:"8px 13px",color:isPast?"#ef4444":"#22c55e",fontWeight:isPast?700:400}}>
                       {inv.status==="paid"?"—":isPast?`${inv.daysPast}d overdue`:"Current"}
                     </td>
@@ -4933,15 +4937,15 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
               {l:"Avg Labor Margin",v:`${subData.length>0?Math.round(subData.reduce((s,e)=>s+e.margin,0)/subData.length):0}%`,c:"#f5a623"},
             ].map(k=><KpiCard key={k.l} label={k.l} val={k.v} sub="" color={k.c}/>)}
           </div>
-          <div style={{background:"#0c0f17",border:"1px solid #111826",borderRadius:12,overflow:"hidden"}}>
-            <div style={{padding:"10px 16px",borderBottom:"1px solid #111826",fontWeight:800,fontSize:12}}>Crew Labor Report</div>
+          <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
+            <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Crew Labor Report</div>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-              <thead><tr style={{background:"#0a0d15"}}>{["Crew Member","Role","Wage/hr","Bill/hr","True Cost/hr","Hours","Billed","True Cost","Net Profit","Margin"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"#4a566e",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid #111826"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Crew Member","Role","Wage/hr","Bill/hr","True Cost/hr","Hours","Billed","True Cost","Net Profit","Margin"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {subData.map((e,i)=>(
-                  <tr key={e.id} className="rh" style={{borderTop:"1px solid #0e1119",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
-                    <td style={{padding:"8px 12px",fontWeight:700,color:"#c8d0e0"}}>{e.name}</td>
-                    <td style={{padding:"8px 12px"}}><span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:`${ROLE_C[e.role]||"#4a566e"}18`,color:ROLE_C[e.role]||"#7a8299"}}>{e.role}</span></td>
+                  <tr key={e.id} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
+                    <td style={{padding:"8px 12px",fontWeight:700,color:"var(--text-2)"}}>{e.name}</td>
+                    <td style={{padding:"8px 12px"}}><span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:8,background:`${ROLE_C[e.role]||"#4a566e"}18`,color:ROLE_C[e.role]||"var(--text-muted)"}}>{e.role}</span></td>
                     <td className="mn" style={{padding:"8px 12px",color:"#f5a623"}}>${e.hourlyWage}</td>
                     <td className="mn" style={{padding:"8px 12px",color:"#3b82f6"}}>${e.billableRate}</td>
                     <td className="mn" style={{padding:"8px 12px",color:"#ef4444"}}>${getBurdenedRate(roles,e.role,e.hourlyWage).toFixed(2)}</td>
@@ -4952,8 +4956,8 @@ function Reports({invs,projs,custs,subs,hrs,roles,company}) {
                     <td className="mn" style={{padding:"8px 12px",color:e.margin>=30?"#22c55e":e.margin>=20?"#f5a623":"#ef4444",fontWeight:700}}>{e.margin}%</td>
                   </tr>
                 ))}
-                <tr style={{borderTop:"2px solid #1e2535",background:"#0a0d15"}}>
-                  <td colSpan={5} style={{padding:"9px 12px",fontWeight:800,color:"#dde1ec"}}>Totals</td>
+                <tr style={{borderTop:"2px solid var(--border-2)",background:"var(--bg-sidebar)"}}>
+                  <td colSpan={5} style={{padding:"9px 12px",fontWeight:800,color:"var(--text)"}}>Totals</td>
                   <td className="mn" style={{padding:"9px 12px",color:"#63b3ed",fontWeight:700}}>{subData.reduce((s,e)=>s+e.totalHours,0)}h</td>
                   <td className="mn" style={{padding:"9px 12px",color:"#22c55e",fontWeight:700}}>{fmt(subData.reduce((s,e)=>s+e.billed,0))}</td>
                   <td className="mn" style={{padding:"9px 12px",color:"#ef4444",fontWeight:700}}>{fmt(subData.reduce((s,e)=>s+e.trueCost,0))}</td>
