@@ -384,7 +384,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api",company}){
 
   const selEst=async est=>{
     const items=(est.lineItems||est.items||[]).map(i=>({id:uid(),description:i.description||i.name||"",qty:parseFloat(i.qty||0),unitPrice:parseFloat(i.unitPrice||i.price||0),unit:i.unit||"ea",isMaterial:Boolean(i.isMaterial)}));
-    const draft={id:null,title:`${est.title||est.name||"Estimate"} — Contract`,contractType:"Prime",status:"Draft",clientOrSubName:est.customerName||"",
+    const draft={id:null,title:`${est.title||est.name||"Estimate"} — Contract`,contractType:"Prime",status:"Draft",clientOrSubName:est.customer?.name||"",
       discountPercent:est.discountPercent||est.discount||0,taxRate:est.taxRate?est.taxRate/100:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",
       lineItems:items,milestones:[],changeOrders:[],scopeOfWork:est.notes||"",exclusions:"",signatureStatus:"Unsigned",linkedEstimateId:est.id};
     setContracts(p=>[...p,draft]);setView("form");setActiveId(null);show("Estimate converted — review and save");
@@ -450,7 +450,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api",company}){
       ests.map(e=>{const t=(e.lineItems||e.items||[]).reduce((a,i)=>a+(i.qty||0)*(i.unitPrice||0),0);
         return<div key={e.id} onClick={()=>selEst(e)} style={{...cardS,cursor:"pointer",transition:"border-color .15s"}} onMouseEnter={x=>x.currentTarget.style.borderColor=ac} onMouseLeave={x=>x.currentTarget.style.borderColor=brdL}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div><div style={{fontSize:13,fontWeight:700,color:tx}}>{e.title||e.name||"Untitled"}</div><div style={{fontSize:11,color:tx2,marginTop:2}}>{e.customerName||"\u2014"} · {(e.lineItems||e.items||[]).length} items</div></div>
+            <div><div style={{fontSize:13,fontWeight:700,color:tx}}>{e.title||e.name||"Untitled"}</div><div style={{fontSize:11,color:tx2,marginTop:2}}>{e.customer?.name||"\u2014"} · {(e.lineItems||e.items||[]).length} items</div></div>
             <div style={{textAlign:"right"}}><div style={{fontSize:15,fontWeight:800,color:grn}}>{$(t)}</div><Chip s={e.status==="approved"?"Active":"Draft"}/></div>
           </div>
         </div>})}
@@ -468,17 +468,19 @@ function ContractSigModal({contract,company,apiBaseUrl,onClose,onSent}){
   const[msg,setMsg]=useState("Please review and sign the attached contract at your earliest convenience.");
   const[sending,setSending]=useState(false);
   const[sent,setSent]=useState(false);
+  const[err,setErr]=useState(null);
   const token=typeof localStorage!=="undefined"?localStorage.getItem("bm_token"):null;
 
   const send=async()=>{
     if(!to.trim())return;
-    setSending(true);
+    setSending(true);setErr(null);
     try{
       const r=await fetch(`${apiBaseUrl}/contracts/${contract.id}/send-signature`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},body:JSON.stringify({toEmail:to.trim(),message:msg.trim()})});
+      if(!r.ok){const d=await r.json().catch(()=>({}));setErr(d.error||"Failed to send. Check SMTP settings in Company Setup.");return;}
       setSent(true);
       if(onSent)onSent(to.trim());
       setTimeout(()=>onClose(),1400);
-    }catch{setSent(true);if(onSent)onSent(to.trim());setTimeout(()=>onClose(),1400);}
+    }catch{setErr("Network error. Please try again.");}
     finally{setSending(false);}
   };
 
@@ -521,6 +523,7 @@ function ContractSigModal({contract,company,apiBaseUrl,onClose,onSent}){
                 <label style={lbl}>Message (optional)</label>
                 <textarea style={{...inp,resize:"vertical",lineHeight:1.6}} value={msg} onChange={e=>setMsg(e.target.value)} rows={3}/>
               </div>
+              {err&&<div style={{background:"rgba(239,68,68,.1)",border:"1px solid rgba(239,68,68,.3)",borderRadius:8,padding:"9px 12px",fontSize:12,color:"#fca5a5"}}>{err}</div>}
               <div style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.07)",borderRadius:10,padding:"10px 14px",fontSize:12,color:"#9ca3af"}}>
                 Customer receives a secure link — no login required — to view and sign the contract online.
               </div>

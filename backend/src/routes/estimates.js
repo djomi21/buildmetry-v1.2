@@ -17,7 +17,8 @@ router.get('/project/:projectId', authenticate, async (req, res) => {
   try {
     const items = await prisma.estimate.findMany({
       where: { companyId: req.companyId, projId: req.params.projectId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: { customer: true },
     });
     res.json(items);
   } catch (err) { res.status(500).json({ error: err.message }); }
