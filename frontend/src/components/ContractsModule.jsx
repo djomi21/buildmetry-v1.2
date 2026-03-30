@@ -277,7 +277,7 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving}){
   return<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
       <div style={{display:"flex",gap:8,alignItems:"center"}}>
-        <button onClick={onCancel} style={bGh}>\u2190 Back</button>
+        <button onClick={onCancel} style={bGh}>Back</button>
         {!isNew&&(dc
           ?<><button onClick={()=>onDelete(f.id)} style={{...bGh,borderColor:red,color:red}}>Confirm delete</button><button onClick={()=>setDc(false)} style={{...bGh,padding:"7px 8px"}}>✕</button></>
           :<button onClick={()=>setDc(true)} style={{...bGh,color:red}}><Ic d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" s={12} c={red}/> Delete</button>
