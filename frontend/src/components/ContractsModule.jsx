@@ -57,6 +57,131 @@ function calc(items,dp,tr,rp){
   return{sub,lab,mat,da,dm,tax,tot,ra,net:tot-ra};
 }
 
+function printContract(c){
+  const t=calc(c.lineItems||[],c.discountPercent||0,c.taxRate||TAX_RATE,c.retentionPercent||0);
+  const fmtDate=d=>d?(d+"").slice(0,10):"—";
+  const labItems=(c.lineItems||[]).filter(i=>!i.isMaterial);
+  const matItems=(c.lineItems||[]).filter(i=>i.isMaterial);
+  const mkRows=items=>items.map((i,n)=>`<tr><td>${n+1}</td><td>${i.description||""}</td><td class="mn r">${i.qty} ${i.unit||"ea"}</td><td class="mn r">${$(i.unitPrice)}</td><td class="mn r fw">${$(i.qty*i.unitPrice)}</td></tr>`).join("");
+  const mkSection=(title,items)=>items.length===0?"":`<div class="section"><div class="sec-title">${title}</div><table><thead><tr><th>#</th><th>Description</th><th class="r">Qty / Unit</th><th class="r">Unit Price</th><th class="r">Total</th></tr></thead><tbody>${mkRows(items)}</tbody></table></div>`;
+  const paid=(c.milestones||[]).filter(m=>m.status==="Paid").reduce((a,m)=>a+(parseFloat(m.amount)||0),0);
+  const msRows=(c.milestones||[]).map((m,i)=>`<tr><td>${i+1}</td><td>${m.milestone||""}</td><td class="mn r">${$(m.amount||0)}</td><td class="r">${m.dueDate?fmtDate(m.dueDate):"—"}</td><td><span class="chip chip-${(m.status||"Pending").toLowerCase()}">${m.status||"Pending"}</span></td></tr>`).join("");
+  const statusColor={Draft:"#6b7280",Sent:"#3b82f6",Active:"#22c55e",Completed:"#22c55e",Cancelled:"#ef4444"};
+  const sc=statusColor[c.status]||"#6b7280";
+  const html=`<!DOCTYPE html><html><head><title>Contract — ${c.title||"Untitled"}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;color:#111827;font-size:11px;padding:32px 40px;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fff}
+@page{size:letter;margin:18mm 14mm}
+@media print{.no-print{display:none!important}}
+.mn{font-family:'JetBrains Mono',monospace;font-weight:600}
+.r{text-align:right}.fw{font-weight:700}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #111827;padding-bottom:14px;margin-bottom:20px}
+.doc-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6b7280;margin-bottom:4px}
+.doc-title{font-size:20px;font-weight:800;color:#111827;letter-spacing:-.3px;line-height:1.2}
+.doc-sub{font-size:12px;color:#374151;margin-top:4px}
+.status{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff;background:${sc}}
+.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px 18px;margin-bottom:20px}
+.meta-item .lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#9ca3af;margin-bottom:2px}
+.meta-item .val{font-size:12px;font-weight:600;color:#111827}
+.section{margin-bottom:20px}
+.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#6b7280;border-bottom:1px solid #e5e7eb;padding-bottom:5px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{background:#f3f4f6}
+th{text-align:left;padding:6px 8px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#6b7280}
+td{padding:6px 8px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+.fin-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px 18px;margin-top:14px}
+.fin-row{display:flex;justify-content:space-between;padding:4px 0;font-size:11px}
+.fin-row.total{border-top:1.5px solid #d1d5db;margin-top:6px;padding-top:8px;font-size:14px;font-weight:800;color:#111827}
+.fin-row.sub{border-top:1px solid #e5e7eb;margin-top:4px;padding-top:6px}
+.fin-lbl{color:#6b7280}
+.fin-val{font-family:'JetBrains Mono',monospace;font-weight:700;color:#111827}
+.fin-val.grn{color:#16a34a}
+.chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.chip-pending{background:#fef3c7;color:#92400e}
+.chip-invoiced{background:#dbeafe;color:#1d4ed8}
+.chip-paid{background:#dcfce7;color:#15803d}
+.scope-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px 18px;font-size:11px;color:#374151;line-height:1.7;white-space:pre-wrap;margin-bottom:20px}
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:8px}
+.sig-line{border-top:1px solid #374151;padding-top:6px;font-size:10px;color:#6b7280;margin-top:40px}
+.footer-bar{margin-top:28px;padding-top:12px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:9px;color:#9ca3af}
+</style></head><body>
+
+<div class="hdr">
+  <div>
+    <div class="doc-label">Contract</div>
+    <div class="doc-title">${c.title||"Untitled Contract"}</div>
+    <div class="doc-sub">${c.contractType||"Prime"} · ${c.clientOrSubName||"—"}</div>
+  </div>
+  <div style="text-align:right">
+    <div class="status">${c.status||"Draft"}</div>
+    <div style="font-size:10px;color:#6b7280;margin-top:6px">${c.signatureStatus||"Unsigned"}</div>
+  </div>
+</div>
+
+<div class="meta">
+  <div class="meta-item"><div class="lbl">Contract Type</div><div class="val">${c.contractType||"Prime"}</div></div>
+  <div class="meta-item"><div class="lbl">Client / Sub</div><div class="val">${c.clientOrSubName||"—"}</div></div>
+  <div class="meta-item"><div class="lbl">Payment Terms</div><div class="val">${c.paymentTerms||"Net 30"}</div></div>
+  <div class="meta-item"><div class="lbl">Start Date</div><div class="val">${fmtDate(c.startDate)}</div></div>
+  <div class="meta-item"><div class="lbl">End Date</div><div class="val">${fmtDate(c.endDate)}</div></div>
+  <div class="meta-item"><div class="lbl">Signature</div><div class="val">${c.signatureStatus||"Unsigned"}</div></div>
+</div>
+
+${mkSection("Labor",labItems)}
+${mkSection("Materials",matItems)}
+
+<div class="section">
+  <div class="sec-title">Financial Summary</div>
+  <div class="fin-box">
+    <div class="fin-row"><span class="fin-lbl">Labor</span><span class="fin-val">${$(t.lab)}</span></div>
+    <div class="fin-row"><span class="fin-lbl">Materials</span><span class="fin-val">${$(t.mat)}</span></div>
+    <div class="fin-row sub"><span class="fin-lbl">Subtotal</span><span class="fin-val">${$(t.sub)}</span></div>
+    ${t.da>0?`<div class="fin-row"><span class="fin-lbl">Discount (${c.discountPercent}%)</span><span class="fin-val grn">−${$(t.da)}</span></div>`:""}
+    <div class="fin-row"><span class="fin-lbl">Tax (${((c.taxRate||TAX_RATE)*100).toFixed(1)}% on materials)</span><span class="fin-val">${$(t.tax)}</span></div>
+    <div class="fin-row total"><span>Contract Total</span><span>${$(t.tot)}</span></div>
+    ${t.ra>0?`<div class="fin-row"><span class="fin-lbl">Retention (${c.retentionPercent}%)</span><span class="fin-val">−${$(t.ra)}</span></div><div class="fin-row sub"><span class="fin-lbl">Net Payable</span><span class="fin-val">${$(t.net)}</span></div>`:""}
+    ${paid>0?`<div class="fin-row"><span class="fin-lbl">Total Billed (Paid milestones)</span><span class="fin-val grn">${$(paid)}</span></div>`:""}
+  </div>
+</div>
+
+${(c.milestones||[]).length>0?`<div class="section"><div class="sec-title">Payment Schedule</div><table><thead><tr><th>#</th><th>Milestone</th><th class="r">Amount</th><th class="r">Due Date</th><th>Status</th></tr></thead><tbody>${msRows}</tbody></table></div>`:""}
+
+${c.scopeOfWork?`<div class="section"><div class="sec-title">Scope of Work</div><div class="scope-box">${c.scopeOfWork}</div></div>`:""}
+${c.exclusions?`<div class="section"><div class="sec-title">Exclusions</div><div class="scope-box">${c.exclusions}</div></div>`:""}
+
+<div class="section">
+  <div class="sec-title">Signatures</div>
+  <div class="sig-grid">
+    <div><div class="sig-line">Contractor Signature &amp; Date</div></div>
+    <div><div class="sig-line">Client / Sub Signature &amp; Date</div></div>
+  </div>
+</div>
+
+<div class="footer-bar">
+  <span>Generated by BuildMetry</span>
+  <span>${new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})}</span>
+</div>
+
+</body></html>`;
+
+  let w;
+  try{w=window.open("","_blank","width=900,height=700")}catch(e){}
+  if(w&&w.document){w.document.write(html);w.document.close();setTimeout(()=>{try{w.print()}catch(e){}},600);return}
+  let iframe=document.getElementById("__contract_print");
+  if(iframe)iframe.remove();
+  iframe=document.createElement("iframe");
+  iframe.id="__contract_print";
+  iframe.style.cssText="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;border:none;background:#fff";
+  document.body.appendChild(iframe);
+  const idoc=iframe.contentDocument||iframe.contentWindow.document;
+  idoc.open();
+  idoc.write(html.replace("</body>",`<div class="no-print" style="position:fixed;top:14px;right:14px;display:flex;gap:6px;z-index:100"><button onclick="window.print()" style="border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;background:#111827;color:#fff">⎙ Print / Save PDF</button><button onclick="parent.document.getElementById('__contract_print').remove()" style="border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;background:#ef4444;color:#fff">✕ Close</button></div></body>`));
+  idoc.close();
+}
+
 // BuildMetry colors
 const bg="#0c0f17",bg2="#0e1119",brd="#1e2535",brdL="#111826",tx="#dde1ec",tx2="#7a8299",tx3="#4a566e",ac="#3b82f6",acL="#63b3ed",acD="#1d4ed8",grn="#22c55e",red="#ef4444",ylw="#f5a623";
 const inpS={background:bg,border:`1px solid ${brd}`,color:tx,borderRadius:8,padding:"9px 13px",fontSize:13,width:"100%",outline:"none",boxSizing:"border-box",fontFamily:"inherit"};
@@ -141,7 +266,7 @@ function FinSummary({t,dp,tr,rp}){
   </div>;
 }
 
-function Form({contract,onSave,onCancel,isNew,saving}){
+function Form({contract,onSave,onCancel,onPrint,isNew,saving}){
   const[f,sF]=useState(()=>contract?{...contract}:{id:null,title:"",contractType:"Prime",status:"Draft",clientOrSubName:"",startDate:"",endDate:"",discountPercent:0,taxRate:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",scopeOfWork:"",exclusions:"",lineItems:[],milestones:[],changeOrders:[],signatureStatus:"Unsigned",linkedEstimateId:null});
   const s=(k,v)=>sF(p=>({...p,[k]:v}));
   const t=useMemo(()=>calc(f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent),[f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent]);
@@ -151,7 +276,10 @@ function Form({contract,onSave,onCancel,isNew,saving}){
   return<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
       <button onClick={onCancel} style={bGh}>\u2190 Back</button>
-      <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={()=>onPrint(f)} title="Print / Save PDF" style={bGh}><Ic d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" s={12}/> Print</button>
+        <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
+      </div>
     </div>
     {warns.length>0&&<div style={{...cardS,background:"rgba(249,166,35,.06)",borderColor:"rgba(249,166,35,.2)"}}>
       <div style={{display:"flex",gap:8,alignItems:"flex-start"}}><Ic d="M12 9v4M12 17h.01M10.29 3.86l-8.6 14.9A2 2 0 003.4 21h17.2a2 2 0 001.71-2.97l-8.6-14.93a2 2 0 00-3.42-.04z" s={14} c={ylw}/>
@@ -188,7 +316,10 @@ function Form({contract,onSave,onCancel,isNew,saving}){
 
     <div style={{display:"flex",justifyContent:"space-between",marginTop:8}}>
       <button onClick={onCancel} style={bGh}>Cancel</button>
-      <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={()=>onPrint(f)} title="Print / Save PDF" style={bGh}><Ic d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" s={12}/> Print</button>
+        <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
+      </div>
     </div>
   </div>;
 }
@@ -274,7 +405,10 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
           return<div key={c.id||uid()} onClick={()=>{setActiveId(c.id);setView("form")}} style={{...cardS,cursor:"pointer",transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=ac} onMouseLeave={e=>e.currentTarget.style.borderColor=brdL}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
               <div><div style={{fontSize:14,fontWeight:800,color:tx}}>{c.title||"Untitled"}</div><div style={{fontSize:11,color:tx2,marginTop:2}}>{c.contractType} · {c.clientOrSubName||"\u2014"}</div></div>
-              <Chip s={c.status}/>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <button onClick={e=>{e.stopPropagation();printContract(c)}} title="Print / Save PDF" style={{...bGh,padding:"4px 8px",border:"none"}}><Ic d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" s={13}/></button>
+                <Chip s={c.status}/>
+              </div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
               <Kpi label="Total" value={$(t.tot)}/><Kpi label="Labor" value={$(t.lab)}/><Kpi label="Materials" value={$(t.mat)}/><Kpi label="Billed" value={pct(t.tot>0?pd/t.tot:0)} sub={$(pd)}/>
@@ -299,6 +433,6 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
         </div>})}
     </div>}
 
-    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} isNew={!active||active.id==null} saving={saving}/>}
+    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} isNew={!active||active.id==null} saving={saving}/>}
   </div>;
 }
