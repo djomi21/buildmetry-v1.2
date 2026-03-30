@@ -187,10 +187,7 @@ router.patch('/:id/status', authenticate, async (req, res) => {
 router.delete('/:id', authenticate, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    await prisma.contract.update({
-      where: { id },
-      data: { status: 'Cancelled' },
-    });
+    await prisma.contract.delete({ where: { id } });
     res.status(204).send();
   } catch (err) {
     console.error('Error deleting contract:', err);

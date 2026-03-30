@@ -182,8 +182,8 @@ ${c.exclusions?`<div class="section"><div class="sec-title">Exclusions</div><div
   idoc.close();
 }
 
-// BuildMetry colors
-const bg="#0c0f17",bg2="#0e1119",brd="#1e2535",brdL="#111826",tx="#dde1ec",tx2="#7a8299",tx3="#4a566e",ac="#3b82f6",acL="#63b3ed",acD="#1d4ed8",grn="#22c55e",red="#ef4444",ylw="#f5a623";
+// Theme-aware colors — CSS variables inherit light/dark from the app
+const bg="var(--bg-card)",bg2="var(--bg-darker)",brd="var(--border-2)",brdL="var(--border)",tx="var(--text)",tx2="var(--text-muted)",tx3="var(--text-dim)",ac="var(--accent)",acL="var(--accent-light)",acD="var(--accent-dark)",grn="#22c55e",red="#ef4444",ylw="#f5a623";
 const inpS={background:bg,border:`1px solid ${brd}`,color:tx,borderRadius:8,padding:"9px 13px",fontSize:13,width:"100%",outline:"none",boxSizing:"border-box",fontFamily:"inherit"};
 const cardS={background:bg2,border:`1px solid ${brdL}`,borderRadius:12,padding:"16px 18px",marginBottom:12};
 const lblS={fontSize:10,fontWeight:700,color:tx3,marginBottom:4,display:"block",textTransform:"uppercase",letterSpacing:".5px"};
@@ -266,16 +266,23 @@ function FinSummary({t,dp,tr,rp}){
   </div>;
 }
 
-function Form({contract,onSave,onCancel,onPrint,isNew,saving}){
+function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving}){
   const[f,sF]=useState(()=>contract?{...contract}:{id:null,title:"",contractType:"Prime",status:"Draft",clientOrSubName:"",startDate:"",endDate:"",discountPercent:0,taxRate:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",scopeOfWork:"",exclusions:"",lineItems:[],milestones:[],changeOrders:[],signatureStatus:"Unsigned",linkedEstimateId:null});
   const s=(k,v)=>sF(p=>({...p,[k]:v}));
   const t=useMemo(()=>calc(f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent),[f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent]);
   const tpl=n=>{const tp=TEMPLATES[n];if(tp)s("lineItems",tp.map(i=>({...i,id:uid()})))};
   const warns=useMemo(()=>{const w=[];if(!f.lineItems.length)w.push("No line items.");if(t.sub>0&&t.lab/t.sub<.15&&f.lineItems.length)w.push("Labor under 15%.");if(t.mat>0&&f.taxRate===0)w.push("Tax 0% with materials.");const sc=f.milestones.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);if(f.milestones.length&&Math.abs(sc-t.tot)>1)w.push(`Schedule ${$(sc)} ≠ total ${$(t.tot)}.`);if(f.status==="Active"&&f.signatureStatus==="Unsigned")w.push("Active but unsigned.");return w},[f,t]);
 
+  const[dc,setDc]=useState(false);
   return<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-      <button onClick={onCancel} style={bGh}>\u2190 Back</button>
+      <div style={{display:"flex",gap:8,alignItems:"center"}}>
+        <button onClick={onCancel} style={bGh}>\u2190 Back</button>
+        {!isNew&&(dc
+          ?<><button onClick={()=>onDelete(f.id)} style={{...bGh,borderColor:red,color:red}}>Confirm delete</button><button onClick={()=>setDc(false)} style={{...bGh,padding:"7px 8px"}}>✕</button></>
+          :<button onClick={()=>setDc(true)} style={{...bGh,color:red}}><Ic d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" s={12} c={red}/> Delete</button>
+        )}
+      </div>
       <div style={{display:"flex",gap:8}}>
         <button onClick={()=>onPrint(f)} title="Print / Save PDF" style={bGh}><Ic d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" s={12}/> Print</button>
         <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
@@ -334,6 +341,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
   const[toast,setToast]=useState(null);
   const[ests,setEsts]=useState([]);
   const[estLd,setEstLd]=useState(false);
+  const[delConfirm,setDelConfirm]=useState(null);
 
   const show=msg=>{setToast(msg);setTimeout(()=>setToast(null),3000)};
   const token=typeof localStorage!=="undefined"?localStorage.getItem("bm_token"):null;
@@ -357,6 +365,13 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
       setContracts(p=>{const idx=p.findIndex(c=>c.id===form.id);if(idx>=0){const n=[...p];n[idx]=form;return n}return[...p.filter(c=>c.id!==null),{...form,id:form.id||uid()}]});
       setView("list");setActiveId(null);show(isUpd?"Updated":"Created");
     }finally{setSaving(false)}
+  };
+
+  const handleDelete=async id=>{
+    try{const r=await fetch(`${apiBaseUrl}/contracts/${id}`,{method:"DELETE",headers:hdr});
+      if(r.ok||r.status===204){setContracts(p=>p.filter(c=>c.id!==id));setView("list");setActiveId(null);setDelConfirm(null);show("Contract deleted");return}
+    }catch{}
+    setContracts(p=>p.filter(c=>c.id!==id));setView("list");setActiveId(null);setDelConfirm(null);show("Deleted");
   };
 
   const pickEst=async()=>{
@@ -405,8 +420,12 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
           return<div key={c.id||uid()} onClick={()=>{setActiveId(c.id);setView("form")}} style={{...cardS,cursor:"pointer",transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=ac} onMouseLeave={e=>e.currentTarget.style.borderColor=brdL}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
               <div><div style={{fontSize:14,fontWeight:800,color:tx}}>{c.title||"Untitled"}</div><div style={{fontSize:11,color:tx2,marginTop:2}}>{c.contractType} · {c.clientOrSubName||"\u2014"}</div></div>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
                 <button onClick={e=>{e.stopPropagation();printContract(c)}} title="Print / Save PDF" style={{...bGh,padding:"4px 8px",border:"none"}}><Ic d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" s={13}/></button>
+                {delConfirm===c.id
+                  ?<><button onClick={e=>{e.stopPropagation();handleDelete(c.id)}} style={{...bGh,padding:"4px 10px",borderColor:red,color:red,fontSize:11}}>Confirm</button><button onClick={e=>{e.stopPropagation();setDelConfirm(null)}} style={{...bGh,padding:"4px 7px",border:"none",fontSize:11}}>✕</button></>
+                  :<button onClick={e=>{e.stopPropagation();setDelConfirm(c.id)}} title="Delete" style={{...bGh,padding:"4px 7px",border:"none"}}><Ic d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" s={13} c={red}/></button>
+                }
                 <Chip s={c.status}/>
               </div>
             </div>
@@ -433,6 +452,6 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
         </div>})}
     </div>}
 
-    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} isNew={!active||active.id==null} saving={saving}/>}
+    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} onDelete={handleDelete} isNew={!active||active.id==null} saving={saving}/>}
   </div>;
 }
