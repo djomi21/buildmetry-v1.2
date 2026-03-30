@@ -467,6 +467,9 @@ const I=({n,s=18})=>{
     case "palette":   return <svg {...p} viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.5-.67 1.5-1.5 0-.38-.15-.74-.39-1.04-.23-.29-.38-.65-.38-1.04 0-.83.67-1.5 1.5-1.5H16c3.31 0 6-2.69 6-6 0-5.52-4.48-9.96-10-9.96z"/></svg>;
     case "image":     return <svg {...p} viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>;
     case "building":  return <svg {...p} viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="6" x2="9.01" y2="6"/><line x1="15" y1="6" x2="15.01" y2="6"/><line x1="9" y1="10" x2="9.01" y2="10"/><line x1="15" y1="10" x2="15.01" y2="10"/><line x1="9" y1="14" x2="9.01" y2="14"/><line x1="15" y1="14" x2="15.01" y2="14"/><path d="M9 22v-4h6v4"/></svg>;
+    case "sun":       return <svg {...p} viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>;
+    case "moon":      return <svg {...p} viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>;
+    case "monitor":   return <svg {...p} viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>;
     default:          return null;
   }
 };
@@ -474,30 +477,40 @@ const I=({n,s=18})=>{
 const FONT_URL='https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap';
 const CSS=`
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--accent:#3b82f6;--accent-dark:#1d4ed8;--accent-light:#63b3ed;--accent-r:59;--accent-g:130;--accent-b:246}
+:root{
+  --accent:#3b82f6;--accent-dark:#1d4ed8;--accent-light:#63b3ed;--accent-r:59;--accent-g:130;--accent-b:246;
+  --bg:#080a0f;--bg-sidebar:#0a0d15;--bg-card:#0c0f17;--bg-input:#0c0f17;--bg-darker:#0e1119;
+  --border:#111826;--border-2:#1e2535;
+  --text:#dde1ec;--text-2:#c8d0e0;--text-3:#9aabb8;--text-muted:#7a8299;--text-dim:#4a566e;--text-faint:#3a4160;--text-ghost:#2d3a52;
+}
+:root[data-theme="light"]{
+  --bg:#f1f5f9;--bg-sidebar:#e8edf5;--bg-card:#ffffff;--bg-input:#f8fafc;--bg-darker:#f0f4f8;
+  --border:#dde3ed;--border-2:#c4cedd;
+  --text:#0f172a;--text-2:#1e293b;--text-3:#334155;--text-muted:#475569;--text-dim:#64748b;--text-faint:#94a3b8;--text-ghost:#cbd5e1;
+}
 ::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-track{background:#0c0f17}
-::-webkit-scrollbar-thumb{background:#1e2535;border-radius:2px}
+::-webkit-scrollbar-track{background:var(--bg-card)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px}
 button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
 input,select,textarea{outline:none;font-family:inherit}
-.nb{transition:all .16s;border-left:2px solid transparent;display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;color:#4a566e;text-align:left;white-space:nowrap;width:100%;font-size:13px;font-weight:600;cursor:pointer}
-.nb:hover{background:rgba(var(--accent-r),var(--accent-g),var(--accent-b),.07)!important;color:#c8d0e0!important}
+.nb{transition:all .16s;border-left:2px solid transparent;display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;color:var(--text-dim);text-align:left;white-space:nowrap;width:100%;font-size:13px;font-weight:600;cursor:pointer}
+.nb:hover{background:rgba(var(--accent-r),var(--accent-g),var(--accent-b),.07)!important;color:var(--text-2)!important}
 .nb.on{background:rgba(var(--accent-r),var(--accent-g),var(--accent-b),.1)!important;border-left-color:var(--accent-light)!important;color:var(--accent-light)!important}
 .card{transition:box-shadow .2s,transform .2s}
-.card:hover{box-shadow:0 10px 36px rgba(0,0,0,.45);transform:translateY(-1px)}
-.rh:hover{background:rgba(255,255,255,.023)!important}
+.card:hover{box-shadow:0 10px 36px rgba(0,0,0,.18);transform:translateY(-1px)}
+.rh:hover{background:rgba(var(--accent-r),var(--accent-g),var(--accent-b),.04)!important}
 .bb{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-family:inherit;border-radius:8px;cursor:pointer;transition:all .15s;border:none}
 .b-bl{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff}.b-bl:hover{transform:translateY(-1px);box-shadow:0 5px 22px rgba(var(--accent-r),var(--accent-g),var(--accent-b),.45)}
 .b-gr{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}.b-gr:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(34,197,94,.4)}
 .b-am{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}.b-am:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(245,158,11,.4)}
-.b-gh{border:1px solid #1e2535!important;color:#7a8299!important;background:transparent}.b-gh:hover{border-color:var(--accent)!important;color:var(--accent-light)!important}
+.b-gh{border:1px solid var(--border-2)!important;color:var(--text-muted)!important;background:transparent}.b-gh:hover{border-color:var(--accent)!important;color:var(--accent-light)!important}
 .b-rd{border:1px solid rgba(239,68,68,.3)!important;color:#ef4444!important;background:transparent}.b-rd:hover{background:rgba(239,68,68,.08)!important}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:flex;align-items:flex-start;justify-content:center;padding:20px;backdrop-filter:blur(8px);overflow-y:auto}
-.mo{background:#0e1119;border:1px solid #1e2535;border-radius:16px;width:100%;box-shadow:0 28px 70px rgba(0,0,0,.7)}
-.inp{background:#0c0f17;border:1px solid #1e2535;color:#dde1ec;border-radius:8px;padding:9px 13px;font-size:13px;width:100%;transition:border-color .18s}
-.inp:focus{border-color:var(--accent)}.inp::placeholder{color:#3a4160}
-select.inp option{background:#0c0f17}
-.lbl{display:block;font-size:11px;color:#4a566e;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;display:flex;align-items:flex-start;justify-content:center;padding:20px;backdrop-filter:blur(8px);overflow-y:auto}
+.mo{background:var(--bg-darker);border:1px solid var(--border-2);border-radius:16px;width:100%;box-shadow:0 28px 70px rgba(0,0,0,.35)}
+.inp{background:var(--bg-input);border:1px solid var(--border-2);color:var(--text);border-radius:8px;padding:9px 13px;font-size:13px;width:100%;transition:border-color .18s}
+.inp:focus{border-color:var(--accent)}.inp::placeholder{color:var(--text-faint)}
+select.inp option{background:var(--bg-input);color:var(--text)}
+.lbl{display:block;font-size:11px;color:var(--text-dim);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -512,10 +525,10 @@ select.inp option{background:#0c0f17}
 .sl:hover{background:rgba(var(--accent-r),var(--accent-g),var(--accent-b),.05)!important;border-left-color:var(--accent)!important}
 .sl.on{background:rgba(var(--accent-r),var(--accent-g),var(--accent-b),.08)!important;border-left-color:var(--accent-light)!important}
 .mn{font-family:'JetBrains Mono',monospace;font-weight:600}
-.stl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:#4a566e;margin-bottom:12px}
-.spl{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 88px);border:1px solid #111826;border-radius:14px;overflow:hidden}
-.spl-l{border-right:1px solid #111826;display:flex;flex-direction:column;background:#0a0d15;overflow:hidden}
-.spl-r{display:flex;flex-direction:column;overflow:hidden;background:#080a0f}
+.stl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-dim);margin-bottom:12px}
+.spl{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 88px);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.spl-l{border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg-sidebar);overflow:hidden}
+.spl-r{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .mob-only{display:none}
 .desk-only{display:block}
@@ -835,6 +848,7 @@ export default function App() {
   const [mobileNav, setMobileNav] = useState(false);
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const [toast,    setToast]    = useState(null);
+  const [themeMode, setThemeMode] = useState(()=>localStorage.getItem('bm_theme')||'dark');
   const [dataLoaded, setDataLoaded] = useState(false);
   const toastTimer = React.useRef(null);
 
@@ -885,6 +899,27 @@ export default function App() {
     root.style.setProperty('--accent-g', String(g));
     root.style.setProperty('--accent-b', String(b));
   }, [company.themeAccent]);
+
+  // ── Apply theme mode (dark / light / system) ───────
+  useEffect(() => {
+    const root = document.documentElement;
+    const apply = (mode) => {
+      if (mode === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      } else {
+        root.setAttribute('data-theme', mode);
+      }
+    };
+    apply(themeMode);
+    localStorage.setItem('bm_theme', themeMode);
+    if (themeMode === 'system') {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const onChange = () => apply('system');
+      mq.addEventListener('change', onChange);
+      return () => mq.removeEventListener('change', onChange);
+    }
+  }, [themeMode]);
 
   // ── Restore session + load all data ────────────────
   useEffect(() => {
@@ -1053,7 +1088,7 @@ export default function App() {
   );
 
   return (
-    <div style={{display:"flex",height:"100vh",fontFamily:"'DM Sans',system-ui,sans-serif",background:"#080a0f",color:"#dde1ec",overflow:"hidden"}}>
+    <div style={{display:"flex",height:"100vh",fontFamily:"'DM Sans',system-ui,sans-serif",background:"var(--bg)",color:"var(--text)",overflow:"hidden"}}>
       <style>{CSS}</style>
 
       {/* MOBILE NAV OVERLAY */}
@@ -1062,13 +1097,13 @@ export default function App() {
       {/* SIDEBAR — desktop: static, mobile: drawer */}
       <aside style={{
         width:mobileNav?260:(sOpen?234:56),
-        background:"#0a0d15",borderRight:"1px solid #111826",display:"flex",flexDirection:"column",flexShrink:0,transition:"all .26s ease",overflow:"hidden",zIndex:mobileNav?100:10,
+        background:"var(--bg-sidebar)",borderRight:"1px solid var(--border)",display:"flex",flexDirection:"column",flexShrink:0,transition:"all .26s ease",overflow:"hidden",zIndex:mobileNav?100:10,
         ...(typeof window!=="undefined"&&window.innerWidth<=768?{position:"fixed",top:0,bottom:0,left:mobileNav?0:-270,boxShadow:mobileNav?"8px 0 40px rgba(0,0,0,.6)":"none"}:{})
       }}>
-        <div style={{padding:"18px 12px 16px",borderBottom:"1px solid #111826",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+        <div style={{padding:"18px 12px 16px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
           {company.logo?<img src={company.logo} alt="Logo" style={{width:32,height:32,borderRadius:8,objectFit:"contain",flexShrink:0}}/>:<div style={{width:32,height:32,borderRadius:8,background:"linear-gradient(135deg,#3b82f6,#1e40af)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><I n="wrench" s={15}/></div>}
-          {(sOpen||mobileNav)&&<div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:"#e2e8f0",lineHeight:1}}>{company.name||"BuildMetry"}</div><div style={{fontSize:8,color:"#2d3a52",fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",marginTop:2}}>v1.0</div></div>}
-          {mobileNav&&<button onClick={()=>setMobileNav(false)} style={{color:"#4a566e",padding:4}}><I n="x" s={16}/></button>}
+          {(sOpen||mobileNav)&&<div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:"var(--text-2)",lineHeight:1}}>{company.name||"BuildMetry"}</div><div style={{fontSize:8,color:"var(--text-ghost)",fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",marginTop:2}}>v1.0</div></div>}
+          {mobileNav&&<button onClick={()=>setMobileNav(false)} style={{color:"var(--text-dim)",padding:4}}><I n="x" s={16}/></button>}
         </div>
         <nav style={{flex:1,padding:"8px 5px",display:"flex",flexDirection:"column",gap:1,overflowY:"auto"}}>
           {nav.map(n=>(
@@ -1080,35 +1115,51 @@ export default function App() {
           ))}
         </nav>
         {/* Sidebar user + logout */}
-        <div style={{padding:"10px 7px",borderTop:"1px solid #111826",display:"flex",alignItems:"center",gap:8}}>
-          <button onClick={()=>{setTab("profile");setMobileNav(false);}} style={{flex:1,display:"flex",alignItems:"center",gap:8,overflow:"hidden",padding:0,borderRadius:6,transition:"all .15s",cursor:"pointer"}} title="View Profile">
-            {(sOpen||mobileNav) ? (<>
-              <div style={{width:28,height:28,borderRadius:"50%",background:auth.avatar?`url(${auth.avatar}) center/cover`:`linear-gradient(135deg,${USER_ROLE_C[auth.role]||"var(--accent)"},${USER_ROLE_C[auth.role]||"var(--accent)"}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fff",flexShrink:0}}>{!auth.avatar&&ini(auth.name)}</div>
-              <div style={{overflow:"hidden",textAlign:"left"}}>
-                <div style={{fontSize:11,fontWeight:700,color:"#c8d0e0",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{auth.name}</div>
-                <div style={{fontSize:9,color:"#3a4160",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{auth.role}</div>
-              </div>
-            </>) : (
-              <div style={{width:28,height:28,borderRadius:"50%",background:auth.avatar?`url(${auth.avatar}) center/cover`:`linear-gradient(135deg,${USER_ROLE_C[auth.role]||"var(--accent)"},${USER_ROLE_C[auth.role]||"var(--accent)"}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fff",flexShrink:0,margin:"0 auto"}}>{!auth.avatar&&ini(auth.name)}</div>
-            )}
-          </button>
-          <button onClick={handleLogout} title="Sign Out" style={{color:"#4a566e",padding:7,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:6,transition:"all .15s",flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.color="#ef4444";}} onMouseLeave={e=>{e.currentTarget.style.color="#4a566e";}}><I n="arrow" s={15}/></button>
+        <div style={{padding:"10px 7px",borderTop:"1px solid var(--border)",display:"flex",flexDirection:"column",gap:6}}>
+          {/* Theme toggle */}
+          {(sOpen||mobileNav)?(
+            <div style={{display:"flex",alignItems:"center",gap:3,background:"var(--bg-card)",borderRadius:8,padding:3,border:"1px solid var(--border)"}}>
+              {[{m:"light",icon:"sun",title:"Light"},{m:"dark",icon:"moon",title:"Dark"},{m:"system",icon:"monitor",title:"System"}].map(({m,icon,title})=>(
+                <button key={m} onClick={()=>setThemeMode(m)} title={title} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:4,padding:"5px 4px",borderRadius:6,fontSize:9,fontWeight:700,transition:"all .15s",background:themeMode===m?"var(--bg-sidebar)":"transparent",color:themeMode===m?"var(--accent-light)":"var(--text-dim)",border:themeMode===m?"1px solid var(--border-2)":"1px solid transparent"}}>
+                  <I n={icon} s={11}/>{title}
+                </button>
+              ))}
+            </div>
+          ):(
+            <button onClick={()=>setThemeMode(m=>m==='dark'?'light':m==='light'?'system':'dark')} title={`Theme: ${themeMode}`} style={{color:"var(--text-dim)",padding:7,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:6,transition:"all .15s",width:"100%"}}>
+              <I n={themeMode==='light'?'sun':themeMode==='system'?'monitor':'moon'} s={15}/>
+            </button>
+          )}
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <button onClick={()=>{setTab("profile");setMobileNav(false);}} style={{flex:1,display:"flex",alignItems:"center",gap:8,overflow:"hidden",padding:0,borderRadius:6,transition:"all .15s",cursor:"pointer"}} title="View Profile">
+              {(sOpen||mobileNav) ? (<>
+                <div style={{width:28,height:28,borderRadius:"50%",background:auth.avatar?`url(${auth.avatar}) center/cover`:`linear-gradient(135deg,${USER_ROLE_C[auth.role]||"var(--accent)"},${USER_ROLE_C[auth.role]||"var(--accent)"}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fff",flexShrink:0}}>{!auth.avatar&&ini(auth.name)}</div>
+                <div style={{overflow:"hidden",textAlign:"left"}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--text-2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{auth.name}</div>
+                  <div style={{fontSize:9,color:"var(--text-faint)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{auth.role}</div>
+                </div>
+              </>) : (
+                <div style={{width:28,height:28,borderRadius:"50%",background:auth.avatar?`url(${auth.avatar}) center/cover`:`linear-gradient(135deg,${USER_ROLE_C[auth.role]||"var(--accent)"},${USER_ROLE_C[auth.role]||"var(--accent)"}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fff",flexShrink:0,margin:"0 auto"}}>{!auth.avatar&&ini(auth.name)}</div>
+              )}
+            </button>
+            <button onClick={handleLogout} title="Sign Out" style={{color:"var(--text-dim)",padding:7,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:6,transition:"all .15s",flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.color="#ef4444";}} onMouseLeave={e=>{e.currentTarget.style.color="var(--text-dim)"}}><I n="arrow" s={15}/></button>
+          </div>
         </div>
       </aside>
 
       {/* MAIN */}
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
-        <header style={{height:52,borderBottom:"1px solid #111826",display:"flex",alignItems:"center",padding:"0 14px 0 12px",justifyContent:"space-between",background:"#080a0f",flexShrink:0,gap:8}}>
+        <header style={{height:52,borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",padding:"0 14px 0 12px",justifyContent:"space-between",background:"var(--bg)",flexShrink:0,gap:8}}>
           <div style={{display:"flex",alignItems:"center",gap:10,minWidth:0,flex:1}}>
             {/* Mobile hamburger */}
-            <button className="mob-only" onClick={()=>setMobileNav(true)} style={{color:"#7a8299",padding:4,flexShrink:0}}><I n="menu" s={20}/></button>
+            <button className="mob-only" onClick={()=>setMobileNav(true)} style={{color:"var(--text-muted)",padding:4,flexShrink:0}}><I n="menu" s={20}/></button>
             <div style={{fontSize:17,fontWeight:800,letterSpacing:.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{tab==="profile"?"My Profile":nav.find(n=>n.id===tab)?.label}</div>
-            <div className="desk-flex" style={{fontSize:11,color:"#2d3a52",borderLeft:"1px solid #1e2535",paddingLeft:12,whiteSpace:"nowrap",flexShrink:0}}>Thursday, March 12, 2026</div>
+            <div className="desk-flex" style={{fontSize:11,color:"var(--text-ghost)",borderLeft:"1px solid var(--border-2)",paddingLeft:12,whiteSpace:"nowrap",flexShrink:0}}>Thursday, March 12, 2026</div>
           </div>
           <div style={{display:"flex",gap:9,alignItems:"center",flexShrink:0}}>
             {overdue.length>0&&<div className="desk-flex" style={{alignItems:"center",gap:5,padding:"4px 11px",background:"rgba(239,68,68,.07)",border:"1px solid rgba(239,68,68,.22)",borderRadius:16,color:"#ef4444",fontSize:10,fontWeight:700}}><I n="alert" s={11}/>{overdue.length} overdue · {fmt(overdueAmt)}</div>}
             <button onClick={()=>setTab("profile")} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",padding:"3px 0",borderRadius:8,transition:"all .15s",border:"none",background:"none",color:"inherit",fontFamily:"inherit"}} title="View Profile">
-              <div className="desk-only" style={{textAlign:"right"}}><div style={{fontSize:11,fontWeight:700,color:"#c8d0e0"}}>{auth.name}</div><div style={{fontSize:9,color:"#3a4160"}}>{auth.role}</div></div>
+              <div className="desk-only" style={{textAlign:"right"}}><div style={{fontSize:11,fontWeight:700,color:"var(--text-2)"}}>{auth.name}</div><div style={{fontSize:9,color:"var(--text-faint)"}}>{auth.role}</div></div>
               <div style={{width:32,height:32,borderRadius:"50%",background:auth.avatar?`url(${auth.avatar}) center/cover`:`linear-gradient(135deg,${USER_ROLE_C[auth.role]||"var(--accent)"},${USER_ROLE_C[auth.role]||"var(--accent)"}88)`,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:11,color:"#fff",flexShrink:0}}>{!auth.avatar&&ini(auth.name)}</div>
             </button>
           </div>
