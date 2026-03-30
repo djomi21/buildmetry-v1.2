@@ -174,7 +174,7 @@ const SD_EXPENSES=[
 
 const EXPENSE_CATS=["Materials","Labor","Permits","Equipment Rental","Insurance","Vehicle","Fuel","Office","Tools","Subcontractor/Crew","Disposal","Meals","Travel","Marketing","Miscellaneous"];
 
-const SD_PHASES=["Planning","Design","Permitting","Demolition","Site Prep","Rough-In","Installations","Finishes","Closeout & Punch List","Completed"];
+const SD_PHASES=["Initiation (feasibility)","Planning & Design (blueprints)","Pre-construction (permits/site prep)","Procurement (bidding/materials)","Construction (execution/monitoring)","Closeout (final inspection/handover)"];
 
 const SD_TASKS=[
   {id:"T-001",projId:"PRJ-2026-001",phase:"Finish Work",title:"Install countertops",assignedTo:1,status:"in_progress",dueDate:"2026-03-18",notes:"Granite template done"},
@@ -2005,7 +2005,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
   const [taskForm, setTaskForm] = useState(null);
   useEffect(() => setDetailTab('overview'), [sel]);
   const sp=projs.find(p=>p.id===sel)||null;
-  const blank={name:"",custId:"",status:"active",contractValue:"",budgetLabor:"",budgetMaterials:"",actualLabor:"0",actualMaterials:"0",start:tod(),end:addD(tod(),60),phase:"Planning",progress:0,notes:""};
+  const blank={name:"",custId:"",status:"active",contractValue:"",budgetLabor:"",budgetMaterials:"",actualLabor:"0",actualMaterials:"0",start:tod(),end:addD(tod(),60),phase:"Initiation (feasibility)",progress:0,notes:""};
   const PHASES=phases;
 
   const openNew=()=>setForm({...blank,_id:null});
@@ -2030,7 +2030,7 @@ function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs
 
   const markComplete=(proj)=>{
     if(!confirm("Mark \""+proj.name+"\" as complete?\n\nThis will create a final invoice with estimate line items + approved change orders.")) return;
-    db.projs.update(proj.id,{status:"complete",phase:"Complete",progress:100});
+    db.projs.update(proj.id,{status:"complete",phase:"Closeout (final inspection/handover)",progress:100});
     var lineItems=[];var lineId=1;
     var est=(ests||[]).find(function(e){return e.id===proj.estId;});
     if(est&&est.lineItems){

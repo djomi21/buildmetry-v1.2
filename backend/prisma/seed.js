@@ -99,7 +99,7 @@ async function main() {
   console.log('  + 10 labor roles');
 
   // ── Project Phases ──────────────────────────────────
-  var phaseNames = ['Planning','Design','Permitting','Demolition','Site Prep','Rough-In','Installations','Finishes','Closeout & Punch List','Complete'];
+  var phaseNames = ['Initiation (feasibility)','Planning & Design (blueprints)','Pre-construction (permits/site prep)','Procurement (bidding/materials)','Construction (execution/monitoring)','Closeout (final inspection/handover)'];
   for (var i = 0; i < phaseNames.length; i++) {
     await prisma.projectPhase.upsert({
       where: { companyId_name: { companyId: company.id, name: phaseNames[i] } },
@@ -107,7 +107,7 @@ async function main() {
       create: { companyId: company.id, name: phaseNames[i], sortOrder: i },
     });
   }
-  console.log('  + 10 project phases');
+  console.log('  + 6 project phases');
 
   // ── Projects (5) ───────────────────────────────────
   var projects = [
