@@ -1,9 +1,21 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
 const { PrismaClient } = require('@prisma/client');
 const { authenticate } = require('../middleware/auth');
 const prisma = new PrismaClient();
 const router = express.Router();
+
+function createTransporter(company) {
+  var port = Number(company.smtpPort) || 587;
+  var secure = company.smtpSecure === true || port === 465;
+  return nodemailer.createTransport({
+    host: company.smtpHost, port, secure,
+    auth: { user: company.smtpUser, pass: company.smtpPass },
+    tls: { rejectUnauthorized: false },
+    connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000,
+  });
+}
 
 // Fields allowed for user create/update
 var USER_FIELDS = ['name', 'email', 'phone', 'role', 'status', 'avatar', 'lastLogin', 'notifPrefs'];
@@ -71,6 +83,40 @@ router.post('/', authenticate, async (req, res) => {
     var safe = { ...item };
     delete safe.passwordHash;
     console.log('User created:', safe.email, 'with default password');
+
+    // Attempt invitation email — non-blocking, never fails the request
+    try {
+      var company = await prisma.company.findUnique({ where: { id: req.companyId } });
+      if (company && company.smtpHost && company.smtpUser) {
+        var loginUrl = process.env.FRONTEND_URL || 'https://app.buildmetry.com';
+        var transporter = createTransporter(company);
+        await transporter.sendMail({
+          from: '"' + (company.emailFromName || company.name || 'BuildMetry') + '" <' + company.smtpUser + '>',
+          to: item.email,
+          subject: 'You\'ve been invited to ' + (company.name || 'BuildMetry'),
+          text: [
+            'Hi ' + item.name + ',',
+            '',
+            'You have been invited to join ' + (company.name || 'BuildMetry') + ' as ' + (item.role || 'a team member') + '.',
+            '',
+            'Login:    ' + loginUrl,
+            'Email:    ' + item.email,
+            'Password: Welcome123!',
+            '',
+            'You will be asked to set a new password on first login.',
+            '',
+            '— ' + (company.emailFromName || company.name || 'BuildMetry'),
+          ].join('\n'),
+        });
+        console.log('Invitation email sent to:', item.email);
+      } else {
+        console.log('SMTP not configured — invitation email skipped for:', item.email);
+      }
+    } catch (mailErr) {
+      // Email failure must never block user creation
+      console.error('Invitation email error:', mailErr.message);
+    }
+
     res.status(201).json(safe);
   } catch (err) {
     console.error('Create user error:', err.message);
