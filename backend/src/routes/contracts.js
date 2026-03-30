@@ -15,6 +15,8 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { authenticate } = require('../middleware/auth');
+const { createTransporter } = require('../utils/mailer');
+const crypto = require('crypto');
 
 // ─── Helper: Calculate contract totals server-side ───
 // Follows BuildMetry rules: tax on materials only, after discount
@@ -176,6 +178,78 @@ router.patch('/:id/status', authenticate, async (req, res) => {
   } catch (err) {
     console.error('Error updating contract status:', err);
     res.status(500).json({ message: 'Failed to update status' });
+  }
+});
+
+
+// ═══════════════════════════════════════
+// POST /api/contracts/:id/send-signature
+// Generate token and email signing link to customer
+// ═══════════════════════════════════════
+router.post('/:id/send-signature', authenticate, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { toEmail, message } = req.body;
+    if (!toEmail) return res.status(400).json({ error: 'Recipient email required.' });
+
+    const contract = await prisma.contract.findUnique({
+      where: { id },
+      include: { project: true }
+    });
+    if (!contract) return res.status(404).json({ error: 'Contract not found.' });
+
+    const company = await prisma.company.findUnique({ where: { id: contract.project.companyId } });
+    if (!company || !company.smtpHost || !company.smtpUser) {
+      return res.status(400).json({ error: 'SMTP not configured. Go to Company Setup > Email & Notifications.' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+    await prisma.contract.update({
+      where: { id },
+      data: { signToken: token, signTokenExpiry: expiry, status: 'Sent' }
+    });
+
+    const frontendUrl = process.env.FRONTEND_URL || 'https://app.buildmetry.com';
+    const signingUrl = frontendUrl + '/sign/' + token;
+
+    const subject = 'Please sign: ' + contract.title;
+    const body = (message ? message + '\n\n' : '')
+      + 'Please review and sign the contract by clicking the link below:\n\n'
+      + signingUrl
+      + '\n\nThis link expires in 30 days.\n\n'
+      + (company.emailSignature || company.name || '');
+
+    const transporter = createTransporter(company);
+    await transporter.sendMail({
+      from: '"' + (company.emailFromName || company.name) + '" <' + company.smtpUser + '>',
+      to: toEmail,
+      replyTo: company.emailReplyTo || company.smtpUser,
+      subject,
+      text: body,
+      html: body.replace(/\n/g, '<br>'),
+    });
+
+    try {
+      await prisma.emailLog.create({
+        data: {
+          companyId: req.companyId,
+          type: 'contract-signature',
+          docId: String(id),
+          toEmail,
+          subject,
+          body,
+          status: 'sent',
+          sentBy: req.user.id,
+        }
+      });
+    } catch (logErr) { /* non-fatal */ }
+
+    res.json({ success: true, signingUrl, status: 'Sent' });
+  } catch (err) {
+    console.error('Send signature error:', err);
+    res.status(500).json({ error: 'Failed to send: ' + err.message });
   }
 });
 

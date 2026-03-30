@@ -134,6 +134,12 @@ model Estimate {
   projId        String?
   name          String
   status        String    @default("draft")  // draft, sent, approved, declined
+  signToken        String?   @unique
+  signTokenExpiry  DateTime?
+  signedAt         DateTime?
+  signedByName     String?
+  signedByIp       String?
+  signatureImage   String?   @db.Text
   date          String
   expiry        String
   taxRate       Float     @default(6.5)
@@ -403,6 +409,12 @@ model Contract {
   startDate         DateTime?
   endDate           DateTime?
   signatureStatus   String     @default("Unsigned")
+  signToken         String?    @unique
+  signTokenExpiry   DateTime?
+  signedAt          DateTime?
+  signedByName      String?
+  signedByIp        String?
+  signatureImage    String?    @db.Text
   discountPercent   Float      @default(0)
   taxRate           Float      @default(0.065)
   retentionPercent  Float      @default(10)

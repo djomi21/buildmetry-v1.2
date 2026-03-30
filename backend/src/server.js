@@ -66,6 +66,7 @@ app.use('/api/phases',         loadRoute('./routes/phases', 'phases'));
 app.use('/api/email',          loadRoute('./routes/email', 'email'));
 app.use('/api/users',          loadRoute('./routes/users', 'users'));
 app.use('/api/contracts',      loadRoute('./routes/contracts', 'contracts'));
+app.use('/api/sign',           loadRoute('./routes/signing', 'signing'));   // PUBLIC — no auth middleware
 
 // ── ERROR HANDLER ────────────────────────────────────
 app.use((err, req, res, next) => {

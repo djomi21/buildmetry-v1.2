@@ -116,6 +116,14 @@ export const api = {
     log:  ()      => request('GET',  '/email/log'),
   },
 
+  // ── E-Signature ────────────────────────────────────
+  contracts: {
+    sendSignature: (id, data) => request('POST', `/contracts/${id}/send-signature`, data),
+  },
+  estimates: {
+    sendApproval: (id, data) => request('POST', `/estimates/${id}/send-approval`, data),
+  },
+
   // ── Tasks ──────────────────────────────────────────
   tasks: {
     list:   ()       => request('GET',    '/tasks'),

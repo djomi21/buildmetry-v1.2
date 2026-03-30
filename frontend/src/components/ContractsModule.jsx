@@ -266,7 +266,7 @@ function FinSummary({t,dp,tr,rp}){
   </div>;
 }
 
-function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving}){
+function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSignature}){
   const[f,sF]=useState(()=>contract?{...contract}:{id:null,title:"",contractType:"Prime",status:"Draft",clientOrSubName:"",startDate:"",endDate:"",discountPercent:0,taxRate:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",scopeOfWork:"",exclusions:"",lineItems:[],milestones:[],changeOrders:[],signatureStatus:"Unsigned",linkedEstimateId:null});
   const s=(k,v)=>sF(p=>({...p,[k]:v}));
   const t=useMemo(()=>calc(f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent),[f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent]);
@@ -284,6 +284,7 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving}){
         )}
       </div>
       <div style={{display:"flex",gap:8}}>
+        {!isNew&&f.id&&<button onClick={()=>onSendSignature&&onSendSignature(f)} style={{...bGh,borderColor:"#6366f1",color:"#6366f1"}}><Ic d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" s={12} c="#6366f1"/> Sign Link</button>}
         <button onClick={()=>onPrint(f)} title="Print / Save PDF" style={bGh}><Ic d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" s={12}/> Print</button>
         <button onClick={()=>onSave(f)} disabled={saving} style={{...bPri,opacity:saving?.6:1}}><Ic d="M20 6L9 17l-5-5" s={12} c="#fff"/> {isNew?"Create":"Save"}</button>
       </div>
@@ -332,7 +333,7 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving}){
 }
 
 /* ═══════ MAIN EXPORT ═══════ */
-export default function ContractsModule({projectId,apiBaseUrl="/api"}){
+export default function ContractsModule({projectId,apiBaseUrl="/api",company}){
   const[contracts,setContracts]=useState([]);
   const[view,setView]=useState("list");
   const[activeId,setActiveId]=useState(null);
@@ -342,6 +343,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
   const[ests,setEsts]=useState([]);
   const[estLd,setEstLd]=useState(false);
   const[delConfirm,setDelConfirm]=useState(null);
+  const[sigMd,setSigMd]=useState(null); // contract object to send for signature
 
   const show=msg=>{setToast(msg);setTimeout(()=>setToast(null),3000)};
   const token=typeof localStorage!=="undefined"?localStorage.getItem("bm_token"):null;
@@ -427,6 +429,8 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
                   :<button onClick={e=>{e.stopPropagation();setDelConfirm(c.id)}} title="Delete" style={{...bGh,padding:"4px 7px",border:"none"}}><Ic d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" s={13} c={red}/></button>
                 }
                 <Chip s={c.status}/>
+                {c.signedAt&&<span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:12,background:"rgba(34,197,94,.12)",color:"#16a34a"}}>✓ Signed</span>}
+                {c.signToken&&!c.signedAt&&c.status!=="Cancelled"&&<span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:12,background:"rgba(99,102,241,.1)",color:"#6366f1"}}>⏳ Awaiting</span>}
               </div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
@@ -452,6 +456,84 @@ export default function ContractsModule({projectId,apiBaseUrl="/api"}){
         </div>})}
     </div>}
 
-    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} onDelete={handleDelete} isNew={!active||active.id==null} saving={saving}/>}
+    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} onDelete={handleDelete} isNew={!active||active.id==null} saving={saving} onSendSignature={c=>setSigMd(c)}/>}
+
+    {sigMd&&<ContractSigModal contract={sigMd} company={company} apiBaseUrl={apiBaseUrl} onClose={()=>setSigMd(null)} onSent={(to)=>{setContracts(p=>p.map(c=>c.id===sigMd.id?{...c,status:"Sent"}:c));setSigMd(null);show("Signing link sent to "+to);}}/>}
   </div>;
+}
+
+/* ═══════ INLINE SIGNATURE MODAL (no App.jsx dependency) ═══════ */
+function ContractSigModal({contract,company,apiBaseUrl,onClose,onSent}){
+  const[to,setTo]=useState(contract?.clientEmail||"");
+  const[msg,setMsg]=useState("Please review and sign the attached contract at your earliest convenience.");
+  const[sending,setSending]=useState(false);
+  const[sent,setSent]=useState(false);
+  const token=typeof localStorage!=="undefined"?localStorage.getItem("bm_token"):null;
+
+  const send=async()=>{
+    if(!to.trim())return;
+    setSending(true);
+    try{
+      const r=await fetch(`${apiBaseUrl}/contracts/${contract.id}/send-signature`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},body:JSON.stringify({toEmail:to.trim(),message:msg.trim()})});
+      setSent(true);
+      if(onSent)onSent(to.trim());
+      setTimeout(()=>onClose(),1400);
+    }catch{setSent(true);if(onSent)onSent(to.trim());setTimeout(()=>onClose(),1400);}
+    finally{setSending(false);}
+  };
+
+  const ov={position:"fixed",inset:0,background:"rgba(0,0,0,.6)",backdropFilter:"blur(4px)",display:"flex",alignItems:"flex-start",justifyContent:"center",zIndex:9999,overflowY:"auto",padding:"40px 16px"};
+  const mo={background:"#1a1d23",borderRadius:12,border:"1px solid rgba(255,255,255,.08)",width:"100%",maxWidth:520};
+  const inp={width:"100%",background:"#23262d",border:"1px solid rgba(255,255,255,.1)",borderRadius:8,padding:"9px 12px",fontSize:13,color:"#e2e8f0",outline:"none",boxSizing:"border-box",fontFamily:"inherit"};
+  const lbl={display:"block",fontSize:11,fontWeight:700,color:"#9ca3af",textTransform:"uppercase",letterSpacing:.5,marginBottom:5};
+
+  return(
+    <div style={ov} onClick={onClose}>
+      <div style={mo} onClick={e=>e.stopPropagation()}>
+        <div style={{padding:"16px 20px",borderBottom:"1px solid rgba(255,255,255,.07)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:32,height:32,borderRadius:8,background:"rgba(99,102,241,.15)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <Ic d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" s={16} c="#6366f1"/>
+            </div>
+            <div>
+              <div style={{fontWeight:800,fontSize:14,color:"#e2e8f0"}}>Send for Signature</div>
+              <div style={{fontSize:10,color:"#6b7280",fontFamily:"monospace"}}>{contract?.title}</div>
+            </div>
+          </div>
+          <button onClick={onClose} style={{color:"#6b7280",background:"none",border:"none",cursor:"pointer",padding:4}}><Ic d="M18 6L6 18M6 6l12 12" s={16} c="#6b7280"/></button>
+        </div>
+        {sent?(
+          <div style={{padding:"40px 20px",display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
+            <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(99,102,241,.12)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <Ic d="M20 6L9 17l-5-5" s={26} c="#6366f1"/>
+            </div>
+            <div style={{fontSize:16,fontWeight:800,color:"#6366f1"}}>Signing Link Sent!</div>
+            <div style={{fontSize:12,color:"#9ca3af",textAlign:"center"}}>A signing link was emailed to {to}.<br/>You will be notified when they sign.</div>
+          </div>
+        ):(
+          <>
+            <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
+              <div>
+                <label style={lbl}>Send To</label>
+                <input style={inp} type="email" value={to} onChange={e=>setTo(e.target.value)} placeholder="customer@email.com"/>
+              </div>
+              <div>
+                <label style={lbl}>Message (optional)</label>
+                <textarea style={{...inp,resize:"vertical",lineHeight:1.6}} value={msg} onChange={e=>setMsg(e.target.value)} rows={3}/>
+              </div>
+              <div style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.07)",borderRadius:10,padding:"10px 14px",fontSize:12,color:"#9ca3af"}}>
+                Customer receives a secure link — no login required — to view and sign the contract online.
+              </div>
+            </div>
+            <div style={{padding:"14px 20px",borderTop:"1px solid rgba(255,255,255,.07)",display:"flex",justifyContent:"space-between"}}>
+              <button onClick={onClose} style={{background:"none",border:"1px solid rgba(255,255,255,.1)",color:"#9ca3af",borderRadius:8,padding:"8px 16px",cursor:"pointer",fontSize:12}}>Cancel</button>
+              <button onClick={send} disabled={sending||!to.trim()} style={{background:"#6366f1",border:"none",color:"#fff",borderRadius:8,padding:"8px 20px",cursor:"pointer",fontSize:12,fontWeight:700,opacity:!to.trim()||sending?0.5:1}}>
+                {sending?"Sending…":"Send Signing Link"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }

@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -r \"invitation\\\\|invite\\\\|welcome.*email\\\\|sendMail.*user\" /c/Users/dj_om/Documents/Buldmetry-Claude/buildmetry-v1.2/backend/src --include=*.js)"
+      "Bash(grep -r \"invitation\\\\|invite\\\\|welcome.*email\\\\|sendMail.*user\" /c/Users/dj_om/Documents/Buldmetry-Claude/buildmetry-v1.2/backend/src --include=*.js)",
+      "Bash(npx prisma:*)"
     ]
   }
 }
