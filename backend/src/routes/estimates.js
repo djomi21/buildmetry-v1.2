@@ -11,6 +11,16 @@ router.get('/', authenticate, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+router.get('/project/:projectId', authenticate, async (req, res) => {
+  try {
+    const items = await prisma.estimate.findMany({
+      where: { companyId: req.companyId, projId: req.params.projectId },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(items);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 router.get('/:id', authenticate, async (req, res) => {
   try {
     const item = await prisma.estimate.findFirst({ where: { id: req.params.id, companyId: req.companyId } });
