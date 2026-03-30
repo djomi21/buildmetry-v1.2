@@ -3,7 +3,7 @@ var bcrypt = require('bcryptjs');
 var prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding ContractorOS database...\n');
+  console.log('Seeding Buildmetry database...\n');
 
   // ── Company ────────────────────────────────────────
   var company = await prisma.company.upsert({
