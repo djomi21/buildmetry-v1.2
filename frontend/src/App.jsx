@@ -3571,7 +3571,7 @@ function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setR
     {id:"users",label:"Users & Roles",icon:"customers"},
     {id:"roles",label:"Role Permissions",icon:"shield"},
     {id:"labor",label:"Labor Roles",icon:"wrench"},
-    {id:"admin_roles",label:"Admin Roles",icon:"building"},
+    {id:"admin_roles",label:"Company Roles",icon:"building"},
     {id:"email",label:"Email & Notifications",icon:"bell"},
     {id:"theme",label:"Theme & Branding",icon:"palette"},
     {id:"company",label:"Company Info",icon:"settings"},
