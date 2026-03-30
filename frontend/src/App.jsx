@@ -2602,13 +2602,20 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
   const blankHr={projId:projs[0]?.id||"",date:tod(),hours:"8",desc:"",approved:false};
   const logHrs=()=>{
     if(!hrForm.projId||!hrForm.hours){showToast("Project and hours required","error");return;}
-    db.hrs.create({...hrForm,id:uid(),subId:sel,hours:Number(hrForm.hours)||0});
-    showToast("Hours logged");setHrForm(null);
+    if(hrForm._id){
+      const ch={projId:hrForm.projId,date:hrForm.date,hours:Number(hrForm.hours)||0,desc:hrForm.desc};
+      db.hrs.update(hrForm._id,ch);showToast("Hours updated");
+    } else {
+      db.hrs.create({...hrForm,id:uid(),subId:sel,hours:Number(hrForm.hours)||0});showToast("Hours logged");
+    }
+    setHrForm(null);
   };
 
   const formPreview=hrForm&&se?{billed:(Number(hrForm.hours)||0)*se.billableRate,cost:(Number(hrForm.hours)||0)*getBurdenedRate(roles,se.role,se.hourlyWage)}:{billed:0,cost:0};
 
   const canApprove = auth && ["Owner","Admin","Foreman"].includes(auth.role);
+  const openEditHr=h=>setHrForm({...h,_id:h.id,hours:String(h.hours)});
+  const delHr=id=>{if(confirm("Delete this hour log?"))db.hrs.remove(id),showToast("Hour log removed");};
   const toggleApprove=(hId,current)=>{
     if(!canApprove) return;
     db.hrs.update(hId,{approved:!current});
@@ -2695,7 +2702,7 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
             {eHrs.length===0?<ES icon="clock" text="No hours logged yet."/>:(
               <div style={{border:"1px solid var(--border)",borderRadius:11,overflow:"hidden"}}>
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-                  <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Date","Project","Hours","Description","Billed","True Cost","Approved"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
+                  <thead><tr style={{background:"var(--bg-sidebar)"}}>{[...["Date","Project","Hours","Description","Billed","True Cost","Approved"],...(canApprove?["Actions"]:[])].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                   <tbody>
                     {eHrs.sort((a,b)=>b.date.localeCompare(a.date)).map((h,i)=>{
                       const p=projs.find(x=>x.id===h.projId);
@@ -2713,6 +2720,10 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
                         ):(
                           <span style={{padding:"2px 7px",borderRadius:10,fontSize:8,fontWeight:700,textTransform:"uppercase",background:h.approved?"rgba(34,197,94,.1)":"rgba(245,166,35,.08)",color:h.approved?"#22c55e":"#f5a623"}}>{h.approved?"Approved":"Pending"}</span>
                         )}</td>
+                        {canApprove&&<td style={{padding:"7px 12px",whiteSpace:"nowrap"}}>
+                          <button onClick={()=>openEditHr(h)} style={{marginRight:5,padding:"2px 8px",borderRadius:8,fontSize:9,fontWeight:700,background:"rgba(99,179,237,.1)",color:"#63b3ed",border:"1px solid rgba(99,179,237,.25)",cursor:"pointer"}}>Edit</button>
+                          <button onClick={()=>delHr(h.id)} style={{padding:"2px 8px",borderRadius:8,fontSize:9,fontWeight:700,background:"rgba(239,68,68,.08)",color:"#ef4444",border:"1px solid rgba(239,68,68,.2)",cursor:"pointer"}}>Del</button>
+                        </td>}
                       </tr>;
                     })}
                   </tbody>
@@ -2791,7 +2802,7 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setHrForm(null)}>
           <div className="mo" style={{maxWidth:460,marginTop:50}}>
             <div style={{padding:"17px 24px",borderBottom:"1px solid var(--border-2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div style={{fontSize:17,fontWeight:800}}>Log Hours — {se.name}</div>
+              <div style={{fontSize:17,fontWeight:800}}>{hrForm._id?"Edit Hours":"Log Hours"} — {se.name}</div>
               <button onClick={()=>setHrForm(null)} style={{color:"var(--text-dim)"}}><I n="x"/></button>
             </div>
             <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:13}}>
@@ -2812,7 +2823,7 @@ function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
               </div>
               <div style={{display:"flex",gap:9}}>
                 <button onClick={()=>setHrForm(null)} className="bb b-gh" style={{flex:1,padding:"10px",justifyContent:"center"}}>Cancel</button>
-                <button onClick={logHrs} className="bb b-am" style={{flex:2,padding:"10px",fontSize:13,justifyContent:"center"}}><I n="clock" s={13}/>Log Hours</button>
+                <button onClick={logHrs} className="bb b-am" style={{flex:2,padding:"10px",fontSize:13,justifyContent:"center"}}><I n="clock" s={13}/>{hrForm._id?"Update Hours":"Log Hours"}</button>
               </div>
             </div>
           </div>
