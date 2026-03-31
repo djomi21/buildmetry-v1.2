@@ -2,7 +2,6 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import api, { getToken, clearAuth, getSavedUser, saveUser } from "./api";
 import ContractsModule from "./components/ContractsModule";
-
 import CustomerManagement from './components/CustomerManagement';
 import ProjectManagement from './components/ProjectManagement';
 import InvoiceManagement from './components/InvoiceManagement';
@@ -17,7 +16,7 @@ function App() {
   const [projects, setProjects] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [subcontractors, setSubcontractors] = useState([]);
-
+  
   // Initialize data
   useEffect(() => {
     // Initialize with sample data or fetch from API
@@ -27,7 +26,7 @@ function App() {
     setSubcontractors(subcontractorData);
   }, []);
 
-    // ... rest of the component logic ...
+  // ... rest of the component logic ...
 
   return (
     <div className="app">
