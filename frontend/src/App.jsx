@@ -27,6 +27,15 @@ function App() {
     setSubcontractors(subcontractorData);
   }, []);
 
+    // ... rest of the component logic ...
+
+  return (
+    <div className="app">
+      {/* Your existing JSX structure */}
+    </div>
+  );
+}
+
 // API_BASE is configured in api.js via VITE_API_URL env var
 
 // ── HELPERS ────────────────────────────────────────────────────
