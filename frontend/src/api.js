@@ -92,7 +92,13 @@ export const api = {
 
   // ── Resource endpoints ─────────────────────────────
   get customers()      { return this._crud('customers'); },
-  get estimates()      { return this._crud('estimates'); },
+  get estimates() {
+  return {
+    ...this._crud('estimates'),
+    sendApproval: (id, data) =>
+      request('POST', `/estimates/${id}/send-approval`, data),
+  };
+},
   get projects()       { return this._crud('projects'); },
   get invoices()       { return this._crud('invoices'); },
   get materials()      { return this._crud('materials'); },
@@ -120,9 +126,7 @@ export const api = {
   contracts: {
     sendSignature: (id, data) => request('POST', `/contracts/${id}/send-signature`, data),
   },
-  estimates: {
-    sendApproval: (id, data) => request('POST', `/estimates/${id}/send-approval`, data),
-  },
+  
 
   // ── Tasks ──────────────────────────────────────────
   tasks: {
