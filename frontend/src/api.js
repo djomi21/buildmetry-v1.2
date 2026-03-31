@@ -129,21 +129,19 @@ export const api = {
   
 
   // ── Tasks ──────────────────────────────────────────
-  tasks: {
-    list:   ()       => request('GET',    '/tasks'),
-    create: (data)   => request('POST',   '/tasks', data),
-    update: (id, d)  => request('PUT',    `/tasks/${id}`, d),
-    remove: (id)     => request('DELETE', `/tasks/${id}`),
+  
+   get tasks() {
+     return this._crud('tasks');
   },
 
   // ── Phases ─────────────────────────────────────────
-  phases: {
-    list:    ()       => request('GET',    '/phases'),
-    create:  (data)   => request('POST',   '/phases', data),
-    update:  (id, d)  => request('PUT',    `/phases/${id}`, d),
-    remove:  (id)     => request('DELETE', `/phases/${id}`),
-    reorder: (phases) => request('PUT',    '/phases/reorder/bulk', { phases }),
-  },
+  get phases() {
+  return {
+    ...this._crud('phases'),
+    reorder: (phases) =>
+      request('PUT', '/phases/reorder/bulk', { phases }),
+  };
+},
 };
 
 export default api;
