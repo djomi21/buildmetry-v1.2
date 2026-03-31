@@ -52,7 +52,14 @@ const request = async (method, path, body = null) => {
   }
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  if (!res.ok) {
+  console.error("API Error:", {
+    path,
+    status: res.status,
+    data
+  });
+  throw new Error(data.error || `Request failed (${res.status})`);
+  }
   return data;
 };
 
