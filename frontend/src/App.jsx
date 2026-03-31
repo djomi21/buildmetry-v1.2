@@ -2,38 +2,6 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import api, { getToken, clearAuth, getSavedUser, saveUser } from "./api";
 import ContractsModule from "./components/ContractsModule";
-import CustomerManagement from './components/CustomerManagement';
-import ProjectManagement from './components/ProjectManagement';
-import InvoiceManagement from './components/InvoiceManagement';
-import SubcontractorManagement from './components/SubcontractorManagement';
-import KpiCards from './components/KpiCards';
-import DataTable from './components/DataTable';
-import ChartComponent from './components/ChartComponent';
-
-function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [customers, setCustomers] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [subcontractors, setSubcontractors] = useState([]);
-  
-  // Initialize data
-  useEffect(() => {
-    // Initialize with sample data or fetch from API
-    setCustomers(customerData);
-    setProjects(projectData);
-    setInvoices(invoiceData);
-    setSubcontractors(subcontractorData);
-  }, []);
-
-  // ... rest of the component logic ...
-
-  return (
-    <div className="app">
-      {/* Your existing JSX structure */}
-    </div>
-  );
-}
 
 // API_BASE is configured in api.js via VITE_API_URL env var
 
