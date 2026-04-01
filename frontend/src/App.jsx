@@ -6,7 +6,6 @@ import Customers from './components/Customers';
 import Projects from './components/Projects';
 import Estimates from './components/Estimates';
 import Invoices from './components/Invoices';
-import ContractsModule from "./components/ContractsModule";
 
 function App() {
   const { 
