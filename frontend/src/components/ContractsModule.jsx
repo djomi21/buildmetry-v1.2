@@ -266,7 +266,31 @@ function FinSummary({t,dp,tr,rp}){
   </div>;
 }
 
-function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSignature}){
+function TemplatePicker({templates,title,onSelect,onClose}){
+  const[srch,setSrch]=useState("");
+  const filt=templates.filter(t=>!srch||t.name.toLowerCase().includes(srch.toLowerCase())||t.content.toLowerCase().includes(srch.toLowerCase()));
+  return<div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="mo" style={{maxWidth:520,marginTop:60}}>
+      <div style={{padding:"16px 20px",borderBottom:`1px solid ${brdL}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{fontWeight:800,fontSize:15}}>{title}</div>
+        <button onClick={onClose} style={{color:tx2}}><Ic d="M18 6L6 18M6 6l12 12" s={16}/></button>
+      </div>
+      <div style={{padding:"12px 20px 0"}}>
+        <input value={srch} onChange={e=>setSrch(e.target.value)} placeholder="Search templates…" style={{...inpS,marginBottom:0}}/>
+      </div>
+      <div style={{padding:"12px 20px 20px",display:"flex",flexDirection:"column",gap:8,maxHeight:380,overflowY:"auto"}}>
+        {filt.length===0&&<div style={{textAlign:"center",padding:"24px 0",color:tx3,fontSize:12}}>{templates.length===0?"No templates yet. Add them in Company Setup → Scope Templates.":"No templates match your search."}</div>}
+        {filt.map(t=><button key={t.id} onClick={()=>{onSelect(t.content);onClose();}} style={{background:bg,border:`1px solid ${brdL}`,borderRadius:10,padding:"12px 14px",textAlign:"left",cursor:"pointer",display:"block",width:"100%",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.borderColor=ac} onMouseLeave={e=>e.currentTarget.style.borderColor=brdL}>
+          <div style={{fontSize:13,fontWeight:700,color:tx,marginBottom:4}}>{t.name}</div>
+          <div style={{fontSize:11,color:tx2,lineHeight:1.5,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:3,WebkitBoxOrient:"vertical"}}>{t.content}</div>
+        </button>)}
+      </div>
+      <div style={{padding:"10px 20px",borderTop:`1px solid ${brdL}`,fontSize:10,color:tx3}}>Selecting a template will replace the current text. You can edit after inserting.</div>
+    </div>
+  </div>;
+}
+
+function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSignature,scopeTemplates=[],exclusionTemplates=[]}){
   const[f,sF]=useState(()=>contract?{...contract}:{id:null,title:"",contractType:"Prime",status:"Draft",clientOrSubName:"",startDate:"",endDate:"",discountPercent:0,taxRate:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",scopeOfWork:"",exclusions:"",lineItems:[],milestones:[],changeOrders:[],signatureStatus:"Unsigned",linkedEstimateId:null});
   const s=(k,v)=>sF(p=>({...p,[k]:v}));
   const t=useMemo(()=>calc(f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent),[f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent]);
@@ -274,6 +298,8 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
   const warns=useMemo(()=>{const w=[];if(!f.lineItems.length)w.push("No line items.");if(t.sub>0&&t.lab/t.sub<.15&&f.lineItems.length)w.push("Labor under 15%.");if(t.mat>0&&f.taxRate===0)w.push("Tax 0% with materials.");const sc=f.milestones.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);if(f.milestones.length&&Math.abs(sc-t.tot)>1)w.push(`Schedule ${$(sc)} ≠ total ${$(t.tot)}.`);if(f.status==="Active"&&f.signatureStatus==="Unsigned")w.push("Active but unsigned.");return w},[f,t]);
 
   const[dc,setDc]=useState(false);
+  const[scopePicker,setScopePicker]=useState(false);
+  const[exclusionPicker,setExclusionPicker]=useState(false);
   return<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
       <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -319,8 +345,24 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
       <Milestones ms={f.milestones} setMs={v=>s("milestones",v)} total={t.tot}/>
     </Section>
 
-    <Section title="Scope" open={false}><div style={{marginBottom:10}}><label style={lblS}>Scope of work</label><textarea value={f.scopeOfWork} onChange={e=>s("scopeOfWork",e.target.value)} rows={4} placeholder="Describe..." style={{...inpS,resize:"vertical"}}/></div>
-      <div><label style={lblS}>Exclusions</label><textarea value={f.exclusions} onChange={e=>s("exclusions",e.target.value)} rows={3} placeholder="Not included..." style={{...inpS,resize:"vertical"}}/></div></Section>
+    <Section title="Scope" open={false}>
+      <div style={{marginBottom:10}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+          <label style={lblS}>Scope of work</label>
+          <button onClick={()=>setScopePicker(true)} style={{...bGh,padding:"4px 10px",fontSize:10}}>Use Template</button>
+        </div>
+        <textarea value={f.scopeOfWork} onChange={e=>s("scopeOfWork",e.target.value)} rows={4} placeholder="Describe..." style={{...inpS,resize:"vertical"}}/>
+      </div>
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+          <label style={lblS}>Exclusions</label>
+          <button onClick={()=>setExclusionPicker(true)} style={{...bGh,padding:"4px 10px",fontSize:10}}>Use Template</button>
+        </div>
+        <textarea value={f.exclusions} onChange={e=>s("exclusions",e.target.value)} rows={3} placeholder="Not included..." style={{...inpS,resize:"vertical"}}/>
+      </div>
+      {scopePicker&&<TemplatePicker templates={scopeTemplates} title="Scope of Work Templates" onSelect={c=>s("scopeOfWork",c)} onClose={()=>setScopePicker(false)}/>}
+      {exclusionPicker&&<TemplatePicker templates={exclusionTemplates} title="Exclusion Templates" onSelect={c=>s("exclusions",c)} onClose={()=>setExclusionPicker(false)}/>}
+    </Section>
 
     <div style={{display:"flex",justifyContent:"space-between",marginTop:8}}>
       <button onClick={onCancel} style={bGh}>Cancel</button>
@@ -333,7 +375,7 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
 }
 
 /* ═══════ MAIN EXPORT ═══════ */
-export default function ContractsModule({projectId,apiBaseUrl="/api",company}){
+export default function ContractsModule({projectId,apiBaseUrl="/api",company,scopeTemplates=[],exclusionTemplates=[]}){
   const[contracts,setContracts]=useState([]);
   const[view,setView]=useState("list");
   const[activeId,setActiveId]=useState(null);
@@ -456,7 +498,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api",company}){
         </div>})}
     </div>}
 
-    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} onDelete={handleDelete} isNew={!active||active.id==null} saving={saving} onSendSignature={c=>setSigMd(c)}/>}
+    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} onDelete={handleDelete} isNew={!active||active.id==null} saving={saving} onSendSignature={c=>setSigMd(c)} scopeTemplates={scopeTemplates} exclusionTemplates={exclusionTemplates}/>}
 
     {sigMd&&<ContractSigModal contract={sigMd} company={company} apiBaseUrl={apiBaseUrl} onClose={()=>setSigMd(null)} onSent={(to)=>{setContracts(p=>p.map(c=>c.id===sigMd.id?{...c,status:"Sent"}:c));setSigMd(null);show("Signing link sent to "+to);}}/>}
   </div>;

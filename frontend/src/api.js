@@ -149,6 +149,9 @@ export const api = {
       request('PUT', '/phases/reorder/bulk', { phases }),
   };
 },
+
+  get scopeTemplates()     { return this._crud('scope-templates'); },
+  get exclusionTemplates() { return this._crud('exclusion-templates'); },
 };
 
 export default api;

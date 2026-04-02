@@ -55,7 +55,9 @@ export const useAppData = (auth) => {
   const [tasks,    setTasks]    = useState([]);
   const [phases,   setPhases]   = useState(SD_PHASES);
   const [company,  setCompany]  = useState({name:"",defaultTaxRate:6.5,paymentTerms:30,laborBurdenDefault:28.3});
-  const [users,    setUsers]    = useState([]);
+  const [users,              setUsers]              = useState([]);
+  const [scopeTemplates,     setScopeTemplates]     = useState([]);
+  const [exclusionTemplates, setExclusionTemplates] = useState([]);
   const [loading,  setLoading]  = useState(true);
 
   const loadAll = useCallback(async () => {
@@ -67,7 +69,7 @@ export const useAppData = (auth) => {
       const user = await api.getMe();
       // Auth update is handled by App.jsx — we just load data here
 
-      const [c,e,p,m,s,r,h,i,co,ex,tk,ph,comp,u] = await Promise.all([
+      const [c,e,p,m,s,r,h,i,co,ex,tk,ph,comp,u,st,et] = await Promise.all([
         api.customers.list().catch(()=>[]),
         api.estimates.list().catch(()=>[]),
         api.projects.list().catch(()=>[]),
@@ -82,11 +84,14 @@ export const useAppData = (auth) => {
         api.phases.list().catch(()=>[]),
         api.company.get().catch(()=>({})),
         api.users.list().catch(()=>[]),
+        api.scopeTemplates.list().catch(()=>[]),
+        api.exclusionTemplates.list().catch(()=>[]),
       ]);
 
       setCusts(c); setEsts(e); setProjs(p); setMats(m);
       setSubs(s); setRoles(r); setHrs(h); setInvs(i);
       setCos(co); setExpenses(ex); setTasks(tk); setUsers(u);
+      setScopeTemplates(st); setExclusionTemplates(et);
       if (ph?.length > 0) setPhases(ph.map(x => x.name));
       if (comp?.id) setCompany(comp);
     } catch {
@@ -114,8 +119,10 @@ export const useAppData = (auth) => {
     invs:     makeDb(setInvs,     api.invoices),
     cos:      makeDb(setCos,      api.changeOrders),
     expenses: makeDb(setExpenses, api.expenses),
-    tasks:    makeDb(setTasks,    api.tasks),
-    users:    makeDb(setUsers,    api.users),
+    tasks:             makeDb(setTasks,             api.tasks),
+    users:             makeDb(setUsers,             api.users),
+    scopeTemplates:    makeDb(setScopeTemplates,    api.scopeTemplates),
+    exclusionTemplates:makeDb(setExclusionTemplates,api.exclusionTemplates),
   };
 
   const reset = useCallback(() => {
@@ -140,6 +147,8 @@ export const useAppData = (auth) => {
     phases, setPhases,
     company, setCompany,
     users, setUsers,
+    scopeTemplates, setScopeTemplates,
+    exclusionTemplates, setExclusionTemplates,
     // Meta
     loading,
     // Helpers

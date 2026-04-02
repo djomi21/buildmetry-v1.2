@@ -74,6 +74,8 @@ model Company {
   expenses            Expense[]
   tasks               Task[]
   projectPhases       ProjectPhase[]
+  scopeTemplates      ScopeTemplate[]
+  exclusionTemplates  ExclusionTemplate[]
 }
 
 // ── USERS ────────────────────────────────────────────
@@ -294,6 +296,32 @@ model LaborRole {
   benefitsPct Float     @default(12.0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([companyId])
+}
+
+// ── SCOPE TEMPLATES ──────────────────────────────────
+model ScopeTemplate {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name      String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+// ── EXCLUSION TEMPLATES ───────────────────────────────
+model ExclusionTemplate {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name      String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([companyId])
 }

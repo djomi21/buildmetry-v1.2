@@ -5,8 +5,10 @@ import { uid, tod } from '../utils/calculations';
 import { I } from './shared/Icons';
 import { Chip, ToggleSwitch, KpiCard, ES, ini } from './shared/ui';
 import LaborRoles from './LaborRoles';
+import ScopeTemplates from './ScopeTemplates';
+import ExclusionTemplates from './ExclusionTemplates';
 
-export default function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setRoles,phases,setPhases}) {
+export default function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setRoles,phases,setPhases,scopeTemplates,setScopeTemplates,exclusionTemplates,setExclusionTemplates}) {
   const [stab, setStab] = useState("users");
   const [dirty, setDirty] = useState(false);
   // Always initialize form from latest company data
@@ -74,6 +76,8 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
     {id:"roles",label:"Role Permissions",icon:"shield"},
     {id:"labor",label:"Labor Roles",icon:"wrench"},
     {id:"admin_roles",label:"Company Roles",icon:"building"},
+    {id:"scope_tpl",label:"Scope Templates",icon:"estimates"},
+    {id:"exclusion_tpl",label:"Exclusion Templates",icon:"estimates"},
     {id:"email",label:"Email & Notifications",icon:"bell"},
     {id:"theme",label:"Theme & Branding",icon:"palette"},
     {id:"company",label:"Company Info",icon:"settings"},
@@ -261,6 +265,16 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
       {/* ── ADMIN ROLES TAB (management roles only) ── */}
       {stab==="admin_roles"&&(
         <LaborRoles roles={roles} setRoles={setRoles} showToast={showToast} db={db} filterFn={function(r){return MGMT_ROLES.has(r.title);}} heading="Administrative Roles"/>
+      )}
+
+      {/* ── SCOPE TEMPLATES TAB ── */}
+      {stab==="scope_tpl"&&(
+        <ScopeTemplates templates={scopeTemplates} showToast={showToast} db={db.scopeTemplates}/>
+      )}
+
+      {/* ── EXCLUSION TEMPLATES TAB ── */}
+      {stab==="exclusion_tpl"&&(
+        <ExclusionTemplates templates={exclusionTemplates} showToast={showToast} db={db.exclusionTemplates}/>
       )}
 
       {/* ── COMPANY INFO TAB ── */}

@@ -256,7 +256,7 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
               </div>;
             })()}
           </div>}
-          {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={sp.id} apiBaseUrl="/api" company={company}/></div>}
+          {detailTab==='contracts'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}><ContractsModule projectId={sp.id} apiBaseUrl="/api" company={company} scopeTemplates={scopeTemplates} exclusionTemplates={exclusionTemplates}/></div>}
         </div>
       ):(
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flex:1,color:"var(--text-ghost)",gap:12}}>
