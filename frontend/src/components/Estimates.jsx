@@ -27,6 +27,8 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
 
   const se=ests.find(e=>e.id===sel)||null;
   const seC=se?calcInv(se.lineItems,se.taxRate,se.discount||0,se.depositType||"none",Number(se.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
+  const seLinkedInv=se?invs.find(i=>i.estId===se.id):null;
+  const seEffBal=seLinkedInv?.status==="paid"?0:seC.balanceDue;
   const formC=form?calcInv(form.lineItems.filter(l=>l.description.trim()),Number(form.taxRate)||FL_TAX,Number(form.discount)||0,form.depositType||"none",Number(form.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
 
   const openNew=()=>setForm({...blank,_id:null});
@@ -188,7 +190,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
               </div>
             </div>
             <div className="est-kpi-row" style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {[{l:"Labor",v:fmt(seC.lab),c:"#f5a623"},{l:"Materials",v:fmt(seC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(seC.sub),c:"var(--text)"},{l:`Tax ${se.taxRate}%`,v:fmt(seC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(seC.total),c:"#22c55e",big:true},...(seC.depAmt>0?[{l:"Deposit",v:fmt(seC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(seC.balanceDue),c:"#63b3ed",big:true}]:[])].map(k=>(
+              {[{l:"Labor",v:fmt(seC.lab),c:"#f5a623"},{l:"Materials",v:fmt(seC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(seC.sub),c:"var(--text)"},{l:`Tax ${se.taxRate}%`,v:fmt(seC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(seC.total),c:"#22c55e",big:true},...(seC.depAmt>0?[{l:"Deposit",v:fmt(seC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(seEffBal),c:seEffBal===0?"#22c55e":"#63b3ed",big:true}]:[])].map(k=>(
                 <div key={k.l} style={{background:"var(--bg-card)",border:`1px solid ${k.big?"rgba(34,197,94,.3)":"var(--border)"}`,borderRadius:8,padding:"6px 11px"}}>
                   <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
                   <div className="mn" style={{fontSize:k.big?14:11,color:k.c,marginTop:2}}>{k.v}</div>
@@ -250,8 +252,8 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
                       <span className="mn" style={{fontSize:11,color:"#f59e0b"}}>{fmt(seC.depAmt)}</span>
                     </div>
                     <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0"}}>
-                      <span style={{fontSize:12,fontWeight:800,color:"#63b3ed"}}>Balance Due</span>
-                      <span className="mn" style={{fontSize:15,color:"#63b3ed"}}>{fmt(seC.balanceDue)}</span>
+                      <span style={{fontSize:12,fontWeight:800,color:seEffBal===0?"#22c55e":"#63b3ed"}}>Balance Due</span>
+                      <span className="mn" style={{fontSize:15,color:seEffBal===0?"#22c55e":"#63b3ed"}}>{fmt(seEffBal)}</span>
                     </div>
                   </>)}
                 </div>
