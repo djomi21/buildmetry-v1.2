@@ -1,7 +1,11 @@
-// ══════════════════════════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════════════════════════
-function Dashboard({custs,ests,projs,invs,setTab}) {
+import React from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { REV_DATA, PRJ_SC } from '../constants';
+import { calcInv, fmt, pct } from '../utils/calculations';
+import { KpiCard, CTip, Chip, Pr } from './shared/ui';
+import I from './shared/Icons';
+
+export default function Dashboard({custs,ests,projs,invs,setTab}) {
   const ytd   = REV_DATA.slice(0,3).reduce((s,m)=>({rev:s.rev+m.revenue,prof:s.prof+m.profit}),{rev:0,prof:0});
   const iCalcs= invs.map(i=>({...i,...calcInv(i.lineItems,i.taxRate,i.discount||0)}));
   const coll  = iCalcs.filter(i=>i.status==="paid").reduce((s,i)=>s+i.total,0);
