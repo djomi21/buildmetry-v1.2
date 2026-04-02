@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../api';
-import { USER_ROLES, USER_ROLE_C, USR_SC, SD_PHASES } from '../constants';
+import { USER_ROLES, USER_ROLE_C, USR_SC, MGMT_ROLES, USER_ROLE_PERMS } from '../constants';
 import { uid, tod } from '../utils/calculations';
 import { I } from './shared/Icons';
-import { Chip, ToggleSwitch, ini, avC } from './shared/ui';
+import { Chip, ToggleSwitch, KpiCard, ES, ini } from './shared/ui';
 import LaborRoles from './LaborRoles';
 
 export default function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setRoles,phases,setPhases}) {
