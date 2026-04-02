@@ -5,7 +5,7 @@ import { Chip, ES, KpiCard, Pr } from './shared/ui';
 import I from './shared/Icons';
 import ContractsModule from './ContractsModule';
 
-export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs,showToast,setTab,db,auth,company,scopeTemplates=[],exclusionTemplates=[]}) {
+export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTasks,phases,subs,showToast,setTab,db,auth,company,scopeTemplates=[],exclusionTemplates=[],svcs=[]}) {
   const [sel,  setSel]  = useState(projs[0]?.id||null);
   const [form, setForm] = useState(null);
   const [detailTab, setDetailTab] = useState('overview');
