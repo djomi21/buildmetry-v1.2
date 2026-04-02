@@ -1,12 +1,29 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { REV_DATA, PRJ_SC } from '../constants';
+import { PRJ_SC } from '../constants';
 import { calcInv, fmt, pct } from '../utils/calculations';
 import { KpiCard, CTip, Chip, Pr } from './shared/ui';
 import I from './shared/Icons';
 
-export default function Dashboard({custs,ests,projs,invs,setTab}) {
-  const ytd   = REV_DATA.slice(0,3).reduce((s,m)=>({rev:s.rev+m.revenue,prof:s.prof+m.profit}),{rev:0,prof:0});
+export default function Dashboard({custs,ests,projs,invs,expenses,setTab}) {
+  const curYear=new Date().getFullYear();
+  const monthlyData=useMemo(()=>{
+    const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const acc=MONTHS.map(m=>({month:m,revenue:0,profit:0}));
+    invs.filter(i=>i.status!=="void").forEach(inv=>{
+      const d=new Date(inv.issueDate);if(d.getFullYear()!==curYear)return;
+      acc[d.getMonth()].revenue+=calcInv(inv.lineItems,inv.taxRate,inv.discount||0).total;
+    });
+    const expByMonth=Array(12).fill(0);
+    (expenses||[]).forEach(exp=>{
+      const d=new Date(exp.date);if(d.getFullYear()!==curYear)return;
+      expByMonth[d.getMonth()]+=exp.amount;
+    });
+    acc.forEach((m,i)=>{m.profit=m.revenue-expByMonth[i];});
+    return acc;
+  },[invs,expenses,curYear]);
+  const ytdMonths=monthlyData.slice(0,new Date().getMonth()+1);
+  const ytd={rev:ytdMonths.reduce((s,m)=>s+m.revenue,0),prof:ytdMonths.reduce((s,m)=>s+m.profit,0),months:ytdMonths.length};
   const iCalcs= invs.map(i=>({...i,...calcInv(i.lineItems,i.taxRate,i.discount||0)}));
   const coll  = iCalcs.filter(i=>i.status==="paid").reduce((s,i)=>s+i.total,0);
   const sent  = iCalcs.filter(i=>i.status==="sent").reduce((s,i)=>s+i.total,0);
@@ -22,7 +39,7 @@ export default function Dashboard({custs,ests,projs,invs,setTab}) {
   ].filter(d=>d.value>0);
 
   const kpis=[
-    {label:"YTD Revenue",      val:fmt(ytd.rev),  sub:`Avg ${fmt(ytd.rev/3)}/mo`,                        color:"#63b3ed"},
+    {label:"YTD Revenue",      val:fmt(ytd.rev),  sub:`Avg ${fmt(ytd.rev/Math.max(1,ytd.months))}/mo`,                        color:"#63b3ed"},
     {label:"YTD Gross Profit", val:fmt(ytd.prof), sub:`${pct(ytd.prof,ytd.rev)}% margin`,                color:"#22c55e"},
     {label:"Invoiced",         val:fmt(iCalcs.reduce((s,i)=>s+i.total,0)), sub:`${invs.length} invoices`,color:"#a78bfa"},
     {label:"Collected",        val:fmt(coll),      sub:`${pct(coll,iCalcs.reduce((s,i)=>s+i.total,0))}% rate`, color:"#22c55e"},
@@ -40,11 +57,11 @@ export default function Dashboard({custs,ests,projs,invs,setTab}) {
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:16}}>
         <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:13,padding:"16px 16px 8px"}}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}>
-            <div><div style={{fontWeight:800,fontSize:13}}>Revenue vs. Profit — 2026</div><div style={{fontSize:10,color:"var(--text-dim)",marginTop:1}}>Monthly trend</div></div>
+            <div><div style={{fontWeight:800,fontSize:13}}>Revenue vs. Profit — {curYear}</div><div style={{fontSize:10,color:"var(--text-dim)",marginTop:1}}>Monthly trend</div></div>
             <span className="mn" style={{fontSize:12,color:"#63b3ed"}}>{fmt(ytd.rev)} YTD</span>
           </div>
           <ResponsiveContainer width="100%" height={160}>
-            <AreaChart data={REV_DATA} margin={{top:4,right:4,left:-24,bottom:0}}>
+            <AreaChart data={monthlyData} margin={{top:4,right:4,left:-24,bottom:0}}>
               <defs>
                 <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={.2}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient>
                 <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={.2}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient>
