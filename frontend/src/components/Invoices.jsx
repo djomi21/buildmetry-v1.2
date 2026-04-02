@@ -17,6 +17,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
   const [invPicker, setInvPicker] = useState(null); // full-screen edit mode
   const si=invs.find(i=>i.id===sel)||null;
   const siC=si?calcInv(si.lineItems,si.taxRate,si.discount||0,si.depositType||"none",Number(si.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
+  const effectiveBal=si?.status==="paid"?0:siC.balanceDue;
 
   const filt=useMemo(()=>invs.filter(i=>stF==="all"||i.status===stF),[invs,stF]);
   const arKpis=useMemo(()=>{
@@ -137,7 +138,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
         <div class="row"><span>Sales Tax (${inv.taxRate}%${calc.discountPct>0?" on disc. materials":""})</span><span class="mn">${fmt(calc.tax)}</span></div>
         <div class="row grand"><span>TOTAL DUE</span><span class="mn">${fmt(calc.total)}</span></div>
         ${calc.depAmt>0?`<div class="row" style="border-top:1px dashed #ccc;padding-top:6px;color:#d97706"><span>Deposit${inv.depositType==="percent"?" ("+inv.depositValue+"%)":""}</span><span class="mn">${fmt(calc.depAmt)}</span></div>
-        <div class="row" style="font-weight:800;color:#2563eb;font-size:14px"><span>Balance Due</span><span class="mn" style="font-size:16px">${fmt(calc.balanceDue)}</span></div>`:""}
+        <div class="row" style="font-weight:800;color:${inv.status==="paid"?"#16a34a":"#2563eb"};font-size:14px"><span>Balance Due</span><span class="mn" style="font-size:16px">${fmt(inv.status==="paid"?0:calc.balanceDue)}</span></div>`:""}
       </div>
       ${inv.notes?`<div class="notes" style="margin-top:16px"><strong>Notes:</strong> ${inv.notes}</div>`:""}
       ${company.invoiceFooter?`<div class="footer">${company.invoiceFooter}</div>`:""}
@@ -212,7 +213,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
                 </div>
               </div>
               <div className="inv-kpi-row" style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {[{l:"Labor",v:fmt(siC.lab),c:"#f5a623"},{l:"Materials",v:fmt(siC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(siC.sub),c:"var(--text)"},...(siC.discountPct>0?[{l:`Disc ${siC.discountPct}%`,v:`−${fmt(siC.discAmt)}`,c:"#a78bfa"}]:[]),{l:`Tax ${si.taxRate}%`,v:fmt(siC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(siC.total),c:"#22c55e",big:true},...(siC.depAmt>0?[{l:"Deposit",v:fmt(siC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(siC.balanceDue),c:"#63b3ed",big:true}]:[])].map(k=>(
+                {[{l:"Labor",v:fmt(siC.lab),c:"#f5a623"},{l:"Materials",v:fmt(siC.mat),c:"#6c8ebf"},{l:"Subtotal",v:fmt(siC.sub),c:"var(--text)"},...(siC.discountPct>0?[{l:`Disc ${siC.discountPct}%`,v:`−${fmt(siC.discAmt)}`,c:"#a78bfa"}]:[]),{l:`Tax ${si.taxRate}%`,v:fmt(siC.tax),c:"#14b8a6"},{l:"TOTAL",v:fmt(siC.total),c:"#22c55e",big:true},...(siC.depAmt>0?[{l:"Deposit",v:fmt(siC.depAmt),c:"#f59e0b"},{l:"Balance Due",v:fmt(effectiveBal),c:effectiveBal===0?"#22c55e":"#63b3ed",big:true}]:[])].map(k=>(
                   <div key={k.l} style={{background:"var(--bg-card)",border:`1px solid ${k.big?"rgba(34,197,94,.28)":"var(--border)"}`,borderRadius:8,padding:"6px 11px"}}>
                     <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>{k.l}</div>
                     <div className="mn" style={{fontSize:k.big?14:11,color:k.c,marginTop:2}}>{k.v}</div>
@@ -291,8 +292,8 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
                         <span className="mn" style={{fontSize:11,color:"#f59e0b"}}>{fmt(siC.depAmt)}</span>
                       </div>
                       <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0"}}>
-                        <span style={{fontSize:12,fontWeight:800,color:"#63b3ed"}}>Balance Due</span>
-                        <span className="mn" style={{fontSize:15,color:"#63b3ed"}}>{fmt(siC.balanceDue)}</span>
+                        <span style={{fontSize:12,fontWeight:800,color:effectiveBal===0?"#22c55e":"#63b3ed"}}>Balance Due</span>
+                        <span className="mn" style={{fontSize:15,color:effectiveBal===0?"#22c55e":"#63b3ed"}}>{fmt(effectiveBal)}</span>
                       </div>
                     </>)}
                   </div>
