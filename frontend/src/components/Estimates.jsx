@@ -50,8 +50,14 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
     setPicker(null);
   };
   const addService=(svc)=>{
-    const line={id:uid(),description:svc.name,qty:1,unitPrice:svc.unitPrice,isMaterial:svc.isMaterial,sourceType:"service",sourceId:svc.id,unit:svc.unit};
-    setForm(f=>({...f,lineItems:[...f.lineItems,line]}));
+    const items=svc.lineItems||[];
+    if(items.length>0){
+      const newLines=items.map(li=>({id:uid(),description:li.description,qty:li.qty,unitPrice:li.unitPrice,isMaterial:li.isMaterial,unit:li.unit,sourceType:"service",sourceId:svc.id}));
+      setForm(f=>({...f,lineItems:[...f.lineItems,...newLines]}));
+    } else {
+      const line={id:uid(),description:svc.name,qty:1,unitPrice:svc.unitPrice,isMaterial:svc.isMaterial,sourceType:"service",sourceId:svc.id,unit:svc.unit};
+      setForm(f=>({...f,lineItems:[...f.lineItems,line]}));
+    }
     setPicker(null);
   };
 
@@ -371,10 +377,13 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
                               <div key={s.id} onClick={()=>addService(s)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"}} className="rh">
                                 <div style={{flex:1,minWidth:0}}>
                                   <div style={{fontSize:11,fontWeight:600,color:"var(--text-2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.name}</div>
-                                  <div style={{fontSize:8,color:"var(--text-faint)",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,fontSize:8,fontWeight:700,background:`${SVC_CAT_C[s.category]||"#4a566e"}18`,color:SVC_CAT_C[s.category]||"var(--text-dim)"}}>{s.category}</span> · {s.isMaterial?"Material":"Labor"}</div>
+                                  <div style={{fontSize:8,color:"var(--text-faint)",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,fontSize:8,fontWeight:700,background:`${SVC_CAT_C[s.category]||"#4a566e"}18`,color:SVC_CAT_C[s.category]||"var(--text-dim)"}}>{s.category}</span> · {(s.lineItems||[]).length>0?"Package":s.isMaterial?"Material":"Labor"}</div>
                                 </div>
                                 <div style={{textAlign:"right",flexShrink:0}}>
-                                  <div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(s.unitPrice)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/{s.unit}</span></div>
+                                  {(s.lineItems||[]).length>0
+                                    ?<><div style={{fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:8,background:"rgba(20,184,166,.12)",color:"#14b8a6"}}>{s.lineItems.length} items</div><div className="mn" style={{fontSize:10,color:"#22c55e",marginTop:1}}>{fmtD(s.lineItems.reduce((t,li)=>t+li.qty*li.unitPrice,0))}</div></>
+                                    :<div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(s.unitPrice)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/{s.unit}</span></div>
+                                  }
                                 </div>
                               </div>
                             ))

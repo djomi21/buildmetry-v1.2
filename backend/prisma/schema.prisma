@@ -255,6 +255,7 @@ model Service {
   unit        String    @default("ls")
   unitPrice   Float     @default(0)
   isMaterial  Boolean   @default(false)
+  lineItems   Json      @default("[]")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

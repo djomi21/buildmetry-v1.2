@@ -285,13 +285,13 @@ export const CAT_C = {"Lumber":"#f5a623","Drywall":"#94a3b8","Flooring":"#22c55e
 export const SVC_CATS = ["General","Plumbing","Electrical","Framing","Painting","Flooring","Roofing","HVAC","Concrete","Landscaping","Cleanup"];
 export const SVC_CAT_C = {"General":"#94a3b8","Plumbing":"#3b82f6","Electrical":"#f59e0b","Framing":"#f5a623","Painting":"#ec4899","Flooring":"#22c55e","Roofing":"#6366f1","HVAC":"#06b6d4","Concrete":"#78716c","Landscaping":"#84cc16","Cleanup":"#fb923c"};
 export const SD_SVCS = [
-  {id:1,name:"Demolition & Haul-off",description:"Demo existing structure and remove debris",category:"General",unit:"ls",unitPrice:800,isMaterial:false},
-  {id:2,name:"Rough Plumbing",description:"Supply & drain rough-in",category:"Plumbing",unit:"ls",unitPrice:3200,isMaterial:false},
-  {id:3,name:"Electrical Rough-in",description:"Rough-in wiring and panel work",category:"Electrical",unit:"ls",unitPrice:2400,isMaterial:false},
-  {id:4,name:"Tile Installation",description:"Set tile — floor or wall",category:"Flooring",unit:"sf",unitPrice:12,isMaterial:false},
-  {id:5,name:"Interior Painting",description:"Walls & trim, 2 coats",category:"Painting",unit:"ls",unitPrice:1600,isMaterial:false},
-  {id:6,name:"Framing Labor",description:"Wood framing per sq ft",category:"Framing",unit:"sf",unitPrice:8,isMaterial:false},
-  {id:7,name:"Cleanup & Haul-off",description:"Final jobsite cleanup and debris removal",category:"Cleanup",unit:"ls",unitPrice:600,isMaterial:false},
+  {id:1,name:"Demolition & Haul-off",description:"Demo existing structure and remove debris",category:"General",unit:"ls",unitPrice:800,isMaterial:false,lineItems:[]},
+  {id:2,name:"Rough Plumbing",description:"Supply & drain rough-in",category:"Plumbing",unit:"ls",unitPrice:3200,isMaterial:false,lineItems:[]},
+  {id:3,name:"Electrical Rough-in",description:"Rough-in wiring and panel work",category:"Electrical",unit:"ls",unitPrice:2400,isMaterial:false,lineItems:[]},
+  {id:4,name:"Tile Installation",description:"Set tile — floor or wall",category:"Flooring",unit:"sf",unitPrice:12,isMaterial:false,lineItems:[]},
+  {id:5,name:"Interior Painting",description:"Walls & trim, 2 coats",category:"Painting",unit:"ls",unitPrice:1600,isMaterial:false,lineItems:[]},
+  {id:6,name:"Framing Labor",description:"Wood framing per sq ft",category:"Framing",unit:"sf",unitPrice:8,isMaterial:false,lineItems:[]},
+  {id:7,name:"Cleanup & Haul-off",description:"Final jobsite cleanup and debris removal",category:"Cleanup",unit:"ls",unitPrice:600,isMaterial:false,lineItems:[]},
 ];
 
 // Role colors — computed from SD_ROLES order

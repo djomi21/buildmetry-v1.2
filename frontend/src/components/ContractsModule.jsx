@@ -303,7 +303,15 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
   const[svcPicker,setSvcPicker]=useState(false);
   const[svcSearch,setSvcSearch]=useState("");
   const[svcCatF,setSvcCatF]=useState("all");
-  const addSvc=svc=>{s("lineItems",[...f.lineItems,{id:uid(),description:svc.name,qty:1,unitPrice:svc.unitPrice,unit:svc.unit,isMaterial:svc.isMaterial}]);setSvcPicker(false);setSvcSearch("");setSvcCatF("all");};
+  const addSvc=svc=>{
+    const items=svc.lineItems||[];
+    if(items.length>0){
+      s("lineItems",[...f.lineItems,...items.map(li=>({id:uid(),description:li.description,qty:li.qty,unitPrice:li.unitPrice,unit:li.unit,isMaterial:li.isMaterial}))]);
+    } else {
+      s("lineItems",[...f.lineItems,{id:uid(),description:svc.name,qty:1,unitPrice:svc.unitPrice,unit:svc.unit,isMaterial:svc.isMaterial}]);
+    }
+    setSvcPicker(false);setSvcSearch("");setSvcCatF("all");
+  };
   return<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
       <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -358,11 +366,16 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
               ?<div style={{padding:"14px",textAlign:"center",color:"#4a566e",fontSize:11}}>No services found</div>
               :fSvcs.map(sv=>(
                 <div key={sv.id} onClick={()=>addSvc(sv)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid #111826",cursor:"pointer"}} className="rh">
-                  <div>
+                  <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:11,fontWeight:600,color:"#dde1ec"}}>{sv.name}</div>
-                    <div style={{fontSize:8,color:"#4a566e",marginTop:1}}>{sv.category} · {sv.isMaterial?"Material":"Labor"}</div>
+                    <div style={{fontSize:8,color:"#4a566e",marginTop:1}}>{sv.category} · {(sv.lineItems||[]).length>0?"Package":sv.isMaterial?"Material":"Labor"}</div>
                   </div>
-                  <div style={{fontSize:11,fontWeight:700,color:"#22c55e",fontFamily:"monospace"}}>${sv.unitPrice.toFixed(2)}/{sv.unit}</div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    {(sv.lineItems||[]).length>0
+                      ?<><div style={{fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:8,background:"rgba(20,184,166,.12)",color:"#14b8a6"}}>{sv.lineItems.length} items</div><div style={{fontSize:10,fontWeight:700,color:"#22c55e",fontFamily:"monospace",marginTop:1}}>${sv.lineItems.reduce((t,li)=>t+li.qty*li.unitPrice,0).toFixed(2)}</div></>
+                      :<div style={{fontSize:11,fontWeight:700,color:"#22c55e",fontFamily:"monospace"}}>${sv.unitPrice.toFixed(2)}/{sv.unit}</div>
+                    }
+                  </div>
                 </div>
               ))
             }
