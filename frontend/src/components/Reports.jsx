@@ -1,17 +1,35 @@
 import { useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ROLE_C, REV_DATA, PRJ_SC, INV_SC } from '../constants';
+import { ROLE_C, PRJ_SC, INV_SC } from '../constants';
 import { calcInv, fmt, tod, pct, getBurdenedRate, printDoc } from '../utils/calculations';
 import { KpiCard, Chip, CTip } from './shared/ui';
 
-export default function Reports({invs,projs,custs,subs,hrs,roles,company}) {
+export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,company}) {
   const [rtab,setRtab]=useState("pl");
 
   const iAll=useMemo(()=>invs.map(i=>({...i,...calcInv(i.lineItems,i.taxRate,i.discount||0)})),[invs]);
-  const ytdRev=useMemo(()=>REV_DATA.slice(0,3).reduce((s,m)=>s+m.revenue,0),[]);
-  const ytdProfit=useMemo(()=>REV_DATA.slice(0,3).reduce((s,m)=>s+m.profit,0),[]);
-  const ytdLabor=useMemo(()=>REV_DATA.slice(0,3).reduce((s,m)=>s+m.labor,0),[]);
-  const ytdMats=useMemo(()=>REV_DATA.slice(0,3).reduce((s,m)=>s+m.materials,0),[]);
+  const curYear=new Date().getFullYear();
+  const monthlyData=useMemo(()=>{
+    const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const acc=MONTHS.map(m=>({month:m,revenue:0,labor:0,materials:0,totalCost:0,profit:0}));
+    invs.filter(i=>i.status!=="void").forEach(inv=>{
+      const d=new Date(inv.issueDate);if(d.getFullYear()!==curYear)return;
+      acc[d.getMonth()].revenue+=calcInv(inv.lineItems,inv.taxRate,inv.discount||0).total;
+    });
+    (expenses||[]).forEach(exp=>{
+      const d=new Date(exp.date);if(d.getFullYear()!==curYear)return;
+      const mIdx=d.getMonth();acc[mIdx].totalCost+=exp.amount;
+      if(exp.category==="Labor"||exp.category==="Subcontractor/Crew")acc[mIdx].labor+=exp.amount;
+      else if(exp.category==="Materials")acc[mIdx].materials+=exp.amount;
+    });
+    acc.forEach(m=>{m.profit=m.revenue-m.totalCost;});
+    return acc;
+  },[invs,expenses,curYear]);
+  const ytdMonths=useMemo(()=>monthlyData.slice(0,new Date().getMonth()+1),[monthlyData]);
+  const ytdRev=ytdMonths.reduce((s,m)=>s+m.revenue,0);
+  const ytdProfit=ytdMonths.reduce((s,m)=>s+m.profit,0);
+  const ytdLabor=ytdMonths.reduce((s,m)=>s+m.labor,0);
+  const ytdMats=ytdMonths.reduce((s,m)=>s+m.materials,0);
   const ytdMargin=pct(ytdProfit,ytdRev);
 
   const arData=useMemo(()=>iAll.map(i=>{
@@ -34,8 +52,8 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,company}) {
     const iAll2=invs.map(i=>({...i,...calcInv(i.lineItems,i.taxRate,i.discount||0)}));
     let body="";
     if(rtab==="pl"){
-      const rows=REV_DATA.slice(0,3).map(m=>{const other=m.revenue-m.labor-m.materials-m.profit;return `<tr><td style="font-weight:700">${m.month}</td><td class="mn" style="text-align:right">${fmt(m.revenue)}</td><td class="mn" style="text-align:right">${fmt(m.labor)}</td><td class="mn" style="text-align:right">${fmt(m.materials)}</td><td class="mn" style="text-align:right">${fmt(other)}</td><td class="mn" style="text-align:right;font-weight:700">${fmt(m.profit)}</td><td class="mn" style="text-align:right">${pct(m.profit,m.revenue)}%</td></tr>`;}).join("");
-      body=`<div class="doc-title">P&L Summary — YTD 2026</div><div class="doc-meta">Generated ${tod()}</div>
+      const rows=ytdMonths.map(m=>{const other=m.revenue-m.labor-m.materials-m.profit;return `<tr><td style="font-weight:700">${m.month}</td><td class="mn" style="text-align:right">${fmt(m.revenue)}</td><td class="mn" style="text-align:right">${fmt(m.labor)}</td><td class="mn" style="text-align:right">${fmt(m.materials)}</td><td class="mn" style="text-align:right">${fmt(other)}</td><td class="mn" style="text-align:right;font-weight:700">${fmt(m.profit)}</td><td class="mn" style="text-align:right">${pct(m.profit,m.revenue)}%</td></tr>`;}).join("");
+      body=`<div class="doc-title">P&L Summary — YTD ${curYear}</div><div class="doc-meta">Generated ${tod()}</div>
         <div class="two-col section"><div>Revenue: <strong class="mn">${fmt(ytdRev)}</strong></div><div>Gross Profit: <strong class="mn">${fmt(ytdProfit)}</strong> (${ytdMargin}%)</div></div>
         <table><thead><tr><th>Month</th><th style="text-align:right">Revenue</th><th style="text-align:right">Labor</th><th style="text-align:right">Materials</th><th style="text-align:right">Other</th><th style="text-align:right">Profit</th><th style="text-align:right">Margin</th></tr></thead><tbody>${rows}
         <tr style="border-top:2px solid #333;font-weight:800"><td>YTD</td><td class="mn" style="text-align:right">${fmt(ytdRev)}</td><td class="mn" style="text-align:right">${fmt(ytdLabor)}</td><td class="mn" style="text-align:right">${fmt(ytdMats)}</td><td class="mn" style="text-align:right">${fmt(ytdRev-ytdLabor-ytdMats-ytdProfit)}</td><td class="mn" style="text-align:right">${fmt(ytdProfit)}</td><td class="mn" style="text-align:right">${ytdMargin}%</td></tr></tbody></table>`;
@@ -74,9 +92,9 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,company}) {
             ))}
           </div>
           <div className="card" style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px 8px"}}>
-            <div style={{fontWeight:800,fontSize:13,marginBottom:10}}>Monthly P&L — 2026</div>
+            <div style={{fontWeight:800,fontSize:13,marginBottom:10}}>Monthly P&L — {curYear}</div>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={REV_DATA} margin={{top:4,right:8,left:-18,bottom:0}} barSize={12} barGap={2}>
+              <BarChart data={monthlyData} margin={{top:4,right:8,left:-18,bottom:0}} barSize={12} barGap={2}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false}/>
                 <XAxis dataKey="month" tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false}/>
                 <YAxis tick={{fill:"var(--text-dim)",fontSize:9}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v/1000}k`}/>
@@ -89,11 +107,11 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,company}) {
             </ResponsiveContainer>
           </div>
           <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
-            <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>P&L Statement — YTD 2026</div>
+            <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>P&L Statement — YTD {curYear}</div>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
               <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Month","Revenue","Labor","Materials","Other","Gross Profit","Margin"].map(h=><th key={h} style={{padding:"7px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
-                {REV_DATA.slice(0,3).map((m,i)=>{
+                {ytdMonths.map((m,i)=>{
                   const other=m.revenue-m.labor-m.materials-m.profit;
                   const mg=pct(m.profit,m.revenue);
                   return <tr key={m.month} className="rh" style={{borderTop:"1px solid var(--border)",background:i%2===0?"transparent":"rgba(255,255,255,.012)"}}>
