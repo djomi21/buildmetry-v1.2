@@ -17,6 +17,7 @@ import JobCosting           from "./components/JobCosting";
 import ChangeOrders         from "./components/ChangeOrders";
 import Expenses             from "./components/Expenses";
 import Materials            from "./components/Materials";
+import Services            from "./components/Services";
 import Subs                 from "./components/Subs";
 import Invoices             from "./components/Invoices";
 import Reports              from "./components/Reports";
@@ -33,6 +34,7 @@ const NAV = [
   {id:"cos",       label:"Change Orders",icon:"changeorder"},
   {id:"expenses",  label:"Expenses",     icon:"expense"},
   {id:"materials", label:"Materials",    icon:"materials"},
+  {id:"services",  label:"Services",     icon:"services"},
   {id:"subs",      label:"Crew",         icon:"employees"},
   {id:"invoices",  label:"Invoices",     icon:"invoices"},
   {id:"reports",   label:"Reports",      icon:"reports"},
@@ -305,6 +307,7 @@ export default function App() {
           {tab==="cos"       && <ChangeOrders {...sh}/>}
           {tab==="expenses"  && <Expenses   {...sh}/>}
           {tab==="materials" && <Materials  {...sh}/>}
+          {tab==="services"  && <Services   {...sh}/>}
           {tab==="subs"      && <Subs       {...sh}/>}
           {tab==="invoices"  && <Invoices   {...sh}/>}
           {tab==="reports"   && <Reports    {...sh}/>}

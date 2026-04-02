@@ -3,7 +3,7 @@ import api, { getToken } from '../api';
 import {
   SD_CUSTS, SD_ESTS, SD_PROJS, SD_MATS, SD_SUBS, SD_ROLES,
   SD_HRS, SD_INVS, SD_COS, SD_EXPENSES, SD_TASKS, SD_USERS,
-  SD_COMPANY, SD_PHASES,
+  SD_COMPANY, SD_PHASES, SD_SVCS,
 } from '../constants';
 
 // Strips internal/relational fields before sending to API
@@ -58,6 +58,7 @@ export const useAppData = (auth) => {
   const [users,              setUsers]              = useState([]);
   const [scopeTemplates,     setScopeTemplates]     = useState([]);
   const [exclusionTemplates, setExclusionTemplates] = useState([]);
+  const [svcs,     setSvcs]     = useState([]);
   const [loading,  setLoading]  = useState(true);
 
   const loadAll = useCallback(async () => {
@@ -69,7 +70,7 @@ export const useAppData = (auth) => {
       const user = await api.getMe();
       // Auth update is handled by App.jsx — we just load data here
 
-      const [c,e,p,m,s,r,h,i,co,ex,tk,ph,comp,u,st,et] = await Promise.all([
+      const [c,e,p,m,s,r,h,i,co,ex,tk,ph,comp,u,st,et,sv] = await Promise.all([
         api.customers.list().catch(()=>[]),
         api.estimates.list().catch(()=>[]),
         api.projects.list().catch(()=>[]),
@@ -86,12 +87,13 @@ export const useAppData = (auth) => {
         api.users.list().catch(()=>[]),
         api.scopeTemplates.list().catch(()=>[]),
         api.exclusionTemplates.list().catch(()=>[]),
+        api.services.list().catch(()=>[]),
       ]);
 
       setCusts(c); setEsts(e); setProjs(p); setMats(m);
       setSubs(s); setRoles(r); setHrs(h); setInvs(i);
       setCos(co); setExpenses(ex); setTasks(tk); setUsers(u);
-      setScopeTemplates(st); setExclusionTemplates(et);
+      setScopeTemplates(st); setExclusionTemplates(et); setSvcs(sv);
       if (ph?.length > 0) setPhases(ph.map(x => x.name));
       if (comp?.id) setCompany(comp);
     } catch {
@@ -99,7 +101,7 @@ export const useAppData = (auth) => {
       setCusts(SD_CUSTS); setEsts(SD_ESTS); setProjs(SD_PROJS); setMats(SD_MATS);
       setSubs(SD_SUBS); setRoles(SD_ROLES); setHrs(SD_HRS); setInvs(SD_INVS);
       setCos(SD_COS); setExpenses(SD_EXPENSES); setTasks(SD_TASKS); setUsers(SD_USERS);
-      setCompany(SD_COMPANY);
+      setCompany(SD_COMPANY); setSvcs(SD_SVCS);
     } finally {
       setLoading(false);
     }
@@ -123,12 +125,13 @@ export const useAppData = (auth) => {
     users:             makeDb(setUsers,             api.users),
     scopeTemplates:    makeDb(setScopeTemplates,    api.scopeTemplates),
     exclusionTemplates:makeDb(setExclusionTemplates,api.exclusionTemplates),
+    svcs:              makeDb(setSvcs,              api.services),
   };
 
   const reset = useCallback(() => {
     setCusts([]); setEsts([]); setProjs([]); setMats([]);
     setSubs([]); setRoles([]); setHrs([]); setInvs([]);
-    setCos([]); setExpenses([]); setUsers([]); setLoading(true);
+    setCos([]); setExpenses([]); setUsers([]); setSvcs([]); setLoading(true);
   }, []);
 
   return {
@@ -149,6 +152,7 @@ export const useAppData = (auth) => {
     users, setUsers,
     scopeTemplates, setScopeTemplates,
     exclusionTemplates, setExclusionTemplates,
+    svcs, setSvcs,
     // Meta
     loading,
     // Helpers

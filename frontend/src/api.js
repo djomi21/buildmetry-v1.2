@@ -109,6 +109,7 @@ export const api = {
   get projects()       { return this._crud('projects'); },
   get invoices()       { return this._crud('invoices'); },
   get materials()      { return this._crud('materials'); },
+  get services()       { return this._crud('services'); },
   get subcontractors() { return this._crud('subcontractors'); },
   get laborRoles()     { return this._crud('labor-roles'); },
   get timeEntries()    { return this._crud('time-entries'); },

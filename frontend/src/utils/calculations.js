@@ -1,4 +1,4 @@
-import { FL_TAX } from '../constants';
+import { TAX } from '../constants';
 
 // ── FORMATTERS ─────────────────────────────────────────────────
 export const fmt  = n => new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(n||0);
@@ -19,8 +19,8 @@ export const nxtNum = (list,prefix,yr=2026) => {
 };
 
 // ── INVOICE / ESTIMATE CALCULATION ────────────────────────────
-// Fixed: replaced undefined TAX default with FL_TAX from constants
-export const calcInv = (lines=[],taxRate=FL_TAX,discountPct=0,depositType="none",depositValue=0) => {
+// Fixed: replaced undefined TAX default with TAX from constants
+export const calcInv = (lines=[],taxRate=TAX,discountPct=0,depositType="none",depositValue=0) => {
   const sub = lines.reduce((s,l)=>s+(l.qty*l.unitPrice),0);
   const lab = lines.filter(l=>!l.isMaterial).reduce((s,l)=>s+(l.qty*l.unitPrice),0);
   const mat = lines.filter(l=> l.isMaterial).reduce((s,l)=>s+(l.qty*l.unitPrice),0);

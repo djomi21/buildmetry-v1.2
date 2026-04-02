@@ -1,5 +1,5 @@
 // ── GLOBAL CONSTANTS ───────────────────────────────────────────
-export const FL_TAX = 6.5;
+export const TAX = 6.5;
 
 export const FONT_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap';
 
@@ -31,17 +31,17 @@ export const SD_CUSTS = [
 ];
 
 export const SD_ESTS = [
-  {id:"EST-2026-001",number:"EST-2026-001",custId:1,projId:"PRJ-2026-001",name:"Thornton Kitchen Full Remodel",discount:0,status:"approved",date:"2026-01-20",expiry:"2026-02-20",taxRate:FL_TAX,notes:"Includes demo, cabinets, countertops, flooring.",subtotal:32800,materialSubtotal:14200,
+  {id:"EST-2026-001",number:"EST-2026-001",custId:1,projId:"PRJ-2026-001",name:"Thornton Kitchen Full Remodel",discount:0,status:"approved",date:"2026-01-20",expiry:"2026-02-20",taxRate:TAX,notes:"Includes demo, cabinets, countertops, flooring.",subtotal:32800,materialSubtotal:14200,
    lineItems:[{id:1,description:"Demo & Hauling",qty:1,unitPrice:2400,isMaterial:false},{id:2,description:"Cabinet Package (14 units)",qty:1,unitPrice:6200,isMaterial:true},{id:3,description:"Granite Countertop 22 LF",qty:22,unitPrice:180,isMaterial:true},{id:4,description:"LVP Flooring 280 SF",qty:280,unitPrice:4.5,isMaterial:true},{id:5,description:"Labor Install",qty:80,unitPrice:75,isMaterial:false},{id:6,description:"Electrical Materials",qty:1,unitPrice:620,isMaterial:true},{id:7,description:"Plumbing Fixtures",qty:1,unitPrice:480,isMaterial:true}]},
-  {id:"EST-2026-002",number:"EST-2026-002",custId:2,projId:"PRJ-2026-002",name:"Rivera Bathroom Remodel",discount:0,status:"approved",date:"2026-02-01",expiry:"2026-03-01",taxRate:FL_TAX,notes:"Tile shower, new vanity, fixtures.",subtotal:17400,materialSubtotal:8100,
+  {id:"EST-2026-002",number:"EST-2026-002",custId:2,projId:"PRJ-2026-002",name:"Rivera Bathroom Remodel",discount:0,status:"approved",date:"2026-02-01",expiry:"2026-03-01",taxRate:TAX,notes:"Tile shower, new vanity, fixtures.",subtotal:17400,materialSubtotal:8100,
    lineItems:[{id:1,description:"Demo & Prep",qty:1,unitPrice:1800,isMaterial:false},{id:2,description:"Shower Tile 90 SF",qty:90,unitPrice:6,isMaterial:true},{id:3,description:"Floor Tile 85 SF",qty:85,unitPrice:4.5,isMaterial:true},{id:4,description:"Vanity & Mirror",qty:1,unitPrice:850,isMaterial:true},{id:5,description:"Plumbing Labor",qty:16,unitPrice:100,isMaterial:false},{id:6,description:"Tile Labor",qty:32,unitPrice:85,isMaterial:false},{id:7,description:"Cement Board & Drywall",qty:1,unitPrice:420,isMaterial:true}]},
-  {id:"EST-2026-003",number:"EST-2026-003",custId:3,projId:"PRJ-2026-003",name:"Goldberg Composite Deck",discount:0,status:"approved",date:"2026-02-20",expiry:"2026-03-20",taxRate:FL_TAX,notes:"280 SF composite deck with rail system.",subtotal:11900,materialSubtotal:6200,
+  {id:"EST-2026-003",number:"EST-2026-003",custId:3,projId:"PRJ-2026-003",name:"Goldberg Composite Deck",discount:0,status:"approved",date:"2026-02-20",expiry:"2026-03-20",taxRate:TAX,notes:"280 SF composite deck with rail system.",subtotal:11900,materialSubtotal:6200,
    lineItems:[{id:1,description:"Deck Framing Labor",qty:24,unitPrice:80,isMaterial:false},{id:2,description:"Composite Decking 280 SF",qty:280,unitPrice:12,isMaterial:true},{id:3,description:"Framing Lumber & Hardware",qty:1,unitPrice:1840,isMaterial:true},{id:4,description:"Rail System",qty:1,unitPrice:1080,isMaterial:true}]},
-  {id:"EST-2026-004",number:"EST-2026-004",custId:4,projId:"PRJ-2026-004",name:"Park Detached ADU",discount:0,status:"approved",date:"2026-03-01",expiry:"2026-04-01",taxRate:FL_TAX,notes:"Full detached ADU 640 SF.",subtotal:74000,materialSubtotal:32000,
+  {id:"EST-2026-004",number:"EST-2026-004",custId:4,projId:"PRJ-2026-004",name:"Park Detached ADU",discount:0,status:"approved",date:"2026-03-01",expiry:"2026-04-01",taxRate:TAX,notes:"Full detached ADU 640 SF.",subtotal:74000,materialSubtotal:32000,
    lineItems:[{id:1,description:"Foundation & Concrete",qty:1,unitPrice:12000,isMaterial:true},{id:2,description:"Framing Labor",qty:120,unitPrice:80,isMaterial:false},{id:3,description:"Framing Materials",qty:1,unitPrice:8200,isMaterial:true},{id:4,description:"Electrical Rough + Finish",qty:1,unitPrice:6800,isMaterial:false},{id:5,description:"Plumbing Rough + Finish",qty:1,unitPrice:5200,isMaterial:false},{id:6,description:"Drywall Materials",qty:1,unitPrice:3200,isMaterial:true},{id:7,description:"Roofing Material",qty:1,unitPrice:4800,isMaterial:true}]},
-  {id:"EST-2026-005",number:"EST-2026-005",custId:6,projId:null,name:"Webb Kitchen Remodel",discount:0,status:"draft",date:"2026-03-10",expiry:"2026-04-10",taxRate:FL_TAX,notes:"Granite, soft-close cabinets.",subtotal:35500,materialSubtotal:15800,
+  {id:"EST-2026-005",number:"EST-2026-005",custId:6,projId:null,name:"Webb Kitchen Remodel",discount:0,status:"draft",date:"2026-03-10",expiry:"2026-04-10",taxRate:TAX,notes:"Granite, soft-close cabinets.",subtotal:35500,materialSubtotal:15800,
    lineItems:[{id:1,description:"Demo Labor",qty:1,unitPrice:2200,isMaterial:false},{id:2,description:"Cabinet Package",qty:1,unitPrice:7400,isMaterial:true},{id:3,description:"Granite 28 LF",qty:28,unitPrice:185,isMaterial:true},{id:4,description:"Install Labor",qty:88,unitPrice:75,isMaterial:false},{id:5,description:"Plumbing Fixtures",qty:1,unitPrice:920,isMaterial:true}]},
-  {id:"EST-2026-006",number:"EST-2026-006",custId:7,projId:null,name:"Nair Basement Finish + Wet Bar",discount:0,status:"sent",date:"2026-03-09",expiry:"2026-04-09",taxRate:FL_TAX,notes:"Full basement finish, wet bar.",subtotal:46000,materialSubtotal:18000,
+  {id:"EST-2026-006",number:"EST-2026-006",custId:7,projId:null,name:"Nair Basement Finish + Wet Bar",discount:0,status:"sent",date:"2026-03-09",expiry:"2026-04-09",taxRate:TAX,notes:"Full basement finish, wet bar.",subtotal:46000,materialSubtotal:18000,
    lineItems:[{id:1,description:"Framing",qty:60,unitPrice:80,isMaterial:false},{id:2,description:"Drywall Materials",qty:1,unitPrice:3600,isMaterial:true},{id:3,description:"Flooring Materials",qty:1,unitPrice:4200,isMaterial:true},{id:4,description:"Electrical",qty:1,unitPrice:5800,isMaterial:false},{id:5,description:"Wet Bar Materials",qty:1,unitPrice:6200,isMaterial:true},{id:6,description:"Plumbing",qty:1,unitPrice:4800,isMaterial:false}]},
 ];
 
@@ -282,6 +282,17 @@ export const PRJ_SC = {"active":{bg:"rgba(59,130,246,.12)",c:"#3b82f6",label:"Ac
 export const CO_SC = {"pending":{bg:"rgba(245,166,35,.12)",c:"#f5a623",label:"Pending"},"approved":{bg:"rgba(34,197,94,.12)",c:"#22c55e",label:"Approved"},"declined":{bg:"rgba(239,68,68,.12)",c:"#ef4444",label:"Declined"},"invoiced":{bg:"rgba(99,102,241,.1)",c:"#6366f1",label:"Invoiced"}};
 export const TAG_C = {"VIP":{bg:"rgba(245,166,35,.14)",c:"#f5a623"},"Repeat":{bg:"rgba(99,179,237,.14)",c:"#63b3ed"},"Hot Lead":{bg:"rgba(239,68,68,.12)",c:"#ef4444"},"Investor":{bg:"rgba(166,139,250,.12)",c:"#a78bfa"},"New":{bg:"rgba(34,197,94,.1)",c:"#22c55e"},"Referral Source":{bg:"rgba(251,146,60,.1)",c:"#fb923c"}};
 export const CAT_C = {"Lumber":"#f5a623","Drywall":"#94a3b8","Flooring":"#22c55e","Tile":"#14b8a6","Paint":"#ec4899","Plumbing":"#3b82f6","Electrical":"#f59e0b","Decking":"#a78bfa","Concrete":"#78716c","Insulation":"#fb923c","Doors & Windows":"#6366f1"};
+export const SVC_CATS = ["General","Plumbing","Electrical","Framing","Painting","Flooring","Roofing","HVAC","Concrete","Landscaping","Cleanup"];
+export const SVC_CAT_C = {"General":"#94a3b8","Plumbing":"#3b82f6","Electrical":"#f59e0b","Framing":"#f5a623","Painting":"#ec4899","Flooring":"#22c55e","Roofing":"#6366f1","HVAC":"#06b6d4","Concrete":"#78716c","Landscaping":"#84cc16","Cleanup":"#fb923c"};
+export const SD_SVCS = [
+  {id:1,name:"Demolition & Haul-off",description:"Demo existing structure and remove debris",category:"General",unit:"ls",unitPrice:800,isMaterial:false},
+  {id:2,name:"Rough Plumbing",description:"Supply & drain rough-in",category:"Plumbing",unit:"ls",unitPrice:3200,isMaterial:false},
+  {id:3,name:"Electrical Rough-in",description:"Rough-in wiring and panel work",category:"Electrical",unit:"ls",unitPrice:2400,isMaterial:false},
+  {id:4,name:"Tile Installation",description:"Set tile — floor or wall",category:"Flooring",unit:"sf",unitPrice:12,isMaterial:false},
+  {id:5,name:"Interior Painting",description:"Walls & trim, 2 coats",category:"Painting",unit:"ls",unitPrice:1600,isMaterial:false},
+  {id:6,name:"Framing Labor",description:"Wood framing per sq ft",category:"Framing",unit:"sf",unitPrice:8,isMaterial:false},
+  {id:7,name:"Cleanup & Haul-off",description:"Final jobsite cleanup and debris removal",category:"Cleanup",unit:"ls",unitPrice:600,isMaterial:false},
+];
 
 // Role colors — computed from SD_ROLES order
 const _RC = ["#f5a623","#6366f1","#3b82f6","#14b8a6","#78716c","#ec4899","#fb923c","#a78bfa","#ef4444","#22c55e","#f59e0b","#94a3b8","#06b6d4","#84cc16","#e879f9","#facc15","#0ea5e9","#d946ef","#f97316","#10b981"];

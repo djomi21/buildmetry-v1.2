@@ -76,6 +76,7 @@ model Company {
   projectPhases       ProjectPhase[]
   scopeTemplates      ScopeTemplate[]
   exclusionTemplates  ExclusionTemplate[]
+  services            Service[]
 }
 
 // ── USERS ────────────────────────────────────────────
@@ -237,6 +238,23 @@ model Material {
   markup      Float     @default(0)
   stock       Int       @default(0)
   reorderAt   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([companyId])
+}
+
+// ── SERVICES ─────────────────────────────────────────
+model Service {
+  id          Int       @id @default(autoincrement())
+  companyId   Int
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  description String    @default("")
+  category    String    @default("General")
+  unit        String    @default("ls")
+  unitPrice   Float     @default(0)
+  isMaterial  Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

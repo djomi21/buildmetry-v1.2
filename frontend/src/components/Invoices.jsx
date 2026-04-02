@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import api from '../api';
-import { INV_SC, EST_SC, FL_TAX, ROLE_C } from '../constants';
+import { INV_SC, EST_SC, TAX, ROLE_C, SVC_CAT_C } from '../constants';
 import { calcInv, fmt, fmtD, tod, uid, nxtNum, printDoc, calcBurden, addD } from '../utils/calculations';
 import { I } from './shared/Icons';
 import { KpiCard, Chip, ES } from './shared/ui';
 import EmailSendModal from './modals/EmailSendModal';
 import SignatureRequestModal from './modals/SignatureRequestModal';
 
-export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,company,showToast,db}) {
+export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,svcs,company,showToast,db}) {
   const [sel,  setSel]  = useState(invs[0]?.id||null);
   const [stF,  setStF]  = useState("all");
   const [newMd,setNewMd]= useState(null);
@@ -46,6 +46,11 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
   const addInvLabor=(role)=>{
     var b=calcBurden(role);
     var line={id:uid(),description:role.title+" Labor",qty:1,unitPrice:b.fullyBurdenedRate,isMaterial:false,sourceType:"labor",sourceId:role.id,unit:"hr"};
+    setEditForm(f=>({...f,lineItems:[...f.lineItems,line]}));
+    setInvPicker(null);
+  };
+  const addInvService=(svc)=>{
+    var line={id:uid(),description:svc.name,qty:1,unitPrice:svc.unitPrice,isMaterial:svc.isMaterial,sourceType:"service",sourceId:svc.id,unit:svc.unit};
     setEditForm(f=>({...f,lineItems:[...f.lineItems,line]}));
     setInvPicker(null);
   };
@@ -89,7 +94,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
       if(p.actualLabor>0||p.budgetLabor>0) lineItems.push({id:lineId++,description:"Labor — "+p.name,qty:1,unitPrice:p.actualLabor||p.budgetLabor,isMaterial:false,section:"estimate"});
       if(p.actualMaterials>0||p.budgetMaterials>0) lineItems.push({id:lineId++,description:"Materials — "+p.name,qty:1,unitPrice:p.actualMaterials||p.budgetMaterials,isMaterial:true,section:"estimate"});
     }
-    var taxRate=est?est.taxRate:FL_TAX;
+    var taxRate=est?est.taxRate:TAX;
     var discount=est?(est.discount||0):0;
     var depositType=est?(est.depositType||"none"):"none";
     var depositValue=est?(Number(est.depositValue)||0):0;
@@ -98,7 +103,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
   };
   const createManual=()=>{
     const id=nxtNum(invs,"INV");
-    setEditForm({_id:null,id:id,number:id,custId:"",projId:null,estId:null,status:"draft",issueDate:tod(),dueDate:addD(tod(),30),discount:0,depositType:"none",depositValue:0,paidDate:null,taxRate:FL_TAX,notes:"",lineItems:[]});
+    setEditForm({_id:null,id:id,number:id,custId:"",projId:null,estId:null,status:"draft",issueDate:tod(),dueDate:addD(tod(),30),discount:0,depositType:"none",depositValue:0,paidDate:null,taxRate:TAX,notes:"",lineItems:[]});
     setNewMd(null);
   };
   const dup=inv=>{
@@ -408,6 +413,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
                   <div style={{display:"flex",gap:4}}>
                     <button onClick={()=>setInvPicker({type:"material",search:""})} className="bb b-bl" style={{padding:"4px 9px",fontSize:10,borderRadius:6}}><I n="materials" s={10}/>Material</button>
                     <button onClick={()=>setInvPicker({type:"labor",search:""})} className="bb b-am" style={{padding:"4px 9px",fontSize:10,borderRadius:6}}><I n="wrench" s={10}/>Labor</button>
+                    <button onClick={()=>setInvPicker({type:"service",search:"",catF:"all"})} className="bb b-gh" style={{padding:"4px 9px",fontSize:10,borderRadius:6,borderColor:"#22c55e",color:"#22c55e"}}><I n="check" s={10}/>Service</button>
                     <button onClick={addEditLine} className="bb b-gh" style={{padding:"4px 9px",fontSize:10,borderRadius:6}}><I n="plus" s={10}/>Custom</button>
                   </div>
                 </div>
@@ -416,7 +422,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
                     <div style={{padding:"8px 10px",borderBottom:"1px solid var(--border-2)",display:"flex",gap:7,alignItems:"center"}}>
                       <div style={{position:"relative",flex:1}}>
                         <div style={{position:"absolute",left:7,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={11}/></div>
-                        <input className="inp" autoFocus value={invPicker.search} onChange={function(e){setInvPicker(function(p){return{...p,search:e.target.value};});}} placeholder={invPicker.type==="material"?"Search materials…":"Search labor roles…"} style={{paddingLeft:24,fontSize:11,padding:"5px 7px 5px 24px"}}/>
+                        <input className="inp" autoFocus value={invPicker.search} onChange={function(e){setInvPicker(function(p){return{...p,search:e.target.value};});}} placeholder={invPicker.type==="material"?"Search materials…":invPicker.type==="service"?"Search services…":"Search labor roles…"} style={{paddingLeft:24,fontSize:11,padding:"5px 7px 5px 24px"}}/>
                       </div>
                       <button onClick={()=>setInvPicker(null)} style={{color:"var(--text-dim)",flexShrink:0}}><I n="x" s={14}/></button>
                     </div>
@@ -438,6 +444,33 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,c
                               </div>
                             </div>;
                           });
+                      })()}
+                      {invPicker.type==="service"&&(function(){
+                        var fSvcs=(svcs||[]).filter(function(s){
+                          return (!invPicker.search||s.name.toLowerCase().includes(invPicker.search.toLowerCase())||s.category.toLowerCase().includes(invPicker.search.toLowerCase()))&&
+                            (invPicker.catF==="all"||s.category===invPicker.catF);
+                        });
+                        return <>
+                          <div style={{display:"flex",gap:4,flexWrap:"wrap",padding:"6px 12px",borderBottom:"1px solid var(--border)"}}>
+                            {["all","General","Plumbing","Electrical","Framing","Painting","Flooring","Roofing","HVAC","Concrete","Landscaping","Cleanup"].map(function(c){
+                              return <button key={c} onClick={function(){setInvPicker(function(p){return{...p,catF:c};});}} style={{padding:"2px 7px",borderRadius:10,fontSize:9,fontWeight:700,border:`1px solid ${invPicker.catF===c?"var(--accent)":"var(--border)"}`,background:invPicker.catF===c?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"transparent",color:invPicker.catF===c?"var(--accent-light)":"var(--text-dim)"}}>{c==="all"?"All":c}</button>;
+                            })}
+                          </div>
+                          {fSvcs.length===0
+                            ?<div style={{padding:"14px",textAlign:"center",color:"var(--text-faint)",fontSize:11}}>No services found</div>
+                            :fSvcs.map(function(s){
+                              return <div key={s.id} onClick={function(){addInvService(s);}} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"}} className="rh">
+                                <div style={{flex:1,minWidth:0}}>
+                                  <div style={{fontSize:11,fontWeight:600,color:"var(--text-2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.name}</div>
+                                  <div style={{fontSize:8,color:"var(--text-faint)",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,fontSize:8,fontWeight:700,background:`${SVC_CAT_C[s.category]||"#4a566e"}18`,color:SVC_CAT_C[s.category]||"var(--text-dim)"}}>{s.category}</span> · {s.isMaterial?"Material":"Labor"}</div>
+                                </div>
+                                <div style={{textAlign:"right",flexShrink:0}}>
+                                  <div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(s.unitPrice)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/{s.unit}</span></div>
+                                </div>
+                              </div>;
+                            })
+                          }
+                        </>;
                       })()}
                       {invPicker.type==="labor"&&(function(){
                         var fRoles=(roles||[]).filter(function(r){return !MGMT_ROLES.has(r.title)&&(!invPicker.search||r.title.toLowerCase().includes(invPicker.search.toLowerCase()));});

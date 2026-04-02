@@ -290,7 +290,7 @@ function TemplatePicker({templates,title,onSelect,onClose}){
   </div>;
 }
 
-function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSignature,scopeTemplates=[],exclusionTemplates=[]}){
+function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSignature,scopeTemplates=[],exclusionTemplates=[],svcs=[]}){
   const[f,sF]=useState(()=>contract?{...contract}:{id:null,title:"",contractType:"Prime",status:"Draft",clientOrSubName:"",startDate:"",endDate:"",discountPercent:0,taxRate:TAX_RATE,retentionPercent:10,paymentTerms:"Net 30",scopeOfWork:"",exclusions:"",lineItems:[],milestones:[],changeOrders:[],signatureStatus:"Unsigned",linkedEstimateId:null});
   const s=(k,v)=>sF(p=>({...p,[k]:v}));
   const t=useMemo(()=>calc(f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent),[f.lineItems,f.discountPercent,f.taxRate,f.retentionPercent]);
@@ -300,6 +300,10 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
   const[dc,setDc]=useState(false);
   const[scopePicker,setScopePicker]=useState(false);
   const[exclusionPicker,setExclusionPicker]=useState(false);
+  const[svcPicker,setSvcPicker]=useState(false);
+  const[svcSearch,setSvcSearch]=useState("");
+  const[svcCatF,setSvcCatF]=useState("all");
+  const addSvc=svc=>{s("lineItems",[...f.lineItems,{id:uid(),description:svc.name,qty:1,unitPrice:svc.unitPrice,unit:svc.unit,isMaterial:svc.isMaterial}]);setSvcPicker(false);setSvcSearch("");setSvcCatF("all");};
   return<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
       <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -332,6 +336,39 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
 
     <Section title="Line Items" badge={<span style={{fontSize:10,color:tx3}}>{f.lineItems.length} items</span>}>
       {f.lineItems.length===0&&!f.linkedEstimateId&&<div style={{marginBottom:12}}><div style={{...lblS,marginBottom:8}}>Quick start</div><div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{Object.keys(TEMPLATES).map(t=><button key={t} onClick={()=>tpl(t)} style={bGh}>{t}</button>)}</div></div>}
+      <div style={{marginBottom:8,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+        <button onClick={()=>{setSvcPicker(p=>!p);setSvcSearch("");setSvcCatF("all");}} style={{...bGh,fontSize:10,padding:"4px 9px",borderColor:"#22c55e",color:"#22c55e"}}>+ From Services</button>
+      </div>
+      {svcPicker&&(()=>{
+        const fSvcs=svcs.filter(s=>(!svcSearch||s.name.toLowerCase().includes(svcSearch.toLowerCase())||s.category.toLowerCase().includes(svcSearch.toLowerCase()))&&(svcCatF==="all"||s.category===svcCatF));
+        return <div style={{border:"1px solid #22c55e44",borderRadius:9,background:"var(--bg-sidebar,#0a0d15)",marginBottom:10,overflow:"hidden"}}>
+          <div style={{padding:"7px 10px",borderBottom:"1px solid var(--border-2,#1e2535)",display:"flex",gap:7,alignItems:"center"}}>
+            <div style={{position:"relative",flex:1}}>
+              <input value={svcSearch} onChange={e=>setSvcSearch(e.target.value)} autoFocus placeholder="Search services…" style={{...inpS,paddingLeft:22,width:"100%"}}/>
+            </div>
+            <button onClick={()=>setSvcPicker(false)} style={{color:"#7a8299",flexShrink:0,background:"none",border:"none",cursor:"pointer",fontSize:14}}>✕</button>
+          </div>
+          <div style={{display:"flex",gap:4,flexWrap:"wrap",padding:"5px 10px",borderBottom:"1px solid var(--border-2,#1e2535)"}}>
+            {["all","General","Plumbing","Electrical","Framing","Painting","Flooring","Roofing","HVAC","Concrete","Landscaping","Cleanup"].map(c=>(
+              <button key={c} onClick={()=>setSvcCatF(c)} style={{padding:"2px 7px",borderRadius:10,fontSize:9,fontWeight:700,border:`1px solid ${svcCatF===c?"#3b82f6":"#111826"}`,background:svcCatF===c?"rgba(59,130,246,.14)":"transparent",color:svcCatF===c?"#63b3ed":"#4a566e",cursor:"pointer"}}>{c==="all"?"All":c}</button>
+            ))}
+          </div>
+          <div style={{maxHeight:180,overflowY:"auto"}}>
+            {fSvcs.length===0
+              ?<div style={{padding:"14px",textAlign:"center",color:"#4a566e",fontSize:11}}>No services found</div>
+              :fSvcs.map(sv=>(
+                <div key={sv.id} onClick={()=>addSvc(sv)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid #111826",cursor:"pointer"}} className="rh">
+                  <div>
+                    <div style={{fontSize:11,fontWeight:600,color:"#dde1ec"}}>{sv.name}</div>
+                    <div style={{fontSize:8,color:"#4a566e",marginTop:1}}>{sv.category} · {sv.isMaterial?"Material":"Labor"}</div>
+                  </div>
+                  <div style={{fontSize:11,fontWeight:700,color:"#22c55e",fontFamily:"monospace"}}>${sv.unitPrice.toFixed(2)}/{sv.unit}</div>
+                </div>
+              ))
+            }
+          </div>
+        </div>;
+      })()}
       <LineItems items={f.lineItems} setItems={v=>s("lineItems",v)}/>
     </Section>
 
@@ -375,7 +412,7 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
 }
 
 /* ═══════ MAIN EXPORT ═══════ */
-export default function ContractsModule({projectId,apiBaseUrl="/api",company,scopeTemplates=[],exclusionTemplates=[]}){
+export default function ContractsModule({projectId,apiBaseUrl="/api",company,scopeTemplates=[],exclusionTemplates=[],svcs=[]}){
   const[contracts,setContracts]=useState([]);
   const[view,setView]=useState("list");
   const[activeId,setActiveId]=useState(null);
@@ -498,7 +535,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api",company,sco
         </div>})}
     </div>}
 
-    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} onDelete={handleDelete} isNew={!active||active.id==null} saving={saving} onSendSignature={c=>setSigMd(c)} scopeTemplates={scopeTemplates} exclusionTemplates={exclusionTemplates}/>}
+    {view==="form"&&<Form contract={active} onSave={handleSave} onCancel={()=>{setView("list");setActiveId(null)}} onPrint={printContract} onDelete={handleDelete} isNew={!active||active.id==null} saving={saving} onSendSignature={c=>setSigMd(c)} scopeTemplates={scopeTemplates} exclusionTemplates={exclusionTemplates} svcs={svcs}/>}
 
     {sigMd&&<ContractSigModal contract={sigMd} company={company} apiBaseUrl={apiBaseUrl} onClose={()=>setSigMd(null)} onSent={(to)=>{setContracts(p=>p.map(c=>c.id===sigMd.id?{...c,status:"Sent"}:c));setSigMd(null);show("Signing link sent to "+to);}}/>}
   </div>;

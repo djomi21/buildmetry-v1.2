@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { FL_TAX, EST_SC, INV_SC, MGMT_ROLES, ROLE_C, CAT_C } from '../constants';
+import { TAX, EST_SC, INV_SC, MGMT_ROLES, ROLE_C, CAT_C, SVC_CAT_C } from '../constants';
 import { calcInv, calcBurden, fmt, fmtD, uid, tod, addD, nxtNum, printDoc } from '../utils/calculations';
 import { Chip, ES, CTip, KpiCard } from './shared/ui';
 import I from './shared/Icons';
@@ -8,7 +8,7 @@ import api from '../api';
 import EmailSendModal from './modals/EmailSendModal';
 import SignatureRequestModal from './modals/SignatureRequestModal';
 
-export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,company,showToast,setTab,db}) {
+export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInvs,mats,roles,svcs,company,showToast,setTab,db}) {
   const [sel,  setSel]  = useState(ests[0]?.id||null);
   const [srch, setSrch] = useState("");
   const [stF,  setStF]  = useState("all");
@@ -18,7 +18,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
   const [sigMd, setSigMd] = useState(false);
 
   const blankLine=()=>({id:uid(),description:"",qty:1,unitPrice:0,isMaterial:false,sourceType:"custom",sourceId:null});
-  const blank={custId:"",name:"",date:tod(),expiry:addD(tod(),30),taxRate:FL_TAX,discount:0,depositType:"none",depositValue:0,notes:"",status:"draft",lineItems:[]};
+  const blank={custId:"",name:"",date:tod(),expiry:addD(tod(),30),taxRate:TAX,discount:0,depositType:"none",depositValue:0,notes:"",status:"draft",lineItems:[]};
 
   const filt=useMemo(()=>ests.filter(e=>{
     const ms=!srch||e.name.toLowerCase().includes(srch.toLowerCase())||(e.number||"").toLowerCase().includes(srch.toLowerCase())||custs.find(c=>c.id===e.custId)?.name.toLowerCase().includes(srch.toLowerCase());
@@ -29,7 +29,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
   const seC=se?calcInv(se.lineItems,se.taxRate,se.discount||0,se.depositType||"none",Number(se.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
   const seLinkedInv=se?invs.find(i=>i.estId===se.id):null;
   const seEffBal=seLinkedInv?.status==="paid"?0:seC.balanceDue;
-  const formC=form?calcInv(form.lineItems.filter(l=>l.description.trim()),Number(form.taxRate)||FL_TAX,Number(form.discount)||0,form.depositType||"none",Number(form.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
+  const formC=form?calcInv(form.lineItems.filter(l=>l.description.trim()),Number(form.taxRate)||TAX,Number(form.discount)||0,form.depositType||"none",Number(form.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
 
   const openNew=()=>setForm({...blank,_id:null});
   const openEdit=e=>setForm({...e,_id:e.id,lineItems:e.lineItems.map(l=>({...l,sourceType:l.sourceType||(l.isMaterial?"material":"labor"),sourceId:l.sourceId||null}))});
@@ -46,6 +46,11 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
   const addLabor=(role)=>{
     const b=calcBurden(role);
     const line={id:uid(),description:`${role.title} Labor`,qty:1,unitPrice:b.fullyBurdenedRate,isMaterial:false,sourceType:"labor",sourceId:role.id,unit:"hr"};
+    setForm(f=>({...f,lineItems:[...f.lineItems,line]}));
+    setPicker(null);
+  };
+  const addService=(svc)=>{
+    const line={id:uid(),description:svc.name,qty:1,unitPrice:svc.unitPrice,isMaterial:svc.isMaterial,sourceType:"service",sourceId:svc.id,unit:svc.unit};
     setForm(f=>({...f,lineItems:[...f.lineItems,line]}));
     setPicker(null);
   };
@@ -317,6 +322,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
                   <div style={{display:"flex",gap:4}}>
                     <button onClick={()=>setPicker({type:"material",search:""})} className="bb b-bl" style={{padding:"4px 9px",fontSize:10,borderRadius:6}}><I n="materials" s={10}/>Material</button>
                     <button onClick={()=>setPicker({type:"labor",search:""})} className="bb b-am" style={{padding:"4px 9px",fontSize:10,borderRadius:6}}><I n="wrench" s={10}/>Labor</button>
+                    <button onClick={()=>setPicker({type:"service",search:"",catF:"all"})} className="bb b-gh" style={{padding:"4px 9px",fontSize:10,borderRadius:6,borderColor:"#22c55e",color:"#22c55e"}}><I n="check" s={10}/>Service</button>
                     <button onClick={addLine} className="bb b-gh" style={{padding:"4px 9px",fontSize:10,borderRadius:6}}><I n="plus" s={10}/>Custom</button>
                   </div>
                 </div>
@@ -325,7 +331,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
                     <div style={{padding:"8px 10px",borderBottom:"1px solid var(--border-2)",display:"flex",gap:7,alignItems:"center"}}>
                       <div style={{position:"relative",flex:1}}>
                         <div style={{position:"absolute",left:7,top:"50%",transform:"translateY(-50%)",color:"var(--text-faint)",pointerEvents:"none"}}><I n="search" s={11}/></div>
-                        <input className="inp" autoFocus value={picker.search} onChange={e=>setPicker(p=>({...p,search:e.target.value}))} placeholder={picker.type==="material"?"Search materials…":"Search labor roles…"} style={{paddingLeft:24,fontSize:11,padding:"5px 7px 5px 24px"}}/>
+                        <input className="inp" autoFocus value={picker.search} onChange={e=>setPicker(p=>({...p,search:e.target.value}))} placeholder={picker.type==="material"?"Search materials…":picker.type==="service"?"Search services…":"Search labor roles…"} style={{paddingLeft:24,fontSize:11,padding:"5px 7px 5px 24px"}}/>
                       </div>
                       <button onClick={()=>setPicker(null)} style={{color:"var(--text-dim)",flexShrink:0}}><I n="x" s={14}/></button>
                     </div>
@@ -347,6 +353,33 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
                               </div>
                             </div>;
                           });
+                      })()}
+                      {picker.type==="service"&&(()=>{
+                        const fSvcs=svcs.filter(s=>
+                          (!picker.search||s.name.toLowerCase().includes(picker.search.toLowerCase())||s.category.toLowerCase().includes(picker.search.toLowerCase()))&&
+                          (picker.catF==="all"||s.category===picker.catF)
+                        );
+                        return <>
+                          <div style={{display:"flex",gap:4,flexWrap:"wrap",padding:"6px 12px",borderBottom:"1px solid var(--border)"}}>
+                            {["all","General","Plumbing","Electrical","Framing","Painting","Flooring","Roofing","HVAC","Concrete","Landscaping","Cleanup"].map(c=>(
+                              <button key={c} onClick={()=>setPicker(p=>({...p,catF:c}))} style={{padding:"2px 7px",borderRadius:10,fontSize:9,fontWeight:700,border:`1px solid ${picker.catF===c?"var(--accent)":"var(--border)"}`,background:picker.catF===c?"rgba(var(--accent-r),var(--accent-g),var(--accent-b),.14)":"transparent",color:picker.catF===c?"var(--accent-light)":"var(--text-dim)"}}>{c==="all"?"All":c}</button>
+                            ))}
+                          </div>
+                          {fSvcs.length===0
+                            ?<div style={{padding:"14px 12px",color:"var(--text-dim)",fontSize:11,textAlign:"center"}}>No services found</div>
+                            :fSvcs.map(s=>(
+                              <div key={s.id} onClick={()=>addService(s)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 12px",borderBottom:"1px solid var(--border)",cursor:"pointer",transition:"background .1s"}} className="rh">
+                                <div style={{flex:1,minWidth:0}}>
+                                  <div style={{fontSize:11,fontWeight:600,color:"var(--text-2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.name}</div>
+                                  <div style={{fontSize:8,color:"var(--text-faint)",marginTop:1}}><span style={{padding:"1px 5px",borderRadius:6,fontSize:8,fontWeight:700,background:`${SVC_CAT_C[s.category]||"#4a566e"}18`,color:SVC_CAT_C[s.category]||"var(--text-dim)"}}>{s.category}</span> · {s.isMaterial?"Material":"Labor"}</div>
+                                </div>
+                                <div style={{textAlign:"right",flexShrink:0}}>
+                                  <div className="mn" style={{fontSize:11,color:"#22c55e"}}>{fmtD(s.unitPrice)}<span style={{fontSize:8,color:"var(--text-faint)"}}>/{s.unit}</span></div>
+                                </div>
+                              </div>
+                            ))
+                          }
+                        </>;
                       })()}
                       {picker.type==="labor"&&(()=>{
                         const fRoles=roles.filter(r=>!MGMT_ROLES.has(r.title)&&(!picker.search||r.title.toLowerCase().includes(picker.search.toLowerCase())));

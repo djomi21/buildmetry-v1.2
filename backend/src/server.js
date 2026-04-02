@@ -56,6 +56,7 @@ app.use('/api/estimates',      loadRoute('./routes/estimates', 'estimates'));
 app.use('/api/projects',       loadRoute('./routes/projects', 'projects'));
 app.use('/api/invoices',       loadRoute('./routes/invoices', 'invoices'));
 app.use('/api/materials',      loadRoute('./routes/materials', 'materials'));
+app.use('/api/services',       loadRoute('./routes/services', 'services'));
 app.use('/api/subcontractors', loadRoute('./routes/subcontractors', 'subcontractors'));
 app.use('/api/labor-roles',    loadRoute('./routes/laborRoles', 'laborRoles'));
 app.use('/api/time-entries',   loadRoute('./routes/timeEntries', 'timeEntries'));
