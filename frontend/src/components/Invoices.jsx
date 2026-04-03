@@ -20,7 +20,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
   const siC=si?calcInv(si.lineItems,si.taxRate,si.discount||0,si.depositType||"none",Number(si.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
   const effectiveBal=si?.status==="paid"?0:siC.balanceDue;
 
-  const filt=useMemo(()=>invs.filter(i=>stF==="all"||i.status===stF),[invs,stF]);
+  const filt=useMemo(()=>invs.filter(i=>stF==="all"||i.status===stF).sort((a,b)=>new Date(b.issueDate)-new Date(a.issueDate)),[invs,stF]);
   const arKpis=useMemo(()=>{
     const all=invs.map(i=>({...i,...calcInv(i.lineItems,i.taxRate,i.discount||0)}));
     return {

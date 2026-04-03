@@ -6,6 +6,16 @@ import { KpiCard, Chip, CTip } from './shared/ui';
 
 export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,company}) {
   const [rtab,setRtab]=useState("pl");
+  const [dateFrom,setDateFrom]=useState("");
+  const [dateTo,setDateTo]=useState("");
+
+  const inRange=(dateStr)=>{
+    if(!dateFrom&&!dateTo)return true;
+    const d=new Date(dateStr);
+    if(dateFrom&&d<new Date(dateFrom))return false;
+    if(dateTo&&d>new Date(dateTo))return false;
+    return true;
+  };
 
   const iAll=useMemo(()=>invs.map(i=>({...i,...calcInv(i.lineItems,i.taxRate,i.discount||0)})),[invs]);
   const curYear=new Date().getFullYear();
@@ -13,11 +23,11 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
   const monthlyData=useMemo(()=>{
     const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     const acc=MONTHS.map(m=>({month:m,revenue:0,labor:0,materials:0,totalCost:0,profit:0}));
-    invs.filter(i=>i.status!=="void").forEach(inv=>{
+    invs.filter(i=>i.status!=="void"&&inRange(i.issueDate)).forEach(inv=>{
       const d=new Date(inv.issueDate);if(d.getFullYear()!==selYear)return;
       acc[d.getMonth()].revenue+=calcInv(inv.lineItems,inv.taxRate,inv.discount||0).total;
     });
-    (expenses||[]).forEach(exp=>{
+    (expenses||[]).filter(exp=>inRange(exp.date)).forEach(exp=>{
       const d=new Date(exp.date);if(d.getFullYear()!==selYear)return;
       const mIdx=d.getMonth();acc[mIdx].totalCost+=exp.amount;
       if(exp.category==="Labor"||exp.category==="Subcontractor/Crew")acc[mIdx].labor+=exp.amount;
@@ -25,7 +35,7 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
     });
     acc.forEach(m=>{m.profit=m.revenue-m.totalCost;});
     return acc;
-  },[invs,expenses,selYear]);
+  },[invs,expenses,selYear,dateFrom,dateTo]);
   const ytdMonths=useMemo(()=>monthlyData.slice(0,selYear===curYear?new Date().getMonth()+1:12),[monthlyData,selYear]);
   const ytdRev=ytdMonths.reduce((s,m)=>s+m.revenue,0);
   const ytdProfit=ytdMonths.reduce((s,m)=>s+m.profit,0);
@@ -33,11 +43,11 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
   const ytdMats=ytdMonths.reduce((s,m)=>s+m.materials,0);
   const ytdMargin=pct(ytdProfit,ytdRev);
 
-  const arData=useMemo(()=>iAll.map(i=>{
+  const arData=useMemo(()=>iAll.filter(i=>inRange(i.issueDate)).map(i=>{
     const due=new Date(i.dueDate);const now=new Date(tod());
     const days=Math.round((now-due)/(1000*60*60*24));
     return {...i,daysPast:days};
-  }).sort((a,b)=>b.daysPast-a.daysPast),[iAll]);
+  }).sort((a,b)=>b.daysPast-a.daysPast),[iAll,dateFrom,dateTo]);
 
   const subData=useMemo(()=>subs.map(sub=>{
     const eHrs=hrs.filter(h=>h.subId===sub.id);
@@ -88,6 +98,9 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
               <button onClick={()=>setSelYear(y=>y+1)} className="bb" style={{padding:"3px 8px",fontSize:12,opacity:selYear>=curYear?.5:1}} disabled={selYear>=curYear}>›</button>
             </div>
           )}
+          <input type="date" value={dateFrom} onChange={e=>setDateFrom(e.target.value)} className="inp" style={{fontSize:10,padding:"3px 6px",width:120}}/>
+          <span style={{fontSize:10,color:"var(--text-faint)"}}>–</span>
+          <input type="date" value={dateTo} onChange={e=>setDateTo(e.target.value)} className="inp" style={{fontSize:10,padding:"3px 6px",width:120}}/>
           <button onClick={()=>exportReport(true)} className="bb b-gh" style={{padding:"5px 12px",fontSize:11}}>⎙ Print</button>
         </div>
       </div>

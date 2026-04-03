@@ -9,7 +9,7 @@ export default function JobCosting({projs,custs,hrs,subs,roles}) {
   const [selP,setSelP]=useState(projs[0]?.id||null);
   const sp=projs.find(p=>p.id===selP);
 
-  const pHrs=selP?hrs.filter(h=>h.projId===selP):[];
+  const pHrs=selP?hrs.filter(h=>h.projId===selP).sort((a,b)=>new Date(b.date)-new Date(a.date)):[];
   const pSubHrs=pHrs.map(h=>{
     const sub=subs.find(e=>e.id===h.subId);
     return {...h,sub,billed:h.hours*(sub?.billableRate||0),trueCost:h.hours*getBurdenedRate(roles,sub?.role,sub?.hourlyWage||0)};

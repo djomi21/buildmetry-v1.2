@@ -24,7 +24,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
   const filt=useMemo(()=>ests.filter(e=>{
     const ms=!srch||e.name.toLowerCase().includes(srch.toLowerCase())||(e.number||"").toLowerCase().includes(srch.toLowerCase())||custs.find(c=>c.id===e.custId)?.name.toLowerCase().includes(srch.toLowerCase());
     return ms&&(stF==="all"||e.status===stF);
-  }),[ests,srch,stF,custs]);
+  }).sort((a,b)=>new Date(b.date)-new Date(a.date)),[ests,srch,stF,custs]);
 
   const se=ests.find(e=>e.id===sel)||null;
   const seC=se?calcInv(se.lineItems,se.taxRate,se.discount||0,se.depositType||"none",Number(se.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};

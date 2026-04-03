@@ -17,7 +17,7 @@ export default function Expenses({expenses,setExpenses,projs,showToast,db}) {
     const cf=catF==="All"||e.category===catF;
     const pf=projF==="all"||(projF==="overhead"?!e.projId:e.projId===projF);
     return ms&&cf&&pf;
-  }),[expenses,srch,catF,projF]);
+  }).sort((a,b)=>new Date(b.date)-new Date(a.date)),[expenses,srch,catF,projF]);
 
   const totalAll=expenses.reduce((s,e)=>s+e.amount,0);
   const totalJob=expenses.filter(e=>e.projId).reduce((s,e)=>s+e.amount,0);

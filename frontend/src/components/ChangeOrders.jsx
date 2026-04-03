@@ -9,7 +9,7 @@ export default function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setIn
   const [stF,setStF]=useState("all");
   const [pendingDel,setPendingDel]=useState(null);
 
-  const filt=useMemo(()=>cos.filter(c=>stF==="all"||c.status===stF),[cos,stF]);
+  const filt=useMemo(()=>cos.filter(c=>stF==="all"||c.status===stF).sort((a,b)=>new Date(b.date)-new Date(a.date)),[cos,stF]);
   const totApproved=cos.filter(c=>c.status==="approved").reduce((s,c)=>s+c.totalAmt,0);
   const totPending=cos.filter(c=>c.status==="pending").reduce((s,c)=>s+c.totalAmt,0);
 

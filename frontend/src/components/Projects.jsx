@@ -14,6 +14,7 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
   const [pendingTaskDel, setPendingTaskDel] = useState(null);
   useEffect(() => setDetailTab('overview'), [sel]);
   const sp=projs.find(p=>p.id===sel)||null;
+  const sortedProjs=useMemo(()=>[...projs].sort((a,b)=>new Date(b.start)-new Date(a.start)),[projs]);
   const blank={name:"",custId:"",status:"active",contractValue:"",budgetLabor:"",budgetMaterials:"",actualLabor:"0",actualMaterials:"0",start:tod(),end:addD(tod(),60),phase:"Initiation (feasibility)",progress:0,notes:""};
   const PHASES=phases;
 
@@ -81,7 +82,7 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
           <button onClick={openNew} className="bb b-bl" style={{padding:"7px 11px",fontSize:11}}><I n="plus" s={11}/>New</button>
         </div>
         <div style={{flex:1,overflowY:"auto"}}>
-          {projs.map(p=>{
+          {sortedProjs.map(p=>{
             const c=custs.find(x=>x.id===p.custId);
             const is=sel===p.id;
             const sc=PRJ_SC[p.status]||PRJ_SC.active;
