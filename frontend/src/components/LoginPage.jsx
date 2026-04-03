@@ -110,7 +110,7 @@ export default function LoginPage({users, onLogin}) {
           {/* Demo quick-access */}
           <div style={{marginTop:28,borderTop:"1px solid var(--border)",paddingTop:20}}>
             <div style={{fontSize:10,fontWeight:700,color:"var(--text-faint)",textTransform:"uppercase",letterSpacing:1,marginBottom:10,textAlign:"center"}}>Quick Demo Access</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            <div className="g2" style={{gap:8}}>
               {users.filter(u=>u.status==="active").slice(0,4).map(u=>{
                 const rc = USER_ROLE_C[u.role]||"var(--accent)";
                 return (

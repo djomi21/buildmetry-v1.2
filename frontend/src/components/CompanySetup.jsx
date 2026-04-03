@@ -231,7 +231,7 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
       {stab==="roles"&&(
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{fontSize:12,color:"var(--text-muted)",lineHeight:1.6}}>Each role grants a specific set of module permissions. Users inherit all permissions from their assigned role.</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+          <div className="g2">
             {USER_ROLES.map(r=>{
               const rc=USER_ROLE_C[r]||"#4a566e";
               const perms=USER_ROLE_PERMS[r]||[];

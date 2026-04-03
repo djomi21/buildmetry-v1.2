@@ -238,7 +238,8 @@ function Milestones({ms,setMs,total}){
   const sched=ms.reduce((s,m)=>s+(parseFloat(m.amount)||0),0);
   return<div>
     {ms.length===0&&<div style={{marginBottom:12}}><div style={{...lblS,marginBottom:8}}>Quick split</div><div style={{display:"flex",gap:8}}>{[2,3,4].map(n=><button key={n} onClick={()=>split(n)} style={bGh}>{n} draws</button>)}</div></div>}
-    {ms.map((m,i)=><div key={m.id} style={{display:"grid",gridTemplateColumns:"1fr 70px 90px 110px 90px 28px",gap:6,alignItems:"end",marginBottom:6}}>
+    <div style={{overflowX:"auto"}}>
+    {ms.map((m,i)=><div key={m.id} style={{display:"grid",gridTemplateColumns:"1fr 70px 90px 110px 90px 28px",gap:6,alignItems:"end",marginBottom:6,minWidth:560}}>
       <div>{i===0&&<label style={lblS}>Milestone</label>}<input value={m.milestone} onChange={e=>upd(m.id,"milestone",e.target.value)} placeholder="e.g. Rough-in" style={{...inpS,padding:"7px 10px"}}/></div>
       <div>{i===0&&<label style={lblS}>%</label>}<input type="number" value={m.pctOfTotal} min={0} max={100} onChange={e=>upd(m.id,"pctOfTotal",e.target.value)} style={{...inpS,padding:"7px 8px"}}/></div>
       <div>{i===0&&<label style={lblS}>Amount</label>}<input type="number" value={m.amount} min={0} onChange={e=>upd(m.id,"amount",e.target.value)} style={{...inpS,padding:"7px 8px"}}/></div>
@@ -246,6 +247,7 @@ function Milestones({ms,setMs,total}){
       <div>{i===0&&<label style={lblS}>Status</label>}<select value={m.status} onChange={e=>upd(m.id,"status",e.target.value)} style={{...inpS,padding:"7px 6px"}}>{MILESTONE_STATUSES.map(s=><option key={s}>{s}</option>)}</select></div>
       <div><button onClick={()=>rm(m.id)} style={{...bGh,padding:"4px",border:"none"}}><Ic d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" s={12} c={red}/></button></div>
     </div>)}
+    </div>
     <div style={{display:"flex",alignItems:"center",gap:12,marginTop:8}}>
       <button onClick={add} style={bGh}><Ic d="M12 5v14M5 12h14" s={12}/> Add</button>
       <span style={{fontSize:11,color:sched>total+.01?red:tx2}}>{$(sched)} / {$(total)}</span>
@@ -331,7 +333,7 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
       <div style={{display:"flex",gap:8,alignItems:"flex-start"}}><Ic d="M12 9v4M12 17h.01M10.29 3.86l-8.6 14.9A2 2 0 003.4 21h17.2a2 2 0 001.71-2.97l-8.6-14.93a2 2 0 00-3.42-.04z" s={14} c={ylw}/>
         <div>{warns.map((w,i)=><div key={i} style={{fontSize:12,color:ylw,marginBottom:i<warns.length-1?3:0}}>{w}</div>)}</div></div></div>}
 
-    <Section title="Contract Details"><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+    <Section title="Contract Details"><div className="g2" style={{gap:10}}>
       <div style={{gridColumn:"1/-1"}}><label style={lblS}>Title</label><input value={f.title} onChange={e=>s("title",e.target.value)} placeholder="e.g. Smith Kitchen — Prime Contract" style={inpS}/></div>
       <div><label style={lblS}>Type</label><select value={f.contractType} onChange={e=>s("contractType",e.target.value)} style={inpS}>{CONTRACT_TYPES.map(t=><option key={t}>{t}</option>)}</select></div>
       <div><label style={lblS}>Status</label><select value={f.status} onChange={e=>s("status",e.target.value)} style={inpS}>{STATUSES.map(x=><option key={x}>{x}</option>)}</select></div>
@@ -385,7 +387,7 @@ function Form({contract,onSave,onCancel,onPrint,onDelete,isNew,saving,onSendSign
       <LineItems items={f.lineItems} setItems={v=>s("lineItems",v)}/>
     </Section>
 
-    <Section title="Pricing & Tax"><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:14}}>
+    <Section title="Pricing & Tax"><div className="g3" style={{gap:10,marginBottom:14}}>
       <div><label style={lblS}>Discount %</label><input type="number" value={f.discountPercent} min={0} max={100} step={.5} onChange={e=>s("discountPercent",Math.max(0,Math.min(100,parseFloat(e.target.value)||0)))} style={inpS}/></div>
       <div><label style={lblS}>Tax %</label><input type="number" value={(f.taxRate*100).toFixed(2)} min={0} max={30} step={.25} onChange={e=>s("taxRate",Math.max(0,Math.min(.3,(parseFloat(e.target.value)||0)/100)))} style={inpS}/></div>
       <div><label style={lblS}>Retention %</label><input type="number" value={f.retentionPercent} min={0} max={20} step={1} onChange={e=>s("retentionPercent",Math.max(0,Math.min(20,parseFloat(e.target.value)||0)))} style={inpS}/></div>
@@ -488,7 +490,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api",company,sco
     {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:ac,color:"#fff",padding:"10px 22px",borderRadius:10,fontSize:12,fontWeight:700,zIndex:999,boxShadow:"0 8px 32px rgba(59,130,246,.4)"}}>{toast}</div>}
 
     {view==="list"&&<>
-      {contracts.length>0&&<div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:14}}>
+      {contracts.length>0&&<div className="g4" style={{gap:8,marginBottom:14}}>
         {(()=>{let tv=0,tl=0,tm=0,tb=0;contracts.forEach(c=>{const t=calc(c.lineItems||[],c.discountPercent||0,c.taxRate||TAX_RATE,c.retentionPercent||0);tv+=t.tot;tl+=t.lab;tm+=t.mat;tb+=(c.milestones||[]).filter(m=>m.status==="Paid").reduce((a,m)=>a+(parseFloat(m.amount)||0),0)});
           return[<Kpi key="v" label="Total value" value={$(tv)} accent/>,<Kpi key="l" label="Labor" value={$(tl)}/>,<Kpi key="m" label="Materials" value={$(tm)}/>,<Kpi key="b" label="Billed" value={$(tb)} sub={tv>0?pct(tb/tv):"0%"}/>]})()}
       </div>}
@@ -525,7 +527,7 @@ export default function ContractsModule({projectId,apiBaseUrl="/api",company,sco
                 {c.signToken&&!c.signedAt&&c.status!=="Cancelled"&&<span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:12,background:"rgba(99,102,241,.1)",color:"#6366f1"}}>⏳ Awaiting</span>}
               </div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+            <div className="g4" style={{gap:8}}>
               <Kpi label="Total" value={$(t.tot)}/><Kpi label="Labor" value={$(t.lab)}/><Kpi label="Materials" value={$(t.mat)}/><Kpi label="Billed" value={pct(t.tot>0?pd/t.tot:0)} sub={$(pd)}/>
             </div>
           </div>})}

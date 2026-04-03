@@ -162,6 +162,14 @@ export default function App() {
   // ── Sidebar state ──────────────────────────────────────────
   const [sOpen, setSOpen] = useState(true);
   const [mobileNav, setMobileNav] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= 768
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   // ── Overdue alerts ─────────────────────────────────────────
   const overdue = appData.invs.filter(i => i.status === "overdue");
@@ -205,7 +213,7 @@ export default function App() {
       <aside style={{
         width: mobileNav ? 260 : (sOpen ? 234 : 56),
         background:"var(--bg-sidebar)",borderRight:"1px solid var(--border)",display:"flex",flexDirection:"column",flexShrink:0,transition:"all .26s ease",overflow:"hidden",zIndex:mobileNav?100:10,
-        ...(typeof window!=="undefined" && window.innerWidth<=768 ? {position:"fixed",top:0,bottom:0,left:mobileNav?0:-270,boxShadow:mobileNav?"8px 0 40px rgba(0,0,0,.6)":"none"} : {})
+        ...(isMobile ? {position:"fixed",top:0,bottom:0,left:mobileNav?0:-270,boxShadow:mobileNav?"8px 0 40px rgba(0,0,0,.6)":"none"} : {})
       }}>
         <div style={{padding:"18px 12px 16px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
           {appData.company.logo
