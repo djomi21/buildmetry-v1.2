@@ -50,7 +50,9 @@ router.post('/', authenticate, async (req, res) => {
 
 router.put('/:id', authenticate, async (req, res) => {
   try {
-    const { id, createdAt, updatedAt, companyId, company, customer, project, estimate, _id, ...clean } = req.body;
+    const { id, createdAt, updatedAt, companyId, company, customer, project, estimate, _id,
+            signToken, signTokenExpiry, signedAt, signedByName, signedByIp, signatureImage,
+            ...clean } = req.body;
     const item = await prisma.estimate.update({ where: { id: req.params.id }, data: clean });
     res.json(item);
   } catch (err) { res.status(500).json({ error: err.message }); }
