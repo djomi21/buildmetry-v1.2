@@ -22,6 +22,7 @@ export default function Customers({custs,setCusts,invs,ests,projs,showToast,db})
   const cEsts=sc?ests.filter(e=>e.custId===sc.id):[];
   const cProj=sc?projs.filter(p=>p.custId===sc.id):[];
   const billed=cInvs.reduce((s,i)=>s+calcInv(i.lineItems,i.taxRate,i.discount||0).total,0);
+  const revenue=cInvs.filter(i=>i.status==="paid").reduce((s,i)=>s+calcInv(i.lineItems,i.taxRate,i.discount||0).total,0);
 
   const blank={name:"",phone:"",email:"",address:"",propertyType:"Single Family",leadSource:"Referral",notes:"",tags:[]};
   const openNew=()=>setForm({...blank,_id:null});
@@ -107,7 +108,7 @@ export default function Customers({custs,setCusts,invs,ests,projs,showToast,db})
               ))}
             </div>
             <div style={{display:"flex",gap:8,marginTop:11,flexWrap:"wrap"}}>
-              {[{l:"Revenue",v:fmt(sc.totalRevenue),c:"#3b82f6"},{l:"Billed",v:fmt(billed),c:"#22c55e"},{l:"Projects",v:cProj.length,c:"#f5a623"},{l:"Estimates",v:cEsts.length,c:"#a78bfa"},{l:"Invoices",v:cInvs.length,c:"#14b8a6"},{l:"Since",v:sc.createdAt,c:"var(--text-dim)"}].map(k=>(
+              {[{l:"Revenue",v:fmt(revenue),c:"#3b82f6"},{l:"Billed",v:fmt(billed),c:"#22c55e"},{l:"Projects",v:cProj.length,c:"#f5a623"},{l:"Estimates",v:cEsts.length,c:"#a78bfa"},{l:"Invoices",v:cInvs.length,c:"#14b8a6"},{l:"Since",v:sc.createdAt,c:"var(--text-dim)"}].map(k=>(
                 <div key={k.l} style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:8,padding:"6px 11px"}}>
                   <div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase",letterSpacing:.5}}>{k.l}</div>
                   <div className="mn" style={{fontSize:12,color:k.c,marginTop:2}}>{k.v}</div>
