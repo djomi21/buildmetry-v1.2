@@ -212,11 +212,11 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
                       <td style={{padding:"8px 14px"}}><Chip s={u.status} map={USR_SC}/></td>
                       <td className="mn" style={{padding:"8px 14px",color:"var(--text-dim)",fontSize:10}}>{u.lastLogin||"Never"}</td>
                       <td style={{padding:"8px 14px"}}>
-                        <div style={{display:"flex",gap:4}}>
+                        {canManageUsers&&<div style={{display:"flex",gap:4}}>
                           <button onClick={()=>openEditUser(u)} title="Edit" style={{padding:5,color:"var(--text-dim)",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color="#63b3ed";}} onMouseLeave={e=>{e.currentTarget.style.color="var(--text-dim)";}}><I n="edit" s={13}/></button>
                           <button onClick={()=>toggleStatus(u.id)} title={u.status==="active"?"Disable":"Enable"} style={{padding:5,color:"var(--text-dim)",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color=u.status==="active"?"#ef4444":"#22c55e";}} onMouseLeave={e=>{e.currentTarget.style.color="var(--text-dim)";}}>{u.status==="active"?<I n="x" s={13}/>:<I n="check" s={13}/>}</button>
                           <button onClick={()=>delUser(u.id)} title="Remove" style={{padding:5,color:"var(--text-dim)",borderRadius:6,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.color="#ef4444";}} onMouseLeave={e=>{e.currentTarget.style.color="var(--text-dim)";}}><I n="trash" s={13}/></button>
-                        </div>
+                        </div>}
                       </td>
                     </tr>
                   );

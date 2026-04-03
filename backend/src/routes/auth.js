@@ -23,7 +23,9 @@ router.post('/login', async (req, res) => {
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
 
-    await prisma.user.update({ where: { id: user.id }, data: { lastLogin: new Date() } });
+    var loginUpdate = { lastLogin: new Date() };
+    if (user.status === 'invited') loginUpdate.status = 'active';
+    await prisma.user.update({ where: { id: user.id }, data: loginUpdate });
 
     const token = jwt.sign({ userId: user.id, companyId: user.companyId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
     const { passwordHash: _, ...safeUser } = user;
