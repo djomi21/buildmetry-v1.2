@@ -184,7 +184,8 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
 
           {/* Users table */}
           <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:520}}>
               <thead>
                 <tr style={{background:"var(--bg-sidebar)"}}>
                   {["User","Email","Phone","Role","Status","Last Login","Actions"].map(h=>
@@ -223,6 +224,7 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

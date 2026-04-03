@@ -247,7 +247,8 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
                       <div style={{fontWeight:700,fontSize:11,color}}><I n={title==="Labor"||title==="CO Labor"?"wrench":"materials"} s={12}/> {title}</div>
                       <span className="mn" style={{fontSize:11,color}}>{fmt(items.reduce((s,l)=>s+l.qty*l.unitPrice,0))}</span>
                     </div>
-                    <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+                    <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:360}}>
                       <thead><tr style={{background:"var(--bg-sidebar)"}}>{["#","Description",qtyLabel,"Rate","Total"].map(h=><th key={h} style={{padding:"6px 12px",textAlign:"left",fontSize:8,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                       <tbody>
                         {items.map((li,i)=>(
@@ -261,6 +262,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
                         ))}
                       </tbody>
                     </table>
+                    </div>
                   </div>
                 );
                 return <>
@@ -518,7 +520,8 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
                         <span style={{fontWeight:700,fontSize:10,color:color,display:"flex",alignItems:"center",gap:5}}><I n={icon} s={11}/>{title}</span>
                         <span className="mn" style={{fontSize:10,color:color}}>{fmt(items.reduce(function(s,l){return s+l.qty*l.unitPrice;},0))}</span>
                       </div>
-                      <table style={{width:"100%",borderCollapse:"collapse"}}>
+                      <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+                      <table style={{width:"100%",borderCollapse:"collapse",minWidth:380}}>
                         <thead><tr style={{background:"var(--bg-card)"}}>{["Description",qtyLabel,"Rate","Total","Type",""].map(function(h){return <th key={h} style={{padding:"5px 7px",textAlign:"left",fontSize:8,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",borderBottom:"1px solid var(--border-2)"}}>{h}</th>;})}</tr></thead>
                         <tbody>
                           {items.map(function(li,i){return (
@@ -533,6 +536,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
                           );})}
                         </tbody>
                       </table>
+                      </div>
                     </div>;
                   };
                   return <>{renderSec("Labor",labLines,"#f5a623","Hrs","wrench")}{renderSec("Materials",matLines,"#6c8ebf","Qty","materials")}</>;
