@@ -141,7 +141,7 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
             ))}
           </div>
           {detailTab==='overview'&&<div style={{flex:1,overflowY:"auto",padding:"16px 20px"}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13,marginBottom:14}}>
+            <div className="g2" style={{gap:13,marginBottom:14}}>
               {[{l:"Labor Budget vs Actual",budget:sp.budgetLabor,actual:sp.actualLabor,c:"#f5a623"},{l:"Materials Budget vs Actual",budget:sp.budgetMaterials,actual:sp.actualMaterials,c:"#6c8ebf"}].map(item=>{
                 const over=item.actual>item.budget;
                 const usePct=item.budget>0?Math.min((item.actual/item.budget)*100,100):0;

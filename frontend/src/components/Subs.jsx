@@ -132,7 +132,8 @@ export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,a
             <div className="stl">Hour Log ({eHrs.length} entries)</div>
             {eHrs.length===0?<ES icon="clock" text="No hours logged yet."/>:(
               <div style={{border:"1px solid var(--border)",borderRadius:11,overflow:"hidden"}}>
-                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:600}}>
                   <thead><tr style={{background:"var(--bg-sidebar)"}}>{[...["Date","Project","Hours","Description","Billed","True Cost","Approved"],...(canApprove?["Actions"]:[])].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                   <tbody>
                     {eHrs.sort((a,b)=>b.date.localeCompare(a.date)).map((h,i)=>{
@@ -159,6 +160,7 @@ export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,a
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </div>

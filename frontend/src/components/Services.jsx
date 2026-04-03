@@ -60,7 +60,8 @@ export default function Services({svcs,db,showToast}) {
       </div>
 
       <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:420}}>
           <thead>
             <tr style={{background:"var(--bg-sidebar)"}}>
               {["Name","Category","Type / Package","Rate",""].map(h=>(
@@ -101,6 +102,7 @@ export default function Services({svcs,db,showToast}) {
             })}
           </tbody>
         </table>
+        </div>
         {filt.length===0&&<ES icon="services" text="No services match your filters."/>}
       </div>
 

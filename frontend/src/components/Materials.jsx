@@ -63,7 +63,8 @@ export default function Materials({mats,setMats,showToast,db}) {
       </div>
 
       <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:820}}>
           <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Name","Category","Supplier","Unit","Cost","Markup","Sell Price","Stock","Reorder At","Status",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((m,i)=>{
@@ -90,6 +91,7 @@ export default function Materials({mats,setMats,showToast,db}) {
             })}
           </tbody>
         </table>
+        </div>
         {filt.length===0&&<ES icon="materials" text="No materials match your filters."/>}
       </div>
 

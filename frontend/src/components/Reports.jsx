@@ -108,7 +108,8 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
           </div>
           <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
             <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>P&L Statement — YTD {curYear}</div>
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:580}}>
               <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Month","Revenue","Labor","Materials","Other","Gross Profit","Margin"].map(h=><th key={h} style={{padding:"7px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {ytdMonths.map((m,i)=>{
@@ -135,6 +136,7 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
                 </tr>
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -157,7 +159,8 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
           </div>
           <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
             <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Job-by-Job P&L</div>
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:700}}>
               <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Project","Customer","Contract","Actual Labor","Actual Mat","Total Actual","Gross Profit","Margin","Status"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {projs.map((p,i)=>{
@@ -179,6 +182,7 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -192,7 +196,8 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
           </div>
           <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
             <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Invoice Aging Detail</div>
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:580}}>
               <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Invoice","Customer","Issued","Due","Days Past Due","Amount","Status"].map(h=><th key={h} style={{padding:"7px 13px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {arData.map((inv,i)=>{
@@ -212,6 +217,7 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}
@@ -228,7 +234,8 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
           </div>
           <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
             <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Crew Labor Report</div>
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+            <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:820}}>
               <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Crew Member","Role","Wage/hr","Bill/hr","True Cost/hr","Hours","Billed","True Cost","Net Profit","Margin"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
               <tbody>
                 {subData.map((e,i)=>(
@@ -255,6 +262,7 @@ export default function Reports({invs,projs,custs,subs,hrs,roles,expenses,compan
                 </tr>
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

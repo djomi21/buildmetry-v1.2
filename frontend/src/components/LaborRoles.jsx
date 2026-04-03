@@ -51,7 +51,8 @@ export default function LaborRoles({roles,setRoles,showToast,db,filterFn,heading
       </div>
 
       <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:580}}>
           <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Role Title","Base Rate","Payroll %","Benefits %","Total Burden %","Fully Burdened Rate",""].map(h=><th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((r,i)=>{
@@ -79,6 +80,7 @@ export default function LaborRoles({roles,setRoles,showToast,db,filterFn,heading
             })}
           </tbody>
         </table>
+        </div>
         {filt.length===0&&<ES icon="wrench" text="No roles match your search."/>}
       </div>
 

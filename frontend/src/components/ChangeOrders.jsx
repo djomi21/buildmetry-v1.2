@@ -55,7 +55,8 @@ export default function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setIn
         <button onClick={openNew} className="bb b-bl" style={{padding:"8px 14px",fontSize:12}}><I n="plus" s={13}/>New CO</button>
       </div>
       <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:720}}>
           <thead><tr style={{background:"var(--bg-sidebar)"}}>{["CO #","Project","Customer","Description","Reason","Labor","Material","Total","Status",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((co,i)=>{
@@ -82,6 +83,7 @@ export default function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setIn
             })}
           </tbody>
         </table>
+        </div>
         {filt.length===0&&<ES icon="changeorder" text="No change orders found."/>}
       </div>
       {pendingDel!==null&&<ConfirmDeleteModal label="this change order" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}

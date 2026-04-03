@@ -57,7 +57,8 @@ export default function Expenses({expenses,setExpenses,projs,showToast,db}) {
         <button onClick={openNew} className="bb b-bl" style={{padding:"8px 14px",fontSize:12,marginLeft:"auto"}}><I n="plus" s={13}/>Add Expense</button>
       </div>
       <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:700}}>
           <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Date","Project","Category","Vendor","Description","Amount","Receipt","Reimb.",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
           <tbody>
             {filt.map((ex,i)=>{
@@ -81,6 +82,7 @@ export default function Expenses({expenses,setExpenses,projs,showToast,db}) {
             })}
           </tbody>
         </table>
+        </div>
         {filt.length===0&&<ES icon="expense" text="No expenses match your filters."/>}
       </div>
       {pendingDel!==null&&<ConfirmDeleteModal label="this expense" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}

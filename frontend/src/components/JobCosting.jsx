@@ -55,7 +55,8 @@ export default function JobCosting({projs,custs,hrs,subs,roles}) {
           <div style={{background:"var(--bg-card)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}}>
             <div style={{padding:"11px 16px",borderBottom:"1px solid var(--border)",fontWeight:800,fontSize:12}}>Labor Detail — {sp.name.split(" ").slice(0,3).join(" ")}</div>
             {pSubHrs.length===0?<ES icon="employees" text="No hours logged for this project."/>:<>
-              <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+              <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:480}}>
                 <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Crew Member","Role","Hours","Billed","True Cost","Margin"].map(h=><th key={h} style={{padding:"7px 13px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.3,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
                 <tbody>
                   {pSubHrs.map((h,i)=>{
@@ -71,6 +72,7 @@ export default function JobCosting({projs,custs,hrs,subs,roles}) {
                   })}
                 </tbody>
               </table>
+              </div>
               <div style={{padding:"9px 16px",background:"var(--bg-sidebar)",borderTop:"2px solid var(--border-2)",display:"flex",gap:18}}>
                 {[{l:"Total Hrs",v:`${totHrs}h`,c:"#63b3ed"},{l:"Total Billed",v:fmt(totBilled),c:"#22c55e"},{l:"True Labor Cost",v:fmt(totCost),c:"#ef4444"},{l:"Labor Margin",v:`${laborMargin}%`,c:laborMargin>=30?"#22c55e":"#f5a623"}].map(k=>(
                   <div key={k.l}><div style={{fontSize:8,color:"var(--text-faint)",fontWeight:700,textTransform:"uppercase"}}>{k.l}</div><div className="mn" style={{fontSize:12,color:k.c,marginTop:2}}>{k.v}</div></div>

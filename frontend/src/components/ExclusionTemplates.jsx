@@ -45,7 +45,8 @@ export default function ExclusionTemplates({ templates, showToast, db }) {
       </div>
 
       <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, minWidth: 360 }}>
           <thead>
             <tr style={{ background: "var(--bg-sidebar)" }}>
               {["Template Name", "Content Preview", ""].map(h =>
@@ -72,6 +73,7 @@ export default function ExclusionTemplates({ templates, showToast, db }) {
             ))}
           </tbody>
         </table>
+        </div>
         {filt.length === 0 && <ES icon="estimates" text={templates.length === 0 ? "No exclusion templates yet. Click 'Add Template' to create your first one." : "No templates match your search."}/>}
       </div>
 

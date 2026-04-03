@@ -100,7 +100,8 @@ export default function Dashboard({custs,ests,projs,invs,expenses,setTab}) {
           <div style={{fontWeight:800,fontSize:13}}>Active Projects</div>
           <button onClick={()=>setTab("projects")} className="bb b-gh" style={{padding:"4px 11px",fontSize:11}}>View All <I n="arrow" s={11}/></button>
         </div>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:620}}>
           <thead><tr style={{background:"var(--bg-sidebar)"}}>{["Project","Customer","Contract","Budget Labor","Budget Mat","Progress","Status"].map(h=><th key={h} style={{padding:"7px 14px",textAlign:"left",fontSize:9,fontWeight:700,color:"var(--text-dim)",textTransform:"uppercase",letterSpacing:.4,borderBottom:"1px solid var(--border)"}}>{h}</th>)}</tr></thead>
           <tbody>
             {actv.map((p,i)=>{
@@ -123,6 +124,7 @@ export default function Dashboard({custs,ests,projs,invs,expenses,setTab}) {
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
