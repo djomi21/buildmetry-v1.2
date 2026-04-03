@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const { PrismaClient } = require('@prisma/client');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, requireRole } = require('../middleware/auth');
 const prisma = new PrismaClient();
 const router = express.Router();
 
@@ -53,7 +53,7 @@ router.get('/:id', authenticate, async (req, res) => {
 });
 
 // POST /api/users — create new user with default password
-router.post('/', authenticate, async (req, res) => {
+router.post('/', authenticate, requireRole('Owner','Admin'), async (req, res) => {
   try {
     var data = pickFields(req.body, USER_FIELDS);
 
@@ -129,6 +129,10 @@ router.put('/:id', authenticate, async (req, res) => {
   try {
     var data = pickFields(req.body, USER_FIELDS);
     if (data.email) data.email = data.email.toLowerCase();
+    // Only Owner/Admin can change a user's role
+    if (data.role && !['Owner','Admin'].includes(req.user.role)) {
+      delete data.role;
+    }
 
     var item = await prisma.user.update({
       where: { id: Number(req.params.id) },

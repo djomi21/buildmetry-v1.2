@@ -8,7 +8,7 @@ import LaborRoles from './LaborRoles';
 import ScopeTemplates from './ScopeTemplates';
 import ExclusionTemplates from './ExclusionTemplates';
 
-export default function CompanySetup({company,setCompany,users,setUsers,showToast,db,roles,setRoles,phases,setPhases,scopeTemplates,setScopeTemplates,exclusionTemplates,setExclusionTemplates}) {
+export default function CompanySetup({company,setCompany,users,setUsers,showToast,db,auth,roles,setRoles,phases,setPhases,scopeTemplates,setScopeTemplates,exclusionTemplates,setExclusionTemplates}) {
   const [stab, setStab] = useState("users");
   const [dirty, setDirty] = useState(false);
   // Always initialize form from latest company data
@@ -94,6 +94,7 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
     return c;
   },[users]);
 
+  const canManageUsers = auth && ["Owner","Admin"].includes(auth.role);
   const blankUser={name:"",email:"",phone:"",role:"Field Tech",status:"invited"};
   const openNewUser=()=>setUForm({...blankUser,_id:null});
   const openEditUser=u=>setUForm({...u,_id:u.id});
@@ -178,7 +179,7 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
               </div>
               {roleF!=="All"&&<button onClick={()=>setRoleF("All")} className="bb b-gh" style={{padding:"5px 10px",fontSize:10}}>Clear filter <I n="x" s={10}/></button>}
             </div>
-            <button onClick={openNewUser} className="bb b-bl" style={{padding:"8px 16px",fontSize:12}}><I n="user-plus" s={14}/>Add User</button>
+            {canManageUsers&&<button onClick={openNewUser} className="bb b-bl" style={{padding:"8px 16px",fontSize:12}}><I n="user-plus" s={14}/>Add User</button>}
           </div>
 
           {/* Users table */}
@@ -574,9 +575,12 @@ export default function CompanySetup({company,setCompany,users,setUsers,showToas
                 <div><label className="lbl">Phone</label><input className="inp" placeholder="(555) 000-0000" value={uForm.phone} onChange={e=>setUForm({...uForm,phone:e.target.value})}/></div>
                 <div>
                   <label className="lbl">Role</label>
-                  <select className="inp" value={uForm.role} onChange={e=>setUForm({...uForm,role:e.target.value})}>
-                    {USER_ROLES.map(r=><option key={r} value={r}>{r}</option>)}
-                  </select>
+                  {canManageUsers
+                    ?<select className="inp" value={uForm.role} onChange={e=>setUForm({...uForm,role:e.target.value})}>
+                      {USER_ROLES.map(r=><option key={r} value={r}>{r}</option>)}
+                    </select>
+                    :<input className="inp" value={uForm.role} readOnly style={{opacity:.6,cursor:"not-allowed"}}/>
+                  }
                 </div>
               </div>
               {uForm._id&&(
