@@ -1,0 +1,8 @@
+{
+  "name": "buildmetry-docs",
+  "version": "1.0.0",
+  "description": "BuildMetry User Manual Generator",
+  "dependencies": {
+    "docx": "^8.5.0"
+  }
+}
