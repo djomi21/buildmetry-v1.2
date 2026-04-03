@@ -72,3 +72,23 @@ export const ToggleSwitch = ({defaultOn=false, on: controlledOn, onChange}) => {
 // ── SMALL HELPERS (not components, but UI utilities) ───────────
 export const ini = n => n?.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()||"??";
 export const avC = id => ["#3b82f6","#a78bfa","#22c55e","#f5a623","#fb923c","#6366f1","#14b8a6"][id%7];
+
+// ── CONFIRM DELETE MODAL ───────────────────────────────────────
+export function ConfirmDeleteModal({ label = "this item", onConfirm, onCancel }) {
+  return (
+    <div className="ov" onClick={onCancel}>
+      <div className="mo" style={{maxWidth:380}} onClick={e=>e.stopPropagation()}>
+        <div style={{borderBottom:"1px solid var(--border)",padding:"14px 18px",fontWeight:600,fontSize:15}}>
+          Confirm Delete
+        </div>
+        <div style={{padding:"20px 18px",color:"var(--text-dim)",fontSize:14}}>
+          Delete {label}? This cannot be undone.
+        </div>
+        <div style={{display:"flex",justifyContent:"flex-end",gap:10,padding:"0 18px 16px"}}>
+          <button className="btn" onClick={onCancel}>Cancel</button>
+          <button className="btn" style={{background:"#ef4444",color:"#fff",borderColor:"#ef4444"}} onClick={onConfirm}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}

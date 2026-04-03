@@ -2,11 +2,12 @@ import { useState, useMemo } from 'react';
 import { ROLE_C } from '../constants';
 import { calcBurden, uid } from '../utils/calculations';
 import { I } from './shared/Icons';
-import { KpiCard, ES } from './shared/ui';
+import { KpiCard, ES, ConfirmDeleteModal } from './shared/ui';
 
 export default function LaborRoles({roles,setRoles,showToast,db,filterFn,heading}) {
   const [form,setForm]=useState(null);
   const [srch,setSrch]=useState("");
+  const [pendingDel,setPendingDel]=useState(null);
 
   const baseRoles=useMemo(()=>filterFn?roles.filter(filterFn):roles,[roles,filterFn]);
   const filt=useMemo(()=>baseRoles.filter(r=>!srch||r.title.toLowerCase().includes(srch.toLowerCase())),[baseRoles,srch]);
@@ -27,7 +28,7 @@ export default function LaborRoles({roles,setRoles,showToast,db,filterFn,heading
     }
     setForm(null);
   };
-  const del=id=>{db.roles.remove(id);showToast("Removed");};
+  const del=id=>{db.roles.remove(id);showToast("Removed");setPendingDel(null);};
 
   const avgBurden=baseRoles.length>0?Math.round(baseRoles.reduce((s,r)=>s+(r.payrollPct+r.benefitsPct),0)/baseRoles.length*10)/10:0;
   const avgBase=baseRoles.length>0?Math.round(baseRoles.reduce((s,r)=>s+r.baseRate,0)/baseRoles.length*100)/100:0;
@@ -71,7 +72,7 @@ export default function LaborRoles({roles,setRoles,showToast,db,filterFn,heading
                 <td style={{padding:"9px 14px"}}>
                   <div style={{display:"flex",gap:5}}>
                     <button onClick={()=>openEdit(r)} style={{color:"var(--text-dim)",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
-                    <button onClick={()=>del(r.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
+                    <button onClick={()=>setPendingDel(r.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
               </tr>;
@@ -88,6 +89,8 @@ export default function LaborRoles({roles,setRoles,showToast,db,filterFn,heading
           <span style={{fontWeight:700,color:"#ef4444"}}>Total Burden %</span> = Payroll % + Benefits % · <span style={{fontWeight:700,color:"#22c55e"}}>Fully Burdened Rate</span> = Base Rate × (1 + Total Burden %)
         </div>
       </div>
+
+      {pendingDel!==null&&<ConfirmDeleteModal label="this labor role" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
 
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>

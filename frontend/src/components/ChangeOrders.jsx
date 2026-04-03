@@ -2,11 +2,12 @@ import { useState, useMemo } from 'react';
 import { CO_SC } from '../constants';
 import { fmt, tod, nxtNum } from '../utils/calculations';
 import { I } from './shared/Icons';
-import { KpiCard, Chip, ES } from './shared/ui';
+import { KpiCard, Chip, ES, ConfirmDeleteModal } from './shared/ui';
 
 export default function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setInvs,showToast,setTab,db}) {
   const [form,setForm]=useState(null);
   const [stF,setStF]=useState("all");
+  const [pendingDel,setPendingDel]=useState(null);
 
   const filt=useMemo(()=>cos.filter(c=>stF==="all"||c.status===stF),[cos,stF]);
   const totApproved=cos.filter(c=>c.status==="approved").reduce((s,c)=>s+c.totalAmt,0);
@@ -36,7 +37,7 @@ export default function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setIn
     showToast("Approved — project budget updated");
   };
   const decline=id=>{db.cos.update(id,{status:"declined"});showToast("Declined");};
-  const del=id=>{db.cos.remove(id);showToast("Removed");};
+  const del=id=>{db.cos.remove(id);showToast("Removed");setPendingDel(null);};
 
   const cnts={all:cos.length,pending:cos.filter(c=>c.status==="pending").length,approved:cos.filter(c=>c.status==="approved").length,declined:cos.filter(c=>c.status==="declined").length};
 
@@ -74,7 +75,7 @@ export default function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setIn
                     {co.status==="pending"&&<button onClick={()=>approve(co)} style={{color:"#22c55e",opacity:.8}} className="rh"><I n="check" s={13}/></button>}
                     {co.status==="pending"&&<button onClick={()=>decline(co.id)} style={{color:"#ef4444",opacity:.6}} className="rh"><I n="x" s={13}/></button>}
                     <button onClick={()=>openEdit(co)} style={{color:"var(--text-dim)",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
-                    <button onClick={()=>del(co.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
+                    <button onClick={()=>setPendingDel(co.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
               </tr>;
@@ -83,6 +84,8 @@ export default function ChangeOrders({cos,setCos,projs,setProjs,custs,invs,setIn
         </table>
         {filt.length===0&&<ES icon="changeorder" text="No change orders found."/>}
       </div>
+      {pendingDel!==null&&<ConfirmDeleteModal label="this change order" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
+
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:560,marginTop:50}}>

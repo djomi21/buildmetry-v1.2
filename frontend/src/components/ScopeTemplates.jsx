@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
 import { uid } from '../utils/calculations';
 import { I } from './shared/Icons';
-import { KpiCard, ES } from './shared/ui';
+import { KpiCard, ES, ConfirmDeleteModal } from './shared/ui';
 
 export default function ScopeTemplates({ templates, showToast, db }) {
   const [form, setForm] = useState(null);
   const [srch, setSrch] = useState("");
+  const [pendingDel, setPendingDel] = useState(null);
 
   const filt = useMemo(() =>
     templates.filter(t => !srch || t.name.toLowerCase().includes(srch.toLowerCase()) || t.content.toLowerCase().includes(srch.toLowerCase())),
@@ -27,7 +28,7 @@ export default function ScopeTemplates({ templates, showToast, db }) {
     }
     setForm(null);
   };
-  const del = id => { db.remove(id); showToast("Removed"); };
+  const del = id => { db.remove(id); showToast("Removed"); setPendingDel(null); };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -64,7 +65,7 @@ export default function ScopeTemplates({ templates, showToast, db }) {
                 <td style={{ padding: "9px 14px" }}>
                   <div style={{ display: "flex", gap: 5 }}>
                     <button onClick={() => openEdit(t)} style={{ color: "var(--text-dim)", opacity: .7 }} className="rh"><I n="edit" s={13}/></button>
-                    <button onClick={() => del(t.id)} style={{ color: "#ef4444", opacity: .5 }} className="rh"><I n="trash" s={13}/></button>
+                    <button onClick={() => setPendingDel(t.id)} style={{ color: "#ef4444", opacity: .5 }} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
               </tr>
@@ -73,6 +74,8 @@ export default function ScopeTemplates({ templates, showToast, db }) {
         </table>
         {filt.length === 0 && <ES icon="estimates" text={templates.length === 0 ? "No scope templates yet. Click 'Add Template' to create your first one." : "No templates match your search."}/>}
       </div>
+
+      {pendingDel !== null && <ConfirmDeleteModal label="this template" onConfirm={() => del(pendingDel)} onCancel={() => setPendingDel(null)}/>}
 
       {form && (
         <div className="ov" onClick={e => e.target === e.currentTarget && setForm(null)}>

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { PRJ_SC, CO_SC, INV_SC } from '../constants';
 import { fmt, fmtD, pct, tod, addD, uid, nxtNum, calcInv } from '../utils/calculations';
-import { Chip, ES, KpiCard, Pr } from './shared/ui';
+import { Chip, ES, KpiCard, Pr, ConfirmDeleteModal } from './shared/ui';
 import I from './shared/Icons';
 import ContractsModule from './ContractsModule';
 
@@ -10,6 +10,8 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
   const [form, setForm] = useState(null);
   const [detailTab, setDetailTab] = useState('overview');
   const [taskForm, setTaskForm] = useState(null);
+  const [pendingDel, setPendingDel] = useState(null);
+  const [pendingTaskDel, setPendingTaskDel] = useState(null);
   useEffect(() => setDetailTab('overview'), [sel]);
   const sp=projs.find(p=>p.id===sel)||null;
   const blank={name:"",custId:"",status:"active",contractValue:"",budgetLabor:"",budgetMaterials:"",actualLabor:"0",actualMaterials:"0",start:tod(),end:addD(tod(),60),phase:"Initiation (feasibility)",progress:0,notes:""};
@@ -26,13 +28,15 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
     setForm(null);
   };
 
+  const execDelTask=(tid)=>{db.tasks.remove(tid);showToast("Task removed");setPendingTaskDel(null);};
+
   const canDelete=auth&&["Owner","Admin","Project Manager"].includes(auth.role);
   const del=(id)=>{
     if(!canDelete)return;
-    if(!confirm("Delete this project? This cannot be undone."))return;
     db.projs.remove(id);
     if(sel===id)setSel(projs.find(p=>p.id!==id)?.id||null);
     showToast("Project deleted");
+    setPendingDel(null);
   };
 
   const markComplete=(proj)=>{
@@ -113,7 +117,7 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
                 {sp.status==="active"&&<button onClick={()=>markComplete(sp)} className="bb b-gr" style={{padding:"6px 11px",fontSize:11}}><I n="check" s={11}/>Mark Complete</button>}
                 <button onClick={()=>openEdit(sp)} className="bb b-gh" style={{padding:"6px 11px",fontSize:11}}><I n="edit" s={11}/>Edit</button>
                 <button onClick={()=>setTab("costing")} className="bb b-am" style={{padding:"6px 11px",fontSize:11}}><I n="costing" s={11}/>Costs</button>
-                {canDelete&&<button onClick={()=>del(sp.id)} className="bb b-rd" style={{padding:"6px 10px",fontSize:11}}><I n="trash" s={11}/></button>}
+                {canDelete&&<button onClick={()=>setPendingDel(sp.id)} className="bb b-rd" style={{padding:"6px 10px",fontSize:11}}><I n="trash" s={11}/></button>}
               </div>
             </div>
             <div style={{marginBottom:11}}>
@@ -180,7 +184,7 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
                 var next=t.status==="todo"?"in_progress":t.status==="in_progress"?"done":"todo";
                 db.tasks.update(tid,{status:next});
               };
-              const delTask=(tid)=>{db.tasks.remove(tid);showToast("Task removed");};
+              const delTask=(tid)=>{execDelTask(tid);};
 
               const donePct=projTasks.length>0?Math.round(projTasks.filter(t=>t.status==="done").length/projTasks.length*100):0;
 
@@ -219,7 +223,7 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
                         </div>
                         <div style={{display:"flex",gap:3,flexShrink:0}}>
                           <button onClick={function(){setTaskForm({...t});}} style={{padding:3,color:"var(--text-faint)"}}><I n="edit" s={12}/></button>
-                          <button onClick={function(){delTask(t.id);}} style={{padding:3,color:"var(--text-faint)"}}><I n="x" s={12}/></button>
+                          <button onClick={function(){setPendingTaskDel(t.id);}} style={{padding:3,color:"var(--text-faint)"}}><I n="x" s={12}/></button>
                         </div>
                       </div>;
                     })}
@@ -264,6 +268,9 @@ export default function Projects({projs,setProjs,custs,ests,cos,invs,tasks,setTa
           <button onClick={openNew} className="bb b-bl" style={{padding:"8px 16px",fontSize:12,marginTop:4}}><I n="plus" s={13}/>New Project</button>
         </div>
       )}
+
+      {pendingDel!==null&&<ConfirmDeleteModal label="this project" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
+      {pendingTaskDel!==null&&<ConfirmDeleteModal label="this task" onConfirm={()=>execDelTask(pendingTaskDel)} onCancel={()=>setPendingTaskDel(null)}/>}
 
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TAX, EST_SC, INV_SC, MGMT_ROLES, ROLE_C, CAT_C, SVC_CAT_C } from '../constants';
 import { calcInv, calcBurden, fmt, fmtD, uid, tod, addD, nxtNum, printDoc } from '../utils/calculations';
-import { Chip, ES, CTip, KpiCard } from './shared/ui';
+import { Chip, ES, CTip, KpiCard, ConfirmDeleteModal } from './shared/ui';
 import I from './shared/Icons';
 import api from '../api';
 import EmailSendModal from './modals/EmailSendModal';
@@ -16,6 +16,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
   const [picker, setPicker] = useState(null); // {type:"material"|"labor", search:""}
   const [emailMd, setEmailMd] = useState(false);
   const [sigMd, setSigMd] = useState(false);
+  const [pendingDel,setPendingDel]=useState(null);
 
   const blankLine=()=>({id:uid(),description:"",qty:1,unitPrice:0,isMaterial:false,sourceType:"custom",sourceId:null});
   const blank={custId:"",name:"",date:tod(),expiry:addD(tod(),30),taxRate:TAX,discount:0,depositType:"none",depositValue:0,notes:"",status:"draft",lineItems:[]};
@@ -95,7 +96,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
     db.ests.update(id,{status:st});
     showToast("Marked "+st);
   };
-  const del=id=>{db.ests.remove(id);if(sel===id)setSel(null);showToast("Deleted");};
+  const del=id=>{db.ests.remove(id);if(sel===id)setSel(null);showToast("Deleted");setPendingDel(null);};
 
   const exportEst=(e,autoPrint=false)=>{
     const c=custs.find(x=>x.id===e.custId);const calc=calcInv(e.lineItems,e.taxRate,e.discount||0,e.depositType||"none",Number(e.depositValue)||0);
@@ -197,7 +198,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
                 <button onClick={()=>setEmailMd(true)} className="bb b-bl" style={{padding:"5px 10px",fontSize:11}}><I n="mail" s={11}/>Email</button>
                 {se.status!=="approved"&&se.status!=="declined"&&<button onClick={()=>setSigMd(true)} className="bb b-bl" style={{padding:"5px 10px",fontSize:11,background:"#6366f1",borderColor:"#6366f1"}}><I n="send" s={11}/>Sign Link</button>}
                 <button onClick={()=>exportEst(se,true)} className="bb b-gh" style={{padding:"5px 9px",fontSize:11}}>⎙ Print</button>
-                <button onClick={()=>del(se.id)} className="bb b-rd" style={{padding:"5px 8px",fontSize:11}}><I n="trash" s={11}/></button>
+                <button onClick={()=>setPendingDel(se.id)} className="bb b-rd" style={{padding:"5px 8px",fontSize:11}}><I n="trash" s={11}/></button>
               </div>
             </div>
             <div className="est-kpi-row" style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -489,6 +490,7 @@ export default function Estimates({ests,setEsts,custs,projs,setProjs,invs,setInv
           </div>
         </div>
       )}
+      {pendingDel!==null&&<ConfirmDeleteModal label="this estimate" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
       {emailMd&&se&&<EmailSendModal type="estimate" docNumber={se.number} customer={custs.find(c=>c.id===se.custId)} total={fmt(seC.total)} project={se.name} company={company} onClose={()=>setEmailMd(false)} onSend={(to)=>{if(se.status==="draft"){markSt(se.id,"sent");}showToast("Estimate emailed to "+to);}}/>}
       {sigMd&&se&&<SignatureRequestModal type="estimate" docId={se.id} docNumber={se.number} customer={custs.find(c=>c.id===se.custId)} company={company} onClose={()=>setSigMd(false)} onSent={(to)=>{db.ests.update(se.id,{status:"sent",signToken:"pending"});showToast("Signing link sent to "+to);}}/>}
     </div>

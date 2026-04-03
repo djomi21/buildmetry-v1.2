@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { ROLE_C, MGMT_ROLES } from '../constants';
 import { fmt, pct, uid, tod, getBurdenedRate } from '../utils/calculations';
-import { ES, ini, avC } from './shared/ui';
+import { ES, ini, avC, ConfirmDeleteModal } from './shared/ui';
 import I from './shared/Icons';
 
 export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,auth}) {
   const [sel,setSel]=useState(subs[0]?.id||null);
   const [form,setForm]=useState(null);
   const [hrForm,setHrForm]=useState(null);
+  const [pendingDel,setPendingDel]=useState(null);
+  const [pendingHrDel,setPendingHrDel]=useState(null);
   const se=subs.find(e=>e.id===sel)||null;
   const eHrs=se?hrs.filter(h=>h.subId===se.id):[];
   const totHrs=eHrs.reduce((s,h)=>s+h.hours,0);
@@ -26,7 +28,7 @@ export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,a
     else{db.subs.create({...data,id:uid()});showToast("Added");}
     setForm(null);
   };
-  const del=id=>{db.subs.remove(id);if(sel===id)setSel(null);showToast("Crew member removed");};
+  const del=id=>{db.subs.remove(id);if(sel===id)setSel(null);showToast("Crew member removed");setPendingDel(null);};
 
   const blankHr={projId:projs[0]?.id||"",date:tod(),hours:"8",desc:"",approved:false};
   const logHrs=()=>{
@@ -44,7 +46,7 @@ export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,a
 
   const canApprove = auth && ["Owner","Admin","Foreman"].includes(auth.role);
   const openEditHr=h=>setHrForm({...h,_id:h.id,hours:String(h.hours)});
-  const delHr=id=>{if(confirm("Delete this hour log?"))db.hrs.remove(id),showToast("Hour log removed");};
+  const delHr=id=>{db.hrs.remove(id);showToast("Hour log removed");setPendingHrDel(null);};
   const toggleApprove=(hId,current)=>{
     if(!canApprove) return;
     db.hrs.update(hId,{approved:!current});
@@ -105,7 +107,7 @@ export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,a
               <div className="act-bar" style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 <button onClick={()=>setHrForm({...blankHr})} className="bb b-am" style={{padding:"6px 11px",fontSize:11}}><I n="clock" s={11}/>Log Hours</button>
                 <button onClick={()=>openEdit(se)} className="bb b-gh" style={{padding:"6px 10px",fontSize:11}}><I n="edit" s={11}/></button>
-                <button onClick={()=>{if(confirm("Delete "+se.name+"?"))del(se.id);}} className="bb b-rd" style={{padding:"6px 10px",fontSize:11}}><I n="trash" s={11}/></button>
+                <button onClick={()=>setPendingDel(se.id)} className="bb b-rd" style={{padding:"6px 10px",fontSize:11}}><I n="trash" s={11}/></button>
               </div>
             </div>
             {(se.phone||se.email||se.hireDate||se.certifications||se.emergencyContact)&&(
@@ -151,7 +153,7 @@ export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,a
                         )}</td>
                         {canApprove&&<td style={{padding:"7px 12px",whiteSpace:"nowrap"}}>
                           <button onClick={()=>openEditHr(h)} style={{marginRight:5,padding:"2px 8px",borderRadius:8,fontSize:9,fontWeight:700,background:"rgba(99,179,237,.1)",color:"#63b3ed",border:"1px solid rgba(99,179,237,.25)",cursor:"pointer"}}>Edit</button>
-                          <button onClick={()=>delHr(h.id)} style={{padding:"2px 8px",borderRadius:8,fontSize:9,fontWeight:700,background:"rgba(239,68,68,.08)",color:"#ef4444",border:"1px solid rgba(239,68,68,.2)",cursor:"pointer"}}>Del</button>
+                          <button onClick={()=>setPendingHrDel(h.id)} style={{padding:"2px 8px",borderRadius:8,fontSize:9,fontWeight:700,background:"rgba(239,68,68,.08)",color:"#ef4444",border:"1px solid rgba(239,68,68,.2)",cursor:"pointer"}}>Del</button>
                         </td>}
                       </tr>;
                     })}
@@ -166,6 +168,9 @@ export default function Subs({subs,setSubs,hrs,setHrs,projs,roles,showToast,db,a
           <I n="employees" s={40}/><div style={{fontSize:14,fontWeight:600}}>Select a crew member</div>
         </div>
       )}
+
+      {pendingDel!==null&&<ConfirmDeleteModal label="this crew member" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
+      {pendingHrDel!==null&&<ConfirmDeleteModal label="this hour log" onConfirm={()=>delHr(pendingHrDel)} onCancel={()=>setPendingHrDel(null)}/>}
 
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>

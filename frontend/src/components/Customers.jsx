@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { TAG_C, INV_SC, EST_SC, PRJ_SC } from '../constants';
 import { calcInv, fmt, uid, tod } from '../utils/calculations';
-import { Chip, ES, ini, avC, Pr } from './shared/ui';
+import { Chip, ES, ini, avC, Pr, ConfirmDeleteModal } from './shared/ui';
 import I from './shared/Icons';
 
 export default function Customers({custs,setCusts,invs,ests,projs,showToast,db}) {
@@ -10,6 +10,7 @@ export default function Customers({custs,setCusts,invs,ests,projs,showToast,db})
   const [tagF, setTagF]  = useState("All");
   const [form, setForm]  = useState(null); // null=closed
   const [dtab, setDtab]  = useState("overview");
+  const [pendingDel, setPendingDel] = useState(null);
 
   const TAGS=["All","VIP","Repeat","Hot Lead","Investor","New","Referral Source"];
   const filt=useMemo(()=>custs.filter(c=>{
@@ -43,7 +44,7 @@ export default function Customers({custs,setCusts,invs,ests,projs,showToast,db})
     }
     setForm(null);
   };
-  const del=id=>{db.custs.remove(id);if(sel===id)setSel(null);showToast("Removed");};
+  const del=id=>{db.custs.remove(id);if(sel===id)setSel(null);showToast("Removed");setPendingDel(null);};
 
   return (
     <div className="spl">
@@ -99,7 +100,7 @@ export default function Customers({custs,setCusts,invs,ests,projs,showToast,db})
               </div>
               <div className="act-bar" style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 <button onClick={()=>openEdit(sc)} className="bb b-gh" style={{padding:"6px 12px",fontSize:11}}><I n="edit" s={12}/>Edit</button>
-                <button onClick={()=>del(sc.id)} className="bb b-rd" style={{padding:"6px 10px",fontSize:11}}><I n="trash" s={12}/></button>
+                <button onClick={()=>setPendingDel(sc.id)} className="bb b-rd" style={{padding:"6px 10px",fontSize:11}}><I n="trash" s={12}/></button>
               </div>
             </div>
             <div style={{display:"flex",gap:16,marginTop:11,flexWrap:"wrap"}}>
@@ -194,6 +195,8 @@ export default function Customers({custs,setCusts,invs,ests,projs,showToast,db})
           <button onClick={openNew} className="bb b-bl" style={{padding:"8px 16px",fontSize:12,marginTop:4}}><I n="plus" s={13}/>Add Customer</button>
         </div>
       )}
+
+      {pendingDel!==null&&<ConfirmDeleteModal label="this customer" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
 
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>

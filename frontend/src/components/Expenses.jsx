@@ -2,13 +2,14 @@ import { useState, useMemo } from 'react';
 import { EXPENSE_CATS } from '../constants';
 import { fmt, tod, uid } from '../utils/calculations';
 import { I } from './shared/Icons';
-import { KpiCard, ES } from './shared/ui';
+import { KpiCard, ES, ConfirmDeleteModal } from './shared/ui';
 
 export default function Expenses({expenses,setExpenses,projs,showToast,db}) {
   const [form,setForm]=useState(null);
   const [catF,setCatF]=useState("All");
   const [projF,setProjF]=useState("all");
   const [srch,setSrch]=useState("");
+  const [pendingDel,setPendingDel]=useState(null);
 
   const cats=["All",...[...new Set(expenses.map(e=>e.category))].sort()];
   const filt=useMemo(()=>expenses.filter(e=>{
@@ -33,7 +34,7 @@ export default function Expenses({expenses,setExpenses,projs,showToast,db}) {
     else{db.expenses.create({...data,id:uid()});showToast("Expense added");}
     setForm(null);
   };
-  const del=id=>{db.expenses.remove(id);showToast("Removed");};
+  const del=id=>{db.expenses.remove(id);showToast("Removed");setPendingDel(null);};
 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:14}}>
@@ -73,7 +74,7 @@ export default function Expenses({expenses,setExpenses,projs,showToast,db}) {
                 <td style={{padding:"8px 12px"}}>
                   <div style={{display:"flex",gap:5}}>
                     <button onClick={()=>openEdit(ex)} style={{color:"var(--text-dim)",opacity:.7}} className="rh"><I n="edit" s={13}/></button>
-                    <button onClick={()=>del(ex.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
+                    <button onClick={()=>setPendingDel(ex.id)} style={{color:"#ef4444",opacity:.5}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
               </tr>;
@@ -82,6 +83,8 @@ export default function Expenses({expenses,setExpenses,projs,showToast,db}) {
         </table>
         {filt.length===0&&<ES icon="expense" text="No expenses match your filters."/>}
       </div>
+      {pendingDel!==null&&<ConfirmDeleteModal label="this expense" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
+
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
           <div className="mo" style={{maxWidth:560,marginTop:40}}>

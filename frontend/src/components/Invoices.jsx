@@ -3,7 +3,7 @@ import api from '../api';
 import { INV_SC, EST_SC, TAX, ROLE_C, SVC_CAT_C } from '../constants';
 import { calcInv, fmt, fmtD, tod, uid, nxtNum, printDoc, calcBurden, addD } from '../utils/calculations';
 import { I } from './shared/Icons';
-import { KpiCard, Chip, ES } from './shared/ui';
+import { KpiCard, Chip, ES, ConfirmDeleteModal } from './shared/ui';
 import EmailSendModal from './modals/EmailSendModal';
 import SignatureRequestModal from './modals/SignatureRequestModal';
 
@@ -15,6 +15,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
   const [emailMd, setEmailMd] = useState(false);
   const [editForm, setEditForm] = useState(null);
   const [invPicker, setInvPicker] = useState(null); // full-screen edit mode
+  const [pendingDel,setPendingDel]=useState(null);
   const si=invs.find(i=>i.id===sel)||null;
   const siC=si?calcInv(si.lineItems,si.taxRate,si.discount||0,si.depositType||"none",Number(si.depositValue)||0):{sub:0,lab:0,mat:0,discountPct:0,discAmt:0,discSub:0,tax:0,total:0,depAmt:0,balanceDue:0};
   const effectiveBal=si?.status==="paid"?0:siC.balanceDue;
@@ -117,7 +118,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
     db.invs.create({...inv,id,number:id,status:"draft",issueDate:tod(),dueDate:addD(tod(),30),paidDate:null});
     setSel(id);showToast(id+" created");
   };
-  const del=id=>{db.invs.remove(id);if(sel===id)setSel(null);showToast("Deleted");};
+  const del=id=>{db.invs.remove(id);if(sel===id)setSel(null);showToast("Deleted");setPendingDel(null);};
 
   const exportInv=(inv,autoPrint=false)=>{
     const c=custs.find(x=>x.id===inv.custId);const calc=calcInv(inv.lineItems,inv.taxRate,inv.discount||0,inv.depositType||"none",Number(inv.depositValue)||0);
@@ -220,7 +221,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
                   <button onClick={()=>setEmailMd(true)} className="bb b-bl" style={{padding:"5px 10px",fontSize:11}}><I n="mail" s={11}/>Email</button>
                   <button onClick={()=>exportInv(si,true)} className="bb b-gh" style={{padding:"5px 9px",fontSize:11}}>⎙ Print</button>
                   {si.status==="draft"&&<button onClick={()=>setStatus(si.id,"void")} className="bb b-rd" style={{padding:"5px 9px",fontSize:11}}>Void</button>}
-                  <button onClick={()=>del(si.id)} className="bb b-rd" style={{padding:"5px 8px",fontSize:11}}><I n="trash" s={11}/></button>
+                  <button onClick={()=>setPendingDel(si.id)} className="bb b-rd" style={{padding:"5px 8px",fontSize:11}}><I n="trash" s={11}/></button>
                 </div>
               </div>
               <div className="inv-kpi-row" style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -360,6 +361,7 @@ export default function Invoices({invs,setInvs,custs,projs,ests,cos,mats,roles,s
           </div>
         </div>
       )}
+      {pendingDel!==null&&<ConfirmDeleteModal label="this invoice" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
       {emailMd&&si&&<EmailSendModal type="invoice" docNumber={si.number} customer={custs.find(c=>c.id===si.custId)} total={fmt(siC.total)} dueDate={si.dueDate} project={projs.find(p=>p.id===si.projId)?.name||""} company={company} onClose={()=>setEmailMd(false)} onSend={(to)=>{if(si.status==="draft"){setStatus(si.id,"sent");}showToast("Invoice emailed to "+to);}}/>}
     </>):(
       <div style={{display:"flex",flexDirection:"column",flex:1,overflow:"hidden"}}>

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { SVC_CATS, SVC_CAT_C } from '../constants';
 import { fmtD, uid } from '../utils/calculations';
-import { KpiCard, ES } from './shared/ui';
+import { KpiCard, ES, ConfirmDeleteModal } from './shared/ui';
 import I from './shared/Icons';
 
 const UNITS = ["ea","sf","lf","sy","cy","hr","day","ls","gal","ton","bd ft"];
@@ -10,6 +10,7 @@ export default function Services({svcs,db,showToast}) {
   const [catF,setCatF]  = useState("All");
   const [srch,setSrch]  = useState("");
   const [form,setForm]  = useState(null);
+  const [pendingDel,setPendingDel] = useState(null);
 
   const filt = useMemo(()=>svcs.filter(s=>{
     const ms = !srch || s.name.toLowerCase().includes(srch.toLowerCase()) || s.description.toLowerCase().includes(srch.toLowerCase());
@@ -30,7 +31,7 @@ export default function Services({svcs,db,showToast}) {
     else{db.svcs.create({...data,id:uid()});showToast("Service added");}
     setForm(null);
   };
-  const del = id=>{db.svcs.remove(id);showToast("Removed");};
+  const del = id=>{db.svcs.remove(id);showToast("Removed");setPendingDel(null);};
 
   const addLI  = isMat=>setForm(f=>({...f,lineItems:[...f.lineItems,{id:uid(),description:"",qty:1,unitPrice:"",unit:"ls",isMaterial:isMat}]}));
   const updLI  = (liId,fld,v)=>setForm(f=>({...f,lineItems:f.lineItems.map(li=>li.id===liId?{...li,[fld]:fld==="qty"||fld==="unitPrice"?Number(v)||0:v}:li)}));
@@ -92,7 +93,7 @@ export default function Services({svcs,db,showToast}) {
                   <td style={{padding:"8px 12px"}}>
                     <div style={{display:"flex",gap:5}}>
                       <button onClick={()=>openEdit(s)} style={{color:"var(--text-dim)",opacity:.7,transition:"opacity .12s"}} className="rh"><I n="edit" s={13}/></button>
-                      <button onClick={()=>del(s.id)} style={{color:"#ef4444",opacity:.5,transition:"opacity .12s"}} className="rh"><I n="trash" s={13}/></button>
+                      <button onClick={()=>setPendingDel(s.id)} style={{color:"#ef4444",opacity:.5,transition:"opacity .12s"}} className="rh"><I n="trash" s={13}/></button>
                     </div>
                   </td>
                 </tr>
@@ -102,6 +103,8 @@ export default function Services({svcs,db,showToast}) {
         </table>
         {filt.length===0&&<ES icon="services" text="No services match your filters."/>}
       </div>
+
+      {pendingDel!==null&&<ConfirmDeleteModal label="this service" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
 
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>

@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { CAT_C } from '../constants';
 import { fmt, fmtD, uid } from '../utils/calculations';
-import { KpiCard, ES } from './shared/ui';
+import { KpiCard, ES, ConfirmDeleteModal } from './shared/ui';
 import I from './shared/Icons';
 
 export default function Materials({mats,setMats,showToast,db}) {
   const [catF,setCatF]=useState("All");
   const [srch,setSrch]=useState("");
   const [form,setForm]=useState(null);
+  const [pendingDel,setPendingDel]=useState(null);
 
   const cats=["All",...[...new Set(mats.map(m=>m.category))].sort()];
   const filt=useMemo(()=>mats.filter(m=>{
@@ -29,7 +30,7 @@ export default function Materials({mats,setMats,showToast,db}) {
     else{db.mats.create({...data,id:uid()});showToast("Added");}
     setForm(null);
   };
-  const del=id=>{db.mats.remove(id);showToast("Removed");};
+  const del=id=>{db.mats.remove(id);showToast("Removed");setPendingDel(null);};
 
   const sellPrice=m=>m.cost*(1+m.markup/100);
 
@@ -82,7 +83,7 @@ export default function Materials({mats,setMats,showToast,db}) {
                 <td style={{padding:"8px 12px"}}>
                   <div style={{display:"flex",gap:5}}>
                     <button onClick={()=>openEdit(m)} style={{color:"var(--text-dim)",opacity:.7,transition:"opacity .12s"}} className="rh"><I n="edit" s={13}/></button>
-                    <button onClick={()=>del(m.id)} style={{color:"#ef4444",opacity:.5,transition:"opacity .12s"}} className="rh"><I n="trash" s={13}/></button>
+                    <button onClick={()=>setPendingDel(m.id)} style={{color:"#ef4444",opacity:.5,transition:"opacity .12s"}} className="rh"><I n="trash" s={13}/></button>
                   </div>
                 </td>
               </tr>;
@@ -91,6 +92,8 @@ export default function Materials({mats,setMats,showToast,db}) {
         </table>
         {filt.length===0&&<ES icon="materials" text="No materials match your filters."/>}
       </div>
+
+      {pendingDel!==null&&<ConfirmDeleteModal label="this material" onConfirm={()=>del(pendingDel)} onCancel={()=>setPendingDel(null)}/>}
 
       {form&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setForm(null)}>
